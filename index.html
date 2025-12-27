@@ -1,30 +1,73 @@
-# Клонируйте репозиторий
-git clone https://github.com/your-username/telegram-bot-styles.git
-cd telegram-bot-styles
-
-# Создайте файл index.html
-nano index.html  # или любой редактор
-
-# Вставьте HTML код, сохраните
-
-# Загрузите на GitHub
-git add index.html
-git commit -m "Add styles page"
-git push
-```
-
-## 3. Включите GitHub Pages
-
-1. В репозитории перейдите в **Settings** (настройки)
-2. В левом меню найдите **Pages**
-3. В разделе **"Source"** выберите:
-   - **Branch**: `main` (или `master`)
-   - **Folder**: `/ (root)`
-4. Нажмите **"Save"**
-5. Подождите 1-2 минуты
-
-## 4. Получите ссылку
-
-После активации GitHub Pages вы увидите сообщение:
-```
-Your site is published at https://your-username.github.io/telegram-bot-styles/
+<script>
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+    
+    let stylesData = [];
+    
+    // Загружаем стили с API
+    async function loadStyles() {
+        try {
+            const response = await fetch('https://platform.higgsfield.ai/v1/text2image/soul-styles', {
+                headers: {
+                    'hf-api-key': 'e42077ce-d23c-4dd5-acf4-b3d8ce837b36',
+                    'hf-secret': '6c1ac7d7aa0b83c84cf0c183851b31f688d03815ff8fc04e137c70de4e794ba1'
+                }
+            });
+            
+            if (response.ok) {
+                stylesData = await response.json();
+                renderStyles(stylesData);
+            } else {
+                throw new Error('Failed to load styles');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            document.getElementById('stylesGrid').innerHTML = 
+                '<div class="loading">❌ Ошибка загрузки стилей</div>';
+        }
+    }
+    
+    function renderStyles(styles) {
+        const grid = document.getElementById('stylesGrid');
+        grid.innerHTML = '';
+        
+        styles.forEach(style => {
+            const card = document.createElement('div');
+            card.className = 'style-card';
+            card.onclick = () => selectStyle(style.name, style.id);
+            
+            card.innerHTML = `
+                <div class="image-container">
+                    <img class="style-image" src="${style.preview_url}" alt="${style.name}" loading="lazy">
+                </div>
+                <div class="style-info">
+                    <div class="style-name">${style.name}</div>
+                    ${style.description ? `<div class="style-description">${style.description}</div>` : ''}
+                </div>
+            `;
+            
+            grid.appendChild(card);
+        });
+    }
+    
+    function selectStyle(name, id) {
+        tg.sendData(JSON.stringify({
+            style_name: name,
+            style_id: id
+        }));
+        tg.close();
+    }
+    
+    // Поиск
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+        const searchTerm = e.target.value.toLowerCase();
+        const filtered = stylesData.filter(style => 
+            style.name.toLowerCase().includes(searchTerm) ||
+            (style.description && style.description.toLowerCase().includes(searchTerm))
+        );
+        renderStyles(filtered);
+    });
+    
+    // Загружаем стили при открытии
+    loadStyles();
+</script>
