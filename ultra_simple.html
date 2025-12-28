@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body style="padding: 20px; font-family: Arial; font-size: 20px;">
+    <h1>🔥 ULTRA SIMPLE TEST</h1>
+    <p id="status">Loading...</p>
+    <button id="btn" style="padding: 20px; font-size: 24px; width: 100%; margin-top: 20px;">
+        CLICK TO SEND
+    </button>
+    
+    <script>
+        const status = document.getElementById('status');
+        const btn = document.getElementById('btn');
+        
+        // Проверка Telegram
+        if (!window.Telegram || !window.Telegram.WebApp) {
+            status.innerHTML = '❌ ERROR: Not in Telegram!';
+            btn.disabled = true;
+        } else {
+            const tg = window.Telegram.WebApp;
+            
+            // Инициализация
+            tg.ready();
+            tg.expand();
+            
+            status.innerHTML = '✅ Ready! Platform: ' + tg.platform;
+            
+            // Обработчик кнопки
+            btn.onclick = function() {
+                status.innerHTML = '📤 Sending...';
+                
+                try {
+                    // САМАЯ ПРОСТАЯ ОТПРАВКА
+                    tg.sendData('HELLO');
+                    status.innerHTML = '✅ Sent!';
+                } catch (e) {
+                    status.innerHTML = '❌ Error: ' + e.message;
+                }
+            };
+        }
+    </script>
+</body>
+</html>
