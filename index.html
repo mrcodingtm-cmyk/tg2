@@ -344,16 +344,49 @@
         }
         
         // Подтверждение выбора
-        document.getElementById('confirmButton').onclick = function() {
-            if (selectedStyle) {
-                // Отправляем данные в бот
-                tg.sendData(JSON.stringify({
-                    style_name: selectedStyle.name,
-                    style_id: selectedStyle.id
-                }));
-                tg.close();
-            }
+ document.getElementById('confirmButton').onclick = function() {
+    console.log('🔥 Кнопка подтверждения нажата');
+    
+    if (selectedStyle) {
+        const dataToSend = {
+            style_name: selectedStyle.name,
+            style_id: selectedStyle.id
         };
+        
+        console.log('📤 Отправка данных:', dataToSend);
+        console.log('📤 JSON:', JSON.stringify(dataToSend));
+        
+        // Проверка доступности Telegram WebApp
+        if (window.Telegram && window.Telegram.WebApp) {
+            const tg = window.Telegram.WebApp;
+            
+            if (tg.sendData) {
+                try {
+                    // ОТПРАВКА ДАННЫХ
+                    tg.sendData(JSON.stringify(dataToSend));
+                    console.log('✅ Данные отправлены!');
+                    
+                    // Закрываем WebApp через 300мс
+                    setTimeout(() => {
+                        tg.close();
+                    }, 300);
+                } catch (e) {
+                    console.error('❌ Ошибка sendData:', e);
+                    alert('Ошибка отправки: ' + e.message);
+                }
+            } else {
+                console.error('❌ tg.sendData недоступен');
+                alert('Функция sendData недоступна');
+            }
+        } else {
+            console.error('❌ Telegram WebApp не найден');
+            alert('Telegram WebApp не инициализирован');
+        }
+    } else {
+        console.warn('⚠️ Стиль не выбран');
+        alert('Пожалуйста, выберите стиль!');
+    }
+};
         
         // Поиск
         let searchTimeout;
