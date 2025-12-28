@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soul Styles Gallery</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding: 16px;
+            background: var(--tg-theme-bg-color, #ffffff);
+            color: var(--tg-theme-text-color, #000000);
+        }
+        
+        h1 {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+        
+        .subtitle {
+            color: var(--tg-theme-hint-color, #999);
+            margin-bottom: 20px;
+        }
+        
+        .search {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 16px;
+            border: 1px solid var(--tg-theme-hint-color, #ddd);
+            border-radius: 8px;
+            font-size: 16px;
+            background: var(--tg-theme-bg-color, #fff);
+            color: var(--tg-theme-text-color, #000);
+        }
+        
+        .styles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 12px;
+        }
+        
+        .style-card {
+            padding: 16px;
+            border: 2px solid transparent;
+            border-radius: 12px;
+            background: var(--tg-theme-secondary-bg-color, #f5f5f5);
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        
+        .style-card:active {
+            transform: scale(0.95);
+        }
+        
+        .style-card.selected {
+            border-color: var(--tg-theme-button-color, #3390ec);
+            background: var(--tg-theme-button-color, #3390ec);
+            color: var(--tg-theme-button-text-color, #ffffff);
+        }
+        
+        .style-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+        
+        .style-name {
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        #selected-info {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 16px;
+            background: var(--tg-theme-bg-color, #fff);
+            border-top: 1px solid var(--tg-theme-hint-color, #ddd);
+            display: none;
+        }
+        
+        #selected-info.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎨 Soul Styles Gallery</h1>
+    <p class="subtitle">Выберите стиль для вашего изображения</p>
+    
+    <input type="text" class="search" id="search" placeholder="🔍 Поиск стилей...">
+    
+    <div class="styles-grid" id="styles-grid"></div>
+    
+    <div id="selected-info">
+        <div id="selected-text"></div>
+    </div>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        
+        // Инициализация
+        tg.ready();
+        tg.expand();
+        
+        // Список стилей (первые 30)
+        const styles = [
+            {id: 'realistic_001', name: 'Realistic', icon: '📸'},
+            {id: 'anime_001', name: 'Anime', icon: '🎌'},
+            {id: 'digital_art_001', name: 'Digital Art', icon: '🖼️'},
+            {id: 'oil_painting_001', name: 'Oil Painting', icon: '🎨'},
+            {id: 'watercolor_001', name: 'Watercolor', icon: '💧'},
+            {id: 'sketch_001', name: 'Sketch', icon: '✏️'},
+            {id: '3d_render_001', name: '3D Render', icon: '🎲'},
+            {id: 'pixel_art_001', name: 'Pixel Art', icon: '👾'},
+            {id: 'comic_book_001', name: 'Comic Book', icon: '💥'},
+            {id: 'fantasy_001', name: 'Fantasy', icon: '🧙'},
+            {id: 'scifi_001', name: 'Sci-Fi', icon: '🚀'},
+            {id: 'cyberpunk_001', name: 'Cyberpunk', icon: '🌆'},
+            {id: 'steampunk_001', name: 'Steampunk', icon: '⚙️'},
+            {id: 'horror_001', name: 'Horror', icon: '👻'},
+            {id: 'minimalist_001', name: 'Minimalist', icon: '⬜'},
+            {id: 'abstract_001', name: 'Abstract', icon: '🎭'},
+            {id: 'pop_art_001', name: 'Pop Art', icon: '🎪'},
+            {id: 'art_nouveau_001', name: 'Art Nouveau', icon: '🌺'},
+            {id: 'impressionism_001', name: 'Impressionism', icon: '🌅'},
+            {id: 'surrealism_001', name: 'Surrealism', icon: '🌀'},
+            {id: 'vintage_001', name: 'Vintage', icon: '📜'},
+            {id: 'retro_001', name: 'Retro', icon: '📺'},
+            {id: 'noir_001', name: 'Film Noir', icon: '🎬'},
+            {id: 'gothic_001', name: 'Gothic', icon: '🏰'},
+            {id: 'baroque_001', name: 'Baroque', icon: '👑'},
+            {id: 'renaissance_001', name: 'Renaissance', icon: '🖌️'},
+            {id: 'expressionism_001', name: 'Expressionism', icon: '😱'},
+            {id: 'cubism_001', name: 'Cubism', icon: '🔷'},
+            {id: 'art_deco_001', name: 'Art Deco', icon: '💎'},
+            {id: 'graffiti_001', name: 'Graffiti', icon: '🎨'},
+        ];
+        
+        let selectedStyle = null;
+        
+        // Отрисовка стилей
+        function renderStyles(filter = '') {
+            const grid = document.getElementById('styles-grid');
+            grid.innerHTML = '';
+            
+            const filtered = styles.filter(s => 
+                s.name.toLowerCase().includes(filter.toLowerCase())
+            );
+            
+            filtered.forEach(style => {
+                const card = document.createElement('div');
+                card.className = 'style-card';
+                if (selectedStyle && selectedStyle.id === style.id) {
+                    card.classList.add('selected');
+                }
+                
+                card.innerHTML = `
+                    <div class="style-icon">${style.icon}</div>
+                    <div class="style-name">${style.name}</div>
+                `;
+                
+                card.onclick = () => selectStyle(style);
+                
+                grid.appendChild(card);
+            });
+        }
+        
+        // Выбор стиля
+        function selectStyle(style) {
+            selectedStyle = style;
+            renderStyles(document.getElementById('search').value);
+            
+            // Показываем выбранный стиль
+            const info = document.getElementById('selected-info');
+            const text = document.getElementById('selected-text');
+            
+            info.classList.add('show');
+            text.innerHTML = `
+                ✅ <strong>${style.name}</strong> выбран<br>
+                <small>ID: ${style.id}</small>
+            `;
+            
+            // Настраиваем главную кнопку Telegram
+            tg.MainButton.setText(`Применить ${style.name}`);
+            tg.MainButton.show();
+            tg.MainButton.onClick(() => sendStyle());
+        }
+        
+        // Отправка стиля
+        function sendStyle() {
+            if (!selectedStyle) return;
+            
+            // ВАРИАНТ 1: Через sendData (если работает)
+            try {
+                const data = JSON.stringify({
+                    style_name: selectedStyle.name,
+                    style_id: selectedStyle.id
+                });
+                tg.sendData(data);
+            } catch (e) {
+                console.error('sendData error:', e);
+            }
+            
+            // ВАРИАНТ 2: Через postEvent (всегда работает)
+            tg.sendData(JSON.stringify({
+                style_name: selectedStyle.name,
+                style_id: selectedStyle.id
+            }));
+            
+            // Закрываем WebApp
+            tg.close();
+        }
+        
+        // Поиск
+        document.getElementById('search').addEventListener('input', (e) => {
+            renderStyles(e.target.value);
+        });
+        
+        // Начальная отрисовка
+        renderStyles();
+        
+        // Настройка темы
+        document.body.style.backgroundColor = tg.themeParams.bg_color || '#ffffff';
+        document.body.style.color = tg.themeParams.text_color || '#000000';
+    </script>
+</body>
+</html>
