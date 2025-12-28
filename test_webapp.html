@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test WebApp</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        .test-button {
+            background: #4CAF50;
+            color: white;
+            padding: 20px 40px;
+            font-size: 18px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 10px;
+            display: block;
+            width: 100%;
+        }
+        .log {
+            background: white;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test WebApp</h1>
+    <div id="logs"></div>
+    
+    <button class="test-button" onclick="testSendData()">📤 TEST 1: Отправить данные</button>
+    <button class="test-button" onclick="testStyle()">🎨 TEST 2: Отправить стиль</button>
+    <button class="test-button" onclick="testClose()">🚪 TEST 3: Закрыть WebApp</button>
+
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script>
+        function addLog(message, isError = false) {
+            const logsDiv = document.getElementById('logs');
+            const logEntry = document.createElement('div');
+            logEntry.className = 'log';
+            logEntry.style.borderLeft = isError ? '4px solid red' : '4px solid green';
+            logEntry.textContent = new Date().toLocaleTimeString() + ' - ' + message;
+            logsDiv.insertBefore(logEntry, logsDiv.firstChild);
+            console.log(message);
+        }
+
+        // ИНИЦИАЛИЗАЦИЯ
+        addLog('🚀 Скрипт загружен');
+        
+        let tg;
+        try {
+            tg = window.Telegram.WebApp;
+            addLog('✅ Telegram WebApp найден');
+            addLog('Version: ' + tg.version);
+            addLog('Platform: ' + tg.platform);
+            addLog('initData: ' + (tg.initData ? 'OK' : 'EMPTY'));
+        } catch (e) {
+            addLog('❌ Ошибка инициализации: ' + e.message, true);
+        }
+
+        try {
+            tg.ready();
+            addLog('✅ tg.ready() вызван');
+        } catch (e) {
+            addLog('❌ Ошибка tg.ready(): ' + e.message, true);
+        }
+
+        try {
+            tg.expand();
+            addLog('✅ tg.expand() вызван');
+        } catch (e) {
+            addLog('❌ Ошибка tg.expand(): ' + e.message, true);
+        }
+
+        // ТЕСТ 1: Простая отправка данных
+        function testSendData() {
+            addLog('🔵 TEST 1: Начало теста отправки');
+            
+            if (!tg) {
+                addLog('❌ tg не определен', true);
+                return;
+            }
+
+            if (!tg.sendData) {
+                addLog('❌ tg.sendData не существует', true);
+                addLog('Доступные методы: ' + Object.keys(tg).join(', '));
+                return;
+            }
+
+            const testData = {
+                test: "hello",
+                timestamp: Date.now()
+            };
+
+            try {
+                const jsonString = JSON.stringify(testData);
+                addLog('📦 Данные: ' + jsonString);
+                
+                tg.sendData(jsonString);
+                addLog('✅ tg.sendData() выполнен успешно!');
+                
+                setTimeout(() => {
+                    addLog('⏱️ Ожидание 1 сек перед закрытием...');
+                    tg.close();
+                }, 1000);
+                
+            } catch (e) {
+                addLog('❌ Ошибка sendData: ' + e.message, true);
+                addLog('Stack: ' + e.stack, true);
+            }
+        }
+
+        // ТЕСТ 2: Отправка стиля (как в реальном коде)
+        function testStyle() {
+            addLog('🔵 TEST 2: Начало теста отправки стиля');
+            
+            const styleData = {
+                style_name: "Realistic",
+                style_id: "1cb4b936-77bf-4f9a-9039-f3d349a4cdbe"
+            };
+
+            try {
+                const jsonString = JSON.stringify(styleData);
+                addLog('📦 Style data: ' + jsonString);
+                
+                tg.sendData(jsonString);
+                addLog('✅ Стиль отправлен!');
+                
+                setTimeout(() => {
+                    tg.close();
+                }, 1000);
+                
+            } catch (e) {
+                addLog('❌ Ошибка: ' + e.message, true);
+            }
+        }
+
+        // ТЕСТ 3: Только закрытие
+        function testClose() {
+            addLog('🔵 TEST 3: Попытка закрыть WebApp');
+            try {
+                tg.close();
+                addLog('✅ tg.close() вызван');
+            } catch (e) {
+                addLog('❌ Ошибка close: ' + e.message, true);
+            }
+        }
+
+        addLog('🎬 Инициализация завершена. Нажмите кнопки для тестов.');
+    </script>
+</body>
+</html>
