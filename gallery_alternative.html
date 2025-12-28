@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎨 Галерея (Alternative)</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding: 16px;
+            padding-bottom: 80px;
+            background: var(--tg-theme-bg-color, #ffffff);
+            color: var(--tg-theme-text-color, #000000);
+        }
+        
+        h1 { font-size: 24px; margin-bottom: 8px; text-align: center; }
+        .subtitle { color: var(--tg-theme-hint-color, #999); margin-bottom: 20px; text-align: center; }
+        
+        .styles-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .style-card {
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            background: #f5f5f5;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            min-height: 100px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .style-card:active { transform: scale(0.95); }
+        
+        .style-card.selected {
+            border-color: #3390ec;
+            background: #e3f2fd;
+            box-shadow: 0 0 0 3px rgba(51, 144, 236, 0.2);
+        }
+        
+        .style-icon { font-size: 36px; margin-bottom: 8px; }
+        .style-name { font-size: 14px; font-weight: 600; color: #333; }
+        .style-id { font-size: 11px; color: #999; margin-top: 4px; }
+        
+        #log {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            max-height: 150px;
+            overflow-y: auto;
+            background: #000;
+            color: #0f0;
+            font-family: monospace;
+            font-size: 11px;
+            padding: 8px;
+            border-top: 2px solid #0f0;
+        }
+        
+        .log-line { margin-bottom: 2px; }
+        .log-success { color: #0f0; }
+        .log-error { color: #f00; }
+        .log-info { color: #0ff; }
+    </style>
+</head>
+<body>
+    <h1>🎨 Soul Styles (Alt)</h1>
+    <p class="subtitle">Выберите стиль - АЛЬТЕРНАТИВНЫЙ МЕТОД</p>
+    
+    <div class="styles-grid" id="styles-grid"></div>
+    <div id="log"></div>
+
+    <script>
+        function log(msg, type = 'info') {
+            const time = new Date().toLocaleTimeString();
+            const line = document.createElement('div');
+            line.className = `log-line log-${type}`;
+            line.textContent = `${time} - ${msg}`;
+            document.getElementById('log').appendChild(line);
+            document.getElementById('log').scrollTop = document.getElementById('log').scrollHeight;
+            console.log(`[${type}] ${msg}`);
+        }
+        
+        log('🚀 Скрипт загружен (АЛЬТЕРНАТИВНЫЙ)');
+        
+        if (!window.Telegram || !window.Telegram.WebApp) {
+            log('❌ Telegram WebApp НЕ найден!', 'error');
+        } else {
+            const tg = window.Telegram.WebApp;
+            log('✅ Telegram WebApp найден', 'success');
+            log(`Platform: ${tg.platform}`, 'info');
+            log(`Version: ${tg.version}`, 'info');
+            
+            tg.ready();
+            tg.expand();
+            log('✅ ready() и expand() вызваны', 'success');
+            
+            const styles = [
+                {id: 'realistic_001', name: 'Realistic', icon: '📸'},
+                {id: 'anime_001', name: 'Anime', icon: '🎌'},
+                {id: 'digital_art_001', name: 'Digital Art', icon: '🖼️'},
+                {id: 'oil_painting_001', name: 'Oil Painting', icon: '🎨'},
+                {id: 'watercolor_001', name: 'Watercolor', icon: '💧'},
+                {id: 'sketch_001', name: 'Sketch', icon: '✏️'},
+                {id: '3d_render_001', name: '3D Render', icon: '🎲'},
+                {id: 'pixel_art_001', name: 'Pixel Art', icon: '👾'},
+                {id: 'fantasy_001', name: 'Fantasy', icon: '🧙'},
+                {id: 'cyberpunk_001', name: 'Cyberpunk', icon: '🌆'},
+            ];
+            
+            let selectedStyle = null;
+            
+            const grid = document.getElementById('styles-grid');
+            styles.forEach(style => {
+                const card = document.createElement('div');
+                card.className = 'style-card';
+                card.innerHTML = `
+                    <div class="style-icon">${style.icon}</div>
+                    <div class="style-name">${style.name}</div>
+                    <div class="style-id">${style.id}</div>
+                `;
+                
+                card.onclick = () => {
+                    log(`🎨 Выбран стиль: ${style.name}`, 'info');
+                    
+                    document.querySelectorAll('.style-card').forEach(c => {
+                        c.classList.remove('selected');
+                    });
+                    
+                    card.classList.add('selected');
+                    selectedStyle = style;
+                    
+                    // ИСПОЛЬЗУЕМ ДРУГОЙ МЕТОД!
+                    log('💡 Используем АЛЬТЕРНАТИВНЫЙ метод отправки', 'info');
+                    
+                    // МЕТОД 1: Закрываем WebApp сразу с данными
+                    setTimeout(() => {
+                        log('📤 Отправка через close()...', 'info');
+                        
+                        const data = JSON.stringify({
+                            style_name: style.name,
+                            style_id: style.id,
+                            method: 'close',
+                            timestamp: Date.now()
+                        });
+                        
+                        log(`📦 Data: ${data}`, 'info');
+                        
+                        try {
+                            // Пробуем sendData
+                            tg.sendData(data);
+                            log('✅ sendData() выполнен', 'success');
+                        } catch (e) {
+                            log(`⚠️ sendData ошибка: ${e.message}`, 'error');
+                        }
+                        
+                        // Закрываем принудительно
+                        setTimeout(() => {
+                            log('🚪 Закрытие WebApp...', 'info');
+                            tg.close();
+                        }, 500);
+                        
+                    }, 300);
+                };
+                
+                grid.appendChild(card);
+            });
+            
+            log(`✅ Отрисовано ${styles.length} стилей`, 'success');
+            log('⚡ Нажмите на стиль - отправка АВТОМАТИЧЕСКАЯ', 'info');
+        }
+    </script>
+</body>
+</html>
