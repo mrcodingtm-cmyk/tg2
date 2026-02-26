@@ -1,0 +1,3542 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>AI Studio</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════
+   CSS VARIABLES & RESET
+   ═══════════════════════════════════════ */
+:root {
+  --bg: #06060a;
+  --surface: rgba(255,255,255,0.03);
+  --surface-2: rgba(255,255,255,0.055);
+  --surface-hover: rgba(255,255,255,0.07);
+  --border: rgba(255,255,255,0.06);
+  --border-active: rgba(168,130,255,0.4);
+  --text: #f0eef6;
+  --text-dim: rgba(255,255,255,0.42);
+  --text-muted: rgba(255,255,255,0.22);
+  --accent: #a882ff;
+  --accent-2: #8b5cf6;
+  --accent-soft: rgba(168,130,255,0.12);
+  --accent-glow: rgba(168,130,255,0.25);
+  --pink: #e879a8;
+  --green: #5beba0;
+  --red: #f87171;
+  --yellow: #fbbf24;
+  --blue: #60a5fa;
+  --cyan: #22d3ee;
+  --r: 18px;
+  --r-sm: 12px;
+  --r-xs: 8px;
+  --font: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html { height: 100%; }
+
+body {
+  background: var(--bg);
+  font-family: var(--font);
+  color: var(--text);
+  min-height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ═══════════════════════════════════════
+   APP SHELL
+   ═══════════════════════════════════════ */
+#app {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+.screen-container {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+  scrollbar-width: none;
+}
+.screen-container::-webkit-scrollbar { display: none; }
+
+.screen {
+  display: none;
+  min-height: 100%;
+  animation: screenIn 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.screen.active { display: block; }
+
+@keyframes screenIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ═══════════════════════════════════════
+   TAB BAR
+   ═══════════════════════════════════════ */
+.tab-bar {
+  height: calc(64px + var(--safe-bottom));
+  padding-bottom: var(--safe-bottom);
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-start;
+  padding-top: 8px;
+  flex-shrink: 0;
+  border-top: 1px solid var(--border);
+  background: linear-gradient(180deg, rgba(6,6,10,0.85) 0%, var(--bg) 40%);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  position: relative;
+  z-index: 100;
+}
+.tab-btn {
+  background: none; border: none;
+  display: flex; flex-direction: column;
+  align-items: center; gap: 3px;
+  cursor: pointer; min-width: 56px;
+  padding: 4px 0; transition: all 0.2s;
+}
+.tab-icon {
+  width: 28px; height: 28px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; border-radius: 8px;
+  transition: all 0.25s;
+}
+.tab-btn.active .tab-icon { color: #fff; }
+.tab-btn:not(.active) .tab-icon { color: rgba(255,255,255,0.28); }
+.tab-label {
+  font-size: 10px; font-weight: 500;
+  letter-spacing: 0.3px;
+  transition: color 0.2s;
+}
+.tab-btn.active .tab-label { color: #fff; }
+.tab-btn:not(.active) .tab-label { color: rgba(255,255,255,0.28); }
+
+/* ═══════════════════════════════════════
+   HEADER
+   ═══════════════════════════════════════ */
+.header {
+  padding: 12px 20px 0;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.header h1 {
+  font-size: 28px; font-weight: 900;
+  letter-spacing: -0.6px; line-height: 1.1;
+  background: linear-gradient(135deg, #fff 60%, var(--accent));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.header-sub { font-size: 11px; color: var(--text-dim); margin-top: 3px; font-weight: 400; }
+.credit-badge {
+  display: flex; align-items: center; gap: 5px;
+  background: var(--accent-soft);
+  border: 1px solid rgba(168,130,255,0.15);
+  border-radius: 12px;
+  padding: 7px 14px; font-size: 13px; font-weight: 600;
+  color: var(--accent); cursor: pointer;
+  transition: all 0.2s;
+}
+.credit-badge:active { transform: scale(0.95); }
+
+/* ═══════════════════════════════════════
+   HERO CAROUSEL
+   ═══════════════════════════════════════ */
+.hero-wrap { margin: 20px 0 8px; overflow: hidden; position: relative; }
+.hero-track {
+  display: flex;
+  transition: transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.hero-dots {
+  display: flex; gap: 6px; justify-content: center; padding: 12px 0 4px;
+}
+.hero-dot {
+  height: 5px; border-radius: 3px; cursor: pointer;
+  transition: all 0.35s; background: rgba(255,255,255,0.12);
+  width: 6px;
+}
+.hero-dot.active { width: 24px; background: var(--accent); }
+
+/* ═══════════════════════════════════════
+   CATEGORY ROWS (horizontal scroll like trending)
+   ═══════════════════════════════════════ */
+.cat-label {
+  font-size: 11px; font-weight: 500; letter-spacing: 0.4px;
+  text-transform: uppercase; color: var(--text-dim); opacity: 0.5;
+  padding: 10px 20px 6px;
+}
+.cat-row {
+  display: flex; gap: 8px; padding: 0 20px 6px;
+  overflow-x: auto; scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.cat-row::-webkit-scrollbar { display: none; }
+.cat-item {
+  min-width: 110px; flex-shrink: 0;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 12px 10px;
+  cursor: pointer; transition: all 0.2s; text-align: center;
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  -webkit-user-select: none; user-select: none;
+  touch-action: pan-x;
+}
+.cat-item:active { background: var(--surface-hover); transform: scale(0.95); }
+.cat-item .ci-icon { font-size: 22px; }
+.cat-item .ci-name { font-size: 11px; font-weight: 600; white-space: nowrap; }
+.cat-item .ci-sub { font-size: 9px; color: var(--text-dim); white-space: nowrap; }
+
+/* Themed */
+.cat-item-ai { background: linear-gradient(135deg, rgba(139,92,246,0.06), rgba(59,130,246,0.06)); border-color: rgba(139,92,246,0.15); }
+.cat-item-ai:active { background: linear-gradient(135deg, rgba(139,92,246,0.12), rgba(59,130,246,0.12)); }
+.cat-item-nsfw { background: linear-gradient(135deg, rgba(239,68,68,0.04), rgba(220,38,38,0.06)); border-color: rgba(248,113,113,0.12); }
+.cat-item-nsfw:active { background: linear-gradient(135deg, rgba(239,68,68,0.10), rgba(220,38,38,0.12)); }
+.cat-item-free { background: linear-gradient(135deg, rgba(34,197,94,0.04), rgba(16,185,129,0.06)); border-color: rgba(34,197,94,0.12); }
+.cat-item-free:active { background: linear-gradient(135deg, rgba(34,197,94,0.10), rgba(16,185,129,0.12)); }
+
+/* ═══════════════════════════════════════
+   SECTION HEADER
+   ═══════════════════════════════════════ */
+.section-head {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 0 20px; margin-bottom: 12px; margin-top: 8px;
+}
+.section-head h3 { font-size: 17px; font-weight: 700; }
+.section-head a {
+  font-size: 12px; color: var(--accent); opacity: 0.7;
+  text-decoration: none; cursor: pointer;
+}
+
+/* ═══════════════════════════════════════
+   MODEL CARDS (horizontal scroll)
+   ═══════════════════════════════════════ */
+.scroll-section {
+  position: relative;
+}
+.scroll-section::after {
+  content: ''; position: absolute; top: 0; right: 0; bottom: 0; width: 40px;
+  background: linear-gradient(to right, transparent, var(--bg));
+  pointer-events: none; z-index: 2;
+}
+.model-scroll {
+  display: flex; gap: 10px; overflow-x: auto; padding: 0 20px 8px;
+  scroll-snap-type: x proximity; scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.model-scroll::-webkit-scrollbar { display: none; }
+
+/* Trending: multi-row horizontal scroll */
+.trending-section { position: relative; }
+.trending-section::after {
+  content: ''; position: absolute; top: 0; right: 0; bottom: 0; width: 40px;
+  background: linear-gradient(to right, transparent, var(--bg));
+  pointer-events: none; z-index: 2;
+}
+.trending-wrap {
+  overflow-x: auto; overflow-y: hidden;
+  padding: 0 20px 12px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  scroll-snap-type: x proximity;
+}
+.trending-wrap::-webkit-scrollbar { display: none; }
+.trending-rows {
+  display: grid;
+  grid-template-rows: auto auto;
+  grid-auto-flow: column;
+  grid-auto-columns: 140px;
+  gap: 8px;
+  width: max-content;
+}
+.trending-rows .model-card {
+  min-width: unset; width: auto;
+  scroll-snap-align: start;
+}
+
+.model-card {
+  min-width: 140px; flex-shrink: 0;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 14px;
+  cursor: pointer; transition: all 0.2s; text-align: left;
+  display: flex; flex-direction: column; gap: 4px;
+  scroll-snap-align: start; position: relative;
+  -webkit-user-select: none; user-select: none;
+  touch-action: pan-x pan-y;
+}
+.model-card:active { background: var(--surface-hover); transform: scale(0.96); }
+.model-card .m-icon { font-size: 24px; }
+.model-card .m-name { font-size: 13px; font-weight: 600; }
+.model-card .m-desc { font-size: 10px; color: var(--text-dim); line-height: 1.4; }
+.model-card .m-price { font-size: 11px; font-weight: 600; color: var(--accent); opacity: 0.7; margin-top: auto; }
+.m-badge {
+  position: absolute; top: 10px; right: 10px;
+  font-size: 8px; font-weight: 800; letter-spacing: 0.8px;
+  padding: 3px 7px; border-radius: 5px; text-transform: uppercase;
+}
+
+/* ═══════════════════════════════════════
+   GRID LIST (Videos/Images pages)
+   ═══════════════════════════════════════ */
+.grid-list {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+  padding: 0 16px 120px;
+}
+.grid-list .model-card {
+  min-width: 0; padding: 10px;
+}
+.grid-list .model-card .m-icon { font-size: 20px; }
+.grid-list .model-card .m-name { font-size: 11px; }
+.grid-list .model-card .m-desc { font-size: 9px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.grid-list .model-card .m-price { font-size: 10px; }
+
+/* ═══════════════════════════════════════
+   BACK / PAGE TITLES
+   ═══════════════════════════════════════ */
+.back-btn {
+  background: none; border: none; color: var(--text-dim);
+  font-size: 14px; cursor: pointer; padding: 12px 20px 8px;
+  font-family: var(--font); display: flex; align-items: center; gap: 6px;
+  transition: color 0.2s;
+}
+.back-btn:active { color: var(--accent); }
+.page-title {
+  font-size: 26px; font-weight: 800; padding: 0 20px 2px;
+  letter-spacing: -0.5px;
+}
+.page-sub { font-size: 12px; color: var(--text-dim); padding: 0 20px 16px; }
+
+/* ═══════════════════════════════════════
+   CONFIG WIZARD
+   ═══════════════════════════════════════ */
+.config-header {
+  padding: 0 20px 16px;
+  display: flex; align-items: center; gap: 14px;
+}
+.config-header .ch-icon { font-size: 36px; }
+.config-header .ch-name { font-size: 22px; font-weight: 800; letter-spacing: -0.3px; }
+.config-header .ch-desc { font-size: 12px; color: var(--text-dim); margin-top: 1px; }
+
+.config-section { padding: 0 20px; margin-bottom: 16px; }
+.config-label {
+  font-size: 11px; font-weight: 600; color: var(--text-dim);
+  margin-bottom: 8px; letter-spacing: 0.4px; text-transform: uppercase;
+}
+
+/* Chip rows */
+.chip-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip {
+  padding: 9px 16px; border-radius: 10px;
+  font-size: 13px; font-weight: 500; cursor: pointer;
+  background: var(--surface); border: 1px solid var(--border);
+  color: var(--text-dim); transition: all 0.2s;
+  font-family: var(--font);
+}
+.chip.active {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent);
+  font-weight: 600;
+}
+.chip:active { transform: scale(0.95); }
+
+/* Mode buttons */
+.mode-row { display: flex; gap: 8px; }
+.mode-btn {
+  flex: 1; padding: 14px 10px; border-radius: var(--r-sm);
+  font-size: 13px; font-weight: 500; cursor: pointer;
+  background: var(--surface); border: 1px solid var(--border);
+  color: var(--text-dim); transition: all 0.2s;
+  text-align: center; font-family: var(--font);
+}
+.mode-btn.active {
+  background: linear-gradient(135deg, rgba(99,102,241,0.15), rgba(139,92,246,0.15));
+  border-color: var(--accent);
+  color: #fff; font-weight: 600;
+}
+.mode-btn:active { transform: scale(0.97); }
+
+/* Upload area */
+.upload-slot { margin-bottom: 12px; }
+.upload-slot-header {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 8px;
+}
+.upload-slot-title { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.7); }
+.upload-slot-tag {
+  font-size: 9px; font-weight: 700; letter-spacing: 0.6px;
+  padding: 3px 8px; border-radius: 5px; text-transform: uppercase;
+}
+.upload-slot-tag.required { background: rgba(248,113,113,0.15); color: var(--red); }
+.upload-slot-tag.optional { background: rgba(91,235,160,0.12); color: var(--green); }
+
+.upload-area {
+  border: 2px dashed rgba(255,255,255,0.08);
+  border-radius: var(--r-sm);
+  padding: 22px 16px; text-align: center;
+  cursor: pointer; transition: all 0.25s;
+  position: relative; overflow: hidden;
+}
+.upload-area:active {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+.upload-area.has-file {
+  border-style: solid;
+  border-color: var(--green);
+  background: rgba(91,235,160,0.04);
+  padding: 14px 16px;
+}
+.u-icon { font-size: 24px; display: block; margin-bottom: 6px; }
+.u-text { font-size: 13px; color: var(--text-dim); display: block; }
+.u-hint { font-size: 11px; color: var(--text-muted); margin-top: 3px; display: block; }
+
+.upload-thumb-row {
+  display: flex; gap: 8px; margin-top: 8px; justify-content: center;
+}
+.upload-thumb-row img {
+  width: 64px; height: 64px; border-radius: 10px; object-fit: cover;
+  border: 2px solid var(--border);
+}
+.upload-thumb-wrap {
+  position: relative; display: inline-block;
+}
+.upload-thumb-remove {
+  position: absolute; top: -6px; right: -6px;
+  width: 20px; height: 20px; border-radius: 10px;
+  background: var(--red); color: #fff; border: none;
+  font-size: 11px; font-weight: 700; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+}
+
+.upload-note {
+  font-size: 11px; color: var(--text-muted); margin-top: 8px;
+  padding: 8px 12px; background: var(--surface);
+  border-radius: var(--r-xs); line-height: 1.5;
+  display: none;
+}
+.upload-note.visible { display: block; }
+
+/* Audio toggle */
+.toggle-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px; background: var(--surface);
+  border: 1px solid var(--border); border-radius: var(--r-sm);
+}
+.toggle-track {
+  width: 48px; height: 28px; border-radius: 14px;
+  cursor: pointer; transition: all 0.3s;
+  position: relative; background: rgba(255,255,255,0.1);
+}
+.toggle-track.on { background: var(--accent); }
+.toggle-thumb {
+  position: absolute; top: 3px; left: 3px;
+  width: 22px; height: 22px; border-radius: 11px;
+  background: #fff; transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+.toggle-track.on .toggle-thumb { transform: translateX(20px); }
+
+/* Prompt textarea */
+.prompt-area {
+  width: 100%; min-height: 100px; padding: 14px;
+  border-radius: var(--r-sm); border: 1px solid var(--border);
+  background: var(--surface); color: var(--text);
+  font-size: 14px; font-family: var(--font); resize: vertical;
+  outline: none; transition: border-color 0.2s;
+  line-height: 1.5;
+}
+.prompt-area:focus { border-color: var(--accent); }
+.prompt-area::placeholder { color: var(--text-muted); }
+.prompt-count {
+  text-align: right; font-size: 11px; color: var(--text-muted);
+  margin-top: 6px; font-family: var(--mono);
+}
+
+/* Summary card */
+.summary-card {
+  margin: 8px 20px 16px; padding: 16px;
+  background: var(--surface-2); border: 1px solid var(--border);
+  border-radius: var(--r);
+}
+.summary-card .s-title {
+  font-size: 13px; font-weight: 700; margin-bottom: 12px;
+  color: rgba(255,255,255,0.6);
+}
+.summary-row {
+  display: flex; justify-content: space-between;
+  font-size: 12px; padding: 4px 0;
+}
+.summary-row .sk { color: var(--text-dim); }
+.summary-row .sv { color: rgba(255,255,255,0.8); font-weight: 500; }
+.summary-price {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-top: 12px; padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+.summary-price .sp-label { font-size: 14px; font-weight: 600; color: rgba(255,255,255,0.65); }
+.summary-price .sp-value { font-size: 20px; font-weight: 800; color: var(--accent); }
+
+/* Generate button */
+.gen-btn {
+  display: block; width: calc(100% - 40px); margin: 0 20px 30px;
+  padding: 16px; border-radius: 14px; border: none;
+  font-size: 16px; font-weight: 700; cursor: pointer;
+  font-family: var(--font); color: #fff; transition: all 0.3s;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6, #a855f7);
+  box-shadow: 0 8px 32px var(--accent-glow);
+}
+.gen-btn:active { transform: scale(0.97); box-shadow: 0 4px 16px var(--accent-glow); }
+
+/* ═══════════════════════════════════════
+   PROGRESS SCREEN
+   ═══════════════════════════════════════ */
+.progress-wrap {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; padding: 40px 20px; min-height: 520px;
+}
+.progress-ring { position: relative; width: 150px; height: 150px; margin-bottom: 24px; }
+.progress-ring svg { transform: rotate(-90deg); }
+.progress-ring .ring-bg { fill: none; stroke: rgba(255,255,255,0.04); stroke-width: 8; }
+.progress-ring .ring-fill {
+  fill: none; stroke: url(#ringGrad); stroke-width: 8;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.6s cubic-bezier(0.4,0,0.2,1);
+}
+.progress-pct {
+  position: absolute; inset: 0; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+}
+.progress-pct .num { font-size: 42px; font-weight: 800; }
+.progress-pct .pct { font-size: 12px; color: var(--text-dim); margin-top: -4px; }
+.progress-stage { font-size: 16px; font-weight: 600; margin-bottom: 6px; text-align: center; }
+.progress-time { font-size: 12px; color: var(--text-dim); margin-bottom: 24px; font-family: var(--mono); }
+
+.stage-list { width: 100%; max-width: 280px; }
+.stage-item {
+  display: flex; align-items: center; gap: 10px; padding: 5px 0;
+  transition: opacity 0.3s;
+}
+.stage-item.done { opacity: 1; }
+.stage-item.current { opacity: 1; }
+.stage-item.pending { opacity: 0.22; }
+.stage-dot {
+  width: 22px; height: 22px; border-radius: 11px;
+  display: flex; align-items: center; justify-content: center; font-size: 10px;
+}
+.stage-item.done .stage-dot { background: rgba(91,235,160,0.18); color: var(--green); }
+.stage-item.current .stage-dot {
+  background: var(--accent-soft); color: var(--accent);
+  animation: stagePulse 1.5s ease infinite;
+}
+.stage-item.pending .stage-dot { background: var(--surface); color: var(--text-muted); }
+.stage-label { font-size: 12px; }
+
+@keyframes stagePulse {
+  0%, 100% { box-shadow: 0 0 0 0 var(--accent-glow); }
+  50% { box-shadow: 0 0 0 6px transparent; }
+}
+
+.cancel-btn {
+  margin-top: 24px; padding: 14px 0; width: 100%; max-width: 280px;
+  border-radius: var(--r-sm); background: none;
+  border: 1px solid var(--border); color: var(--text-dim);
+  font-size: 13px; font-weight: 500; cursor: pointer; font-family: var(--font);
+}
+.cancel-btn:active { background: var(--surface); }
+
+/* ═══════════════════════════════════════
+   RESULT SCREEN
+   ═══════════════════════════════════════ */
+.result-video {
+  width: calc(100% - 40px); margin: 12px 20px 16px; aspect-ratio: 16/9;
+  border-radius: var(--r); overflow: hidden; position: relative;
+  background: linear-gradient(135deg, #0d0520, #1b1050, #081028);
+  display: flex; align-items: center; justify-content: center;
+}
+.result-video::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(circle at 50%, rgba(168,130,255,0.08), transparent 70%);
+}
+.play-circle {
+  width: 56px; height: 56px; border-radius: 28px;
+  background: rgba(255,255,255,0.12); backdrop-filter: blur(10px);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; position: relative; cursor: pointer;
+}
+
+.result-info {
+  margin: 0 20px 16px; background: var(--surface);
+  border: 1px solid var(--border); border-radius: var(--r); padding: 16px;
+}
+.ri-title { font-size: 15px; font-weight: 700; margin-bottom: 12px; color: var(--green); }
+.result-row { display: flex; justify-content: space-between; font-size: 12px; padding: 4px 0; }
+.result-row .rk { color: var(--text-dim); }
+.result-row .rv { color: rgba(255,255,255,0.78); font-weight: 500; }
+
+.result-actions { display: flex; gap: 10px; padding: 0 20px; margin-bottom: 10px; }
+.result-actions button {
+  flex: 1; padding: 14px; border-radius: var(--r-sm);
+  font-size: 14px; font-weight: 600; cursor: pointer; font-family: var(--font);
+  border: none; transition: all 0.2s;
+}
+.save-btn { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #fff; }
+.save-btn:active { transform: scale(0.97); }
+.share-btn { background: var(--surface); border: 1px solid var(--border) !important; color: #fff; }
+
+.new-gen-btn {
+  display: block; width: calc(100% - 40px); margin: 6px 20px 30px;
+  padding: 14px; border-radius: var(--r-sm); background: none;
+  border: 1px solid var(--border); color: var(--text-dim);
+  font-size: 13px; font-weight: 500; cursor: pointer; font-family: var(--font);
+}
+
+/* ═══════════════════════════════════════
+   PROFILE
+   ═══════════════════════════════════════ */
+.profile-card {
+  margin: 8px 20px 14px; padding: 20px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r); display: flex; align-items: center; gap: 16px;
+}
+.profile-avatar {
+  width: 54px; height: 54px; border-radius: 27px;
+  background: linear-gradient(135deg, #6366f1, #d946ef);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; font-weight: 700; flex-shrink: 0;
+}
+.profile-name { font-size: 17px; font-weight: 600; }
+.profile-id { font-size: 12px; color: var(--text-dim); margin-top: 2px; }
+
+.balance-card {
+  margin: 0 20px 14px; padding: 20px;
+  background: linear-gradient(135deg, rgba(99,102,241,0.12), rgba(139,92,246,0.12));
+  border: 1px solid rgba(168,130,255,0.15); border-radius: var(--r);
+}
+.balance-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+.balance-label { font-size: 13px; color: var(--text-dim); }
+.balance-value { font-size: 28px; font-weight: 800; color: var(--accent); }
+.topup-btn {
+  width: 100%; padding: 13px; border-radius: 12px;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  border: none; color: #fff; font-size: 14px; font-weight: 600;
+  cursor: pointer; font-family: var(--font);
+}
+.topup-btn:active { transform: scale(0.97); }
+
+/* Insufficient funds modal */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 9999;
+  background: rgba(0,0,0,0.65); backdrop-filter: blur(8px);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none; transition: opacity 0.25s;
+}
+.modal-overlay.show { opacity: 1; pointer-events: auto; }
+.modal-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 20px; padding: 28px 24px; width: 88%; max-width: 340px;
+  text-align: center; transform: scale(0.92); transition: transform 0.25s;
+}
+.modal-overlay.show .modal-card { transform: scale(1); }
+.modal-icon { font-size: 40px; margin-bottom: 10px; }
+.modal-title { font-size: 18px; font-weight: 800; margin-bottom: 16px; }
+.modal-body { background: rgba(0,0,0,0.15); border-radius: 12px; padding: 14px 16px; margin-bottom: 4px; }
+.modal-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 6px 0; font-size: 13px; color: var(--text-dim);
+}
+.modal-row .modal-val { font-weight: 700; color: var(--text); }
+.modal-row.deficit { border-top: 1px solid var(--border); margin-top: 6px; padding-top: 10px; }
+.modal-row.deficit .modal-val { color: #f87171; }
+.modal-close-btn {
+  width: 100%; padding: 12px; border-radius: 12px;
+  background: transparent; border: 1px solid var(--border);
+  color: var(--text-dim); font-size: 13px; font-weight: 600;
+  cursor: pointer; margin-top: 8px; font-family: var(--font);
+}
+
+/* Balance badge low/empty states */
+.credit-badge.low { background: rgba(251,191,36,0.12)!important; color: #fbbf24!important; border-color: rgba(251,191,36,0.2)!important; }
+.credit-badge.empty { background: rgba(239,68,68,0.12)!important; color: #f87171!important; border-color: rgba(239,68,68,0.2)!important; }
+
+/* Free models screen */
+.free-limits {
+  margin: 0 20px 18px; padding: 16px;
+  background: linear-gradient(135deg, rgba(34,197,94,0.08), rgba(16,185,129,0.06));
+  border: 1px solid rgba(34,197,94,0.15); border-radius: var(--r);
+}
+.fl-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 7px 0; font-size: 13px;
+}
+.fl-icon { font-size: 16px; width: 22px; text-align: center; }
+.fl-name { font-weight: 600; width: 60px; }
+.fl-bar {
+  flex: 1; height: 6px; border-radius: 3px;
+  background: rgba(255,255,255,0.08); overflow: hidden;
+}
+.fl-fill {
+  height: 100%; border-radius: 3px;
+  background: linear-gradient(90deg, #22c55e, #10b981);
+  transition: width 0.4s ease;
+}
+.fl-fill.warn { background: linear-gradient(90deg, #f59e0b, #ef4444); }
+.fl-count { font-size: 12px; color: var(--text-dim); font-weight: 600; min-width: 40px; text-align: right; }
+.free-models-grid {
+  display: grid; grid-template-columns: 1fr; gap: 8px;
+  margin: 0 20px 18px;
+}
+.free-model-card {
+  display: flex; align-items: center; gap: 14px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 14px; padding: 14px 16px; cursor: pointer;
+  transition: all 0.2s;
+}
+.free-model-card:active { transform: scale(0.98); }
+.free-model-card.exhausted { opacity: 0.4; pointer-events: none; }
+.fmc-icon {
+  width: 44px; height: 44px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; background: rgba(34,197,94,0.1);
+}
+.fmc-info { flex: 1; min-width: 0; }
+.fmc-name { font-size: 15px; font-weight: 700; }
+.fmc-desc { font-size: 12px; color: var(--text-dim); margin-top: 2px; }
+.fmc-badge {
+  padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 700;
+  background: rgba(34,197,94,0.12); color: #22c55e;
+}
+.fmc-badge.exhausted { background: rgba(239,68,68,0.12); color: #f87171; }
+.free-upgrade-hint {
+  margin: 10px 20px 0; padding: 14px 16px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; font-size: 13px; color: var(--text-dim);
+  text-align: center;
+}
+
+.menu-list {
+  margin: 0 20px; background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r); overflow: hidden;
+}
+.menu-item {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 15px 16px; cursor: pointer; transition: background 0.2s;
+  font-size: 14px; color: rgba(255,255,255,0.72);
+}
+.menu-item:not(:last-child) { border-bottom: 1px solid var(--border); }
+.menu-item:active { background: var(--surface-hover); }
+.menu-arrow { color: var(--text-muted); font-size: 16px; }
+.menu-meta { margin-left: auto; margin-right: 8px; font-size: 12px; color: var(--text-dim); font-weight: 600; }
+
+.promo-input-wrap {
+  margin: 12px 20px 0; padding: 14px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r);
+}
+.promo-input-row { display: flex; gap: 8px; }
+.promo-input-row input {
+  flex: 1; padding: 10px 14px; border-radius: 10px;
+  background: rgba(0,0,0,0.2); border: 1px solid var(--border);
+  color: var(--text); font-size: 14px; font-family: var(--font);
+  text-transform: uppercase; letter-spacing: 1px;
+}
+.promo-input-row input::placeholder { text-transform: none; letter-spacing: 0; color: var(--text-dim); }
+.promo-apply-btn {
+  padding: 10px 18px; border-radius: 10px;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  border: none; color: #fff; font-size: 13px; font-weight: 600;
+  cursor: pointer; font-family: var(--font); white-space: nowrap;
+}
+.promo-apply-btn:active { transform: scale(0.96); }
+
+/* ═══════════════════════════════════════
+   IN-APP CHAT
+   ═══════════════════════════════════════ */
+.chat-container {
+  display: flex; flex-direction: column; height: calc(100vh - 140px);
+  position: relative;
+}
+.chat-header-bar {
+  display: flex; align-items: center; gap: 10px; padding: 10px 16px;
+  background: var(--surface); border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.chat-model-btn {
+  display: flex; align-items: center; gap: 8px; padding: 8px 14px;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 12px; color: var(--text); font-size: 13px; font-weight: 600;
+  cursor: pointer; flex: 1;
+}
+.chat-model-btn .cmi { font-size: 18px; }
+.chat-model-btn .cmn { flex: 1; text-align: left; }
+.chat-model-btn .cma { color: var(--text-dim); font-size: 11px; }
+.chat-clear-btn {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 10px; padding: 8px 12px; color: var(--text-dim);
+  font-size: 14px; cursor: pointer;
+}
+.chat-messages {
+  flex: 1; overflow-y: auto; padding: 12px 16px 12px; display: flex;
+  flex-direction: column; gap: 8px;
+  -webkit-overflow-scrolling: touch;
+}
+.chat-welcome {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; padding: 40px 30px; text-align: center;
+  flex: 1; opacity: 0.7;
+}
+.chat-welcome-icon { font-size: 44px; margin-bottom: 12px; }
+.chat-welcome h3 { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+.chat-welcome p { font-size: 12px; color: var(--text-dim); line-height: 1.5; }
+.chat-suggestions {
+  display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-top: 14px;
+}
+.chat-sug-chip {
+  padding: 6px 12px; border-radius: 10px; font-size: 11px;
+  background: var(--surface2); border: 1px solid var(--border);
+  color: var(--text-dim); cursor: pointer; transition: all 0.15s;
+}
+.chat-sug-chip:active { background: var(--accent-soft); border-color: var(--accent); }
+.msg-row { display: flex; gap: 8px; max-width: 92%; animation: msgIn 0.2s ease; }
+.msg-row.user { align-self: flex-end; flex-direction: row-reverse; }
+.msg-row.ai { align-self: flex-start; }
+@keyframes msgIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+.msg-avatar {
+  width: 28px; height: 28px; border-radius: 50%; display: flex;
+  align-items: center; justify-content: center; font-size: 14px;
+  flex-shrink: 0; margin-top: 2px;
+}
+.msg-row.user .msg-avatar { background: var(--accent-soft); }
+.msg-row.ai .msg-avatar { background: var(--surface2); }
+.msg-bubble {
+  padding: 10px 14px; border-radius: 16px; font-size: 14px;
+  line-height: 1.55; word-break: break-word; white-space: pre-wrap;
+}
+.msg-row.user .msg-bubble {
+  background: var(--accent); color: #fff; border-bottom-right-radius: 4px;
+}
+.msg-row.ai .msg-bubble {
+  background: var(--surface2); color: var(--text); border-bottom-left-radius: 4px;
+}
+.msg-meta {
+  font-size: 10px; color: var(--text-dim); margin-top: 3px;
+  padding: 0 4px;
+}
+.msg-row.user .msg-meta { text-align: right; }
+.typing-dots { display: inline-flex; gap: 4px; padding: 4px 0; }
+.typing-dots span {
+  width: 7px; height: 7px; border-radius: 50%; background: var(--text-dim);
+  animation: blink 1.4s infinite both;
+}
+.typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+.typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes blink { 0%,80%,100% { opacity: 0.3; } 40% { opacity: 1; } }
+.chat-input-bar {
+  display: flex; align-items: flex-end; gap: 8px; padding: 10px 16px 14px;
+  background: var(--bg); border-top: 1px solid var(--border); flex-shrink: 0;
+}
+.chat-input {
+  flex: 1; background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 20px; padding: 10px 16px; font-size: 14px;
+  color: var(--text); outline: none; resize: none; max-height: 120px;
+  min-height: 40px; font-family: inherit; line-height: 1.4;
+}
+.chat-input::placeholder { color: var(--text-dim); }
+.chat-send-btn {
+  width: 40px; height: 40px; border-radius: 50%; border: none;
+  background: var(--accent); color: #fff; font-size: 18px;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: opacity 0.15s;
+}
+.chat-send-btn:disabled { opacity: 0.4; cursor: default; }
+.chat-empty { display: none; }
+
+/* ═══════════════════════════════════════
+   CHAT SELECT SCREEN
+   ═══════════════════════════════════════ */
+.chat-select-section { padding: 0 16px 12px; }
+.chat-select-label {
+  font-size: 13px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.8px; color: var(--text-dim); padding: 16px 0 10px;
+  display: flex; align-items: center; gap: 8px;
+}
+.chat-select-label span { font-size: 16px; }
+.chat-select-grid { display: flex; flex-direction: column; gap: 8px; }
+.chat-select-card {
+  display: flex; align-items: center; gap: 14px; padding: 14px 16px;
+  background: var(--surface); border: 1.5px solid var(--border);
+  border-radius: 16px; cursor: pointer; transition: all 0.15s;
+}
+.chat-select-card:active {
+  transform: scale(0.98); border-color: var(--accent);
+  background: var(--accent-soft);
+}
+.chat-select-card .csc-icon {
+  width: 44px; height: 44px; border-radius: 12px; display: flex;
+  align-items: center; justify-content: center; font-size: 22px;
+  flex-shrink: 0;
+}
+.chat-select-card .csc-info { flex: 1; min-width: 0; }
+.chat-select-card .csc-name { font-size: 15px; font-weight: 700; }
+.chat-select-card .csc-desc {
+  font-size: 12px; color: var(--text-dim); margin-top: 2px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.chat-select-card .csc-price {
+  font-size: 11px; color: var(--accent); font-weight: 600;
+  flex-shrink: 0;
+}
+
+/* ═══════════════════════════════════════
+   UTILITY / COMING SOON BADGE
+   ═══════════════════════════════════════ */
+.coming-soon {
+  position: relative; opacity: 0.5; pointer-events: none;
+}
+.coming-soon::after {
+  content: 'SOON'; position: absolute; top: 10px; right: 10px;
+  font-size: 8px; font-weight: 800; letter-spacing: 0.8px;
+  padding: 3px 7px; border-radius: 5px;
+  background: rgba(255,255,255,0.06); color: var(--text-muted);
+}
+
+/* ═══════════════════════════════════════
+   ACTION SHEETS (Create / Edit bottom menus)
+   ═══════════════════════════════════════ */
+.action-sheet-overlay {
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  display: none; align-items: flex-end; justify-content: center;
+  animation: fadeIn 0.2s ease;
+}
+.action-sheet-overlay.show { display: flex; }
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.action-sheet {
+  width: 100%; max-width: 480px;
+  background: #111116;
+  border-top-left-radius: 24px; border-top-right-radius: 24px;
+  padding: 12px 20px 32px; padding-bottom: calc(32px + var(--safe-bottom));
+  animation: slideUp 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+  border-top: 1px solid var(--border);
+}
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+.as-handle {
+  width: 36px; height: 4px; border-radius: 2px;
+  background: rgba(255,255,255,0.12); margin: 0 auto 16px;
+}
+.as-title {
+  font-size: 18px; font-weight: 700; margin-bottom: 16px;
+  text-align: center;
+}
+.as-grid { display: flex; gap: 12px; }
+.as-item {
+  flex: 1; padding: 20px 12px; text-align: center;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r); cursor: pointer; transition: all 0.2s;
+}
+.as-item:active { transform: scale(0.96); background: var(--surface-hover); }
+.as-icon {
+  width: 52px; height: 52px; border-radius: 16px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px; margin: 0 auto 10px;
+}
+.as-name { font-size: 14px; font-weight: 600; margin-bottom: 3px; }
+.as-desc { font-size: 11px; color: var(--text-dim); }
+
+/* ═══════════════════════════════════════
+   HERO CARD ANIMATIONS
+   ═══════════════════════════════════════ */
+.hero-card {
+  min-width: calc(100% - 40px); margin: 0 20px;
+  height: 170px; border-radius: 22px;
+  padding: 24px; display: flex; flex-direction: column;
+  justify-content: flex-end; position: relative; overflow: hidden;
+  border: 1px solid var(--border);
+}
+.hero-card::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 70% 15%, rgba(168,130,255,0.1) 0%, transparent 65%);
+}
+.hero-card .badge {
+  position: absolute; top: 14px; right: 14px;
+  background: rgba(255,255,255,0.08); border-radius: 7px;
+  padding: 4px 10px; font-size: 9px; font-weight: 700;
+  letter-spacing: 1.2px; text-transform: uppercase;
+  color: rgba(255,255,255,0.55); backdrop-filter: blur(10px);
+  z-index: 2;
+}
+.hero-card h2 {
+  font-size: 26px; font-weight: 800;
+  letter-spacing: -0.5px; position: relative; z-index: 2;
+}
+.hero-card p {
+  font-size: 12px; color: var(--text-dim);
+  margin-top: 4px; position: relative; font-weight: 400; z-index: 2;
+}
+/* Shimmer animation */
+.hero-card::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 30%,
+    rgba(255,255,255,0.03) 45%,
+    rgba(255,255,255,0.06) 50%,
+    rgba(255,255,255,0.03) 55%,
+    transparent 70%
+  );
+  background-size: 200% 100%;
+  animation: heroShimmer 4s ease-in-out infinite;
+}
+@keyframes heroShimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Floating particles on hero */
+.hero-particles {
+  position: absolute; inset: 0; pointer-events: none; overflow: hidden;
+}
+.hero-particle {
+  position: absolute; width: 3px; height: 3px;
+  background: rgba(168,130,255,0.35); border-radius: 50%;
+  animation: particleFloat linear infinite;
+}
+@keyframes particleFloat {
+  0% { transform: translateY(0) translateX(0); opacity: 0; }
+  15% { opacity: 1; }
+  85% { opacity: 1; }
+  100% { transform: translateY(-120px) translateX(30px); opacity: 0; }
+}
+
+/* Scrollbar hidden globally */
+::-webkit-scrollbar { width: 0; height: 0; }
+/* ═══════════════════════════════════════
+   SWIPE HINT ANIMATION
+   ═══════════════════════════════════════ */
+@keyframes swipeHint {
+  0% { transform: translateX(0); opacity: 1; }
+  50% { transform: translateX(-12px); opacity: 0.6; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+.swipe-hint {
+  display: flex; align-items: center; gap: 4px;
+  font-size: 10px; color: var(--text-dim); opacity: 0.4;
+  padding: 2px 20px 8px; animation: swipeHint 2s ease-in-out 3;
+}
+.swipe-hint svg { width: 12px; height: 12px; }
+
+/* ═══════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════ */
+@media (max-width: 359px) {
+  .cat-row { gap: 6px; padding: 0 12px 4px; }
+  .cat-item { min-width: 95px; padding: 10px 6px; }
+  .cat-item .ci-icon { font-size: 18px; }
+  .cat-item .ci-name { font-size: 10px; }
+  .trending-rows { grid-auto-columns: 120px; }
+  .model-card { min-width: 120px; padding: 10px; }
+  .model-card .m-icon { font-size: 20px; }
+  .model-card .m-name { font-size: 11px; }
+  .model-scroll, .trending-wrap { padding-left: 12px; }
+  .section-head { padding: 0 12px; }
+  .cat-label { padding: 10px 12px 6px; }
+  .hero-card h2 { font-size: 20px; }
+  .grid-list { grid-template-columns: repeat(2, 1fr); padding: 0 12px 120px; }
+}
+@media (min-width: 420px) {
+  .trending-rows { grid-auto-columns: 150px; }
+  .model-card { min-width: 150px; }
+  .cat-item { min-width: 120px; }
+}
+
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div class="screen-container" id="scrollContainer">
+
+    <!-- ════════════ HOME ════════════ -->
+    <div class="screen active" id="screen-home">
+      <div class="header">
+        <div>
+          <h1>AI Studio</h1>
+          <div class="header-sub">65+ AI моделей в одном приложении</div>
+        </div>
+        <div class="credit-badge" onclick="switchTab('profile')">💎 <span id="balanceTop">0</span>₽</div>
+      </div>
+
+      <div class="hero-wrap">
+        <div class="hero-track" id="heroTrack">
+          <div class="hero-card" style="background:linear-gradient(135deg,#061222 0%,#152d52 50%,#070c16 100%)">
+            <div class="hero-particles" id="hp0"></div>
+            <div class="badge">HOT</div>
+            <h2>Kling 3.0 Pro</h2>
+            <p>Cinematic Video • до 15 секунд • Audio</p>
+          </div>
+          <div class="hero-card" style="background:linear-gradient(135deg,#0c0320 0%,#211555 50%,#0a0a18 100%)">
+            <div class="hero-particles" id="hp1"></div>
+            <div class="badge">NEW</div>
+            <h2>Kling O3 Video</h2>
+            <p>First/Last Frame • 3-15 сек</p>
+          </div>
+          <div class="hero-card" style="background:linear-gradient(135deg,#150808 0%,#3d1515 50%,#0a0404 100%)">
+            <div class="hero-particles" id="hp2"></div>
+            <div class="badge">PRO</div>
+            <h2>AI Chat & Coder</h2>
+            <p>Grok 4 • Claude Opus 4.6 • GPT-5.2 • Gemini 3.1</p>
+          </div>
+        </div>
+        <div class="hero-dots" id="heroDots">
+          <div class="hero-dot active" onclick="setHero(0)"></div>
+          <div class="hero-dot" onclick="setHero(1)"></div>
+          <div class="hero-dot" onclick="setHero(2)"></div>
+        </div>
+      </div>
+
+      <!-- ── MEDIA ── -->
+      <div class="cat-label">🎨 Media</div>
+      <div class="cat-row">
+        <div class="cat-item" onclick="showCreateMenu('video')">
+          <div class="ci-icon">🎬</div>
+          <div class="ci-name">Create Video</div>
+          <div class="ci-sub">17 моделей</div>
+        </div>
+        <div class="cat-item" onclick="showCreateMenu('image')">
+          <div class="ci-icon">🖼</div>
+          <div class="ci-name">Create Image</div>
+          <div class="ci-sub">26 моделей</div>
+        </div>
+        <div class="cat-item" onclick="showEditMenu('image')">
+          <div class="ci-icon">✏️</div>
+          <div class="ci-name">Edit Image</div>
+          <div class="ci-sub">8 моделей</div>
+        </div>
+        <div class="cat-item" onclick="showEditMenu('video')">
+          <div class="ci-icon">🎞️</div>
+          <div class="ci-name">Edit Video</div>
+          <div class="ci-sub">4 модели</div>
+        </div>
+      </div>
+
+      <!-- ── AI BOTS ── -->
+      <div class="cat-label">🤖 AI Bots</div>
+      <div class="cat-row">
+        <div class="cat-item cat-item-ai" onclick="openChatSelect('chat')">
+          <div class="ci-icon">💬</div>
+          <div class="ci-name">AI Chat</div>
+          <div class="ci-sub">4 модели</div>
+        </div>
+        <div class="cat-item cat-item-ai" onclick="openChatSelect('code')">
+          <div class="ci-icon">👨‍💻</div>
+          <div class="ci-name">AI Coder</div>
+          <div class="ci-sub">6 моделей</div>
+        </div>
+      </div>
+
+      <!-- ── CONTENT 18+ ── -->
+      <div class="cat-label">🔞 Content 18+</div>
+      <div class="cat-row">
+        <div class="cat-item cat-item-nsfw" onclick="goScreen('screen-adult')">
+          <div class="ci-icon">🖼</div>
+          <div class="ci-name">Images</div>
+          <div class="ci-sub">Create & Edit</div>
+        </div>
+        <div class="cat-item cat-item-nsfw" onclick="goScreen('screen-adult')">
+          <div class="ci-icon">🎬</div>
+          <div class="ci-name">Videos</div>
+          <div class="ci-sub">Create & Edit</div>
+        </div>
+      </div>
+
+      <!-- ── FREE BOT AI ── -->
+      <div class="cat-label">🆓 Free Bot AI</div>
+      <div class="cat-row">
+        <div class="cat-item cat-item-free" onclick="openFreeScreen('chat')">
+          <div class="ci-icon">💬</div>
+          <div class="ci-name">AI Chat</div>
+          <div class="ci-sub" id="freeBadgeChat">30/день</div>
+        </div>
+        <div class="cat-item cat-item-free" onclick="openFreeScreen('image')">
+          <div class="ci-icon">🖼</div>
+          <div class="ci-name">Images</div>
+          <div class="ci-sub" id="freeBadgeImage">5/день</div>
+        </div>
+        <div class="cat-item cat-item-free" onclick="openFreeScreen('video')">
+          <div class="ci-icon">🎬</div>
+          <div class="ci-name">Videos</div>
+          <div class="ci-sub" id="freeBadgeVideo">2/день</div>
+        </div>
+      </div>
+
+      <!-- ── TRENDING ── -->
+      <div class="section-head" style="margin-top:12px"><h3>🔥 Trending</h3></div>
+      <div class="trending-section">
+        <div class="trending-wrap" id="trendingWrap"></div>
+      </div>
+      <div class="swipe-hint" id="swipeHint">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        свайпните для просмотра
+      </div>
+
+      <!-- ── POPULAR ── -->
+      <div class="section-head"><h3>⭐ Популярное</h3></div>
+      <div class="scroll-section">
+        <div class="model-scroll" id="popularScroll"></div>
+      </div>
+
+      <div style="height:100px"></div>
+    </div>
+
+    <!-- ════════════ VIDEOS ════════════ -->
+    <div class="screen" id="screen-videos">
+      <button class="back-btn" onclick="goScreen('screen-home')">← Назад</button>
+      <div class="page-title">Create Videos</div>
+      <div class="page-sub">Выберите AI модель для генерации видео</div>
+      <div class="grid-list" id="videoGrid"></div>
+    </div>
+
+    <!-- ════════════ IMAGES ════════════ -->
+    <div class="screen" id="screen-images">
+      <button class="back-btn" onclick="goScreen('screen-home')">← Назад</button>
+      <div class="page-title">📷 Create Images</div>
+      <div class="page-sub">11 AI моделей для генерации изображений</div>
+      <div class="grid-list" id="imageGrid"></div>
+    </div>
+
+    <!-- ════════════ EDIT IMAGES ════════════ -->
+    <div class="screen" id="screen-edit-images">
+      <button class="back-btn" onclick="goScreen('screen-home')">← Назад</button>
+      <div class="page-title">✏️ Edit Images</div>
+      <div class="page-sub">AI инструменты для редактирования изображений</div>
+      <div class="grid-list" id="editImageGrid"></div>
+    </div>
+
+    <!-- ════════════ EDIT VIDEOS ════════════ -->
+    <div class="screen" id="screen-edit-videos">
+      <button class="back-btn" onclick="goScreen('screen-home')">← Назад</button>
+      <div class="page-title">🎞 Edit Videos</div>
+      <div class="page-sub">AI инструменты для редактирования видео</div>
+      <div class="grid-list" id="editVideoGrid"></div>
+    </div>
+
+    <!-- ════════════ CONTENT 18+ ════════════ -->
+    <div class="screen" id="screen-adult">
+      <button class="back-btn" onclick="goScreen('screen-home')">← Назад</button>
+      <div class="page-title">🔞 Content 18+</div>
+      <div class="page-sub">Create & Edit • Только для совершеннолетних</div>
+
+      <div class="adult-sections">
+        <div class="section-head"><h3>🎬 Create</h3></div>
+        <div class="cat-row" style="margin-bottom:20px">
+          <div class="cat-item cat-item-nsfw" style="opacity:0.4;pointer-events:none">
+            <div class="ci-icon">🎬</div>
+            <div class="ci-name">Create Videos</div>
+            <div class="ci-sub">Скоро</div>
+          </div>
+          <div class="cat-item cat-item-nsfw" style="opacity:0.4;pointer-events:none">
+            <div class="ci-icon">🖼</div>
+            <div class="ci-name">Create Images</div>
+            <div class="ci-sub">Скоро</div>
+          </div>
+        </div>
+
+        <div class="section-head"><h3>✏️ Edit</h3></div>
+        <div class="cat-row" style="margin-bottom:20px">
+          <div class="cat-item cat-item-nsfw" style="opacity:0.4;pointer-events:none">
+            <div class="ci-icon">🎞️</div>
+            <div class="ci-name">Edit Videos</div>
+            <div class="ci-sub">Скоро</div>
+          </div>
+          <div class="cat-item cat-item-nsfw" style="opacity:0.4;pointer-events:none">
+            <div class="ci-icon">✏️</div>
+            <div class="ci-name">Edit Images</div>
+            <div class="ci-sub">Скоро</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════ FREE MODELS ════════════ -->
+    <div class="screen" id="screen-free">
+      <button class="back-btn" onclick="goScreen('screen-home')">← Назад</button>
+      <div class="page-title">🆓 Free Bot AI</div>
+      <div class="page-sub">Бесплатные модели • Обновление лимитов каждый день</div>
+
+      <!-- Usage counters -->
+      <div class="free-limits" id="freeLimits">
+        <div class="fl-row">
+          <span class="fl-icon">💬</span>
+          <span class="fl-name">AI Chat</span>
+          <div class="fl-bar"><div class="fl-fill" id="flChat" style="width:0%"></div></div>
+          <span class="fl-count" id="flChatCount">0/30</span>
+        </div>
+        <div class="fl-row">
+          <span class="fl-icon">🖼</span>
+          <span class="fl-name">Images</span>
+          <div class="fl-bar"><div class="fl-fill" id="flImage" style="width:0%"></div></div>
+          <span class="fl-count" id="flImageCount">0/5</span>
+        </div>
+        <div class="fl-row">
+          <span class="fl-icon">🎬</span>
+          <span class="fl-name">Videos</span>
+          <div class="fl-bar"><div class="fl-fill" id="flVideo" style="width:0%"></div></div>
+          <span class="fl-count" id="flVideoCount">0/2</span>
+        </div>
+      </div>
+
+      <!-- Free Chat -->
+      <div class="section-head"><h3>💬 Бесплатные чаты</h3></div>
+      <div class="free-models-grid" id="freeChatGrid"></div>
+
+      <!-- Free Image -->
+      <div class="section-head"><h3>🖼 Бесплатные изображения</h3></div>
+      <div class="free-models-grid" id="freeImageGrid"></div>
+
+      <!-- Free Video -->
+      <div class="section-head"><h3>🎬 Бесплатное видео</h3></div>
+      <div class="free-models-grid" id="freeVideoGrid"></div>
+
+      <div class="free-upgrade-hint">
+        💡 Хотите больше? <span style="color:var(--accent);cursor:pointer" onclick="switchTab('profile')">Пополните баланс</span> для безлимитного доступа ко всем моделям
+      </div>
+      <div style="height:120px"></div>
+    </div>
+
+    <!-- ════════════ CONFIG WIZARD ════════════ -->
+    <div class="screen" id="screen-config">
+      <button class="back-btn" onclick="goScreen('screen-videos')">← Назад</button>
+      <div class="config-header" id="configHeader"></div>
+
+      <div class="config-section">
+        <div class="config-label">Версия модели</div>
+        <div class="chip-row" id="subModelChips"></div>
+      </div>
+      <div class="config-section">
+        <div class="config-label">Режим</div>
+        <div class="mode-row" id="modeRow"></div>
+      </div>
+      <div class="config-section" id="uploadSection" style="display:none">
+        <div class="config-label" id="uploadLabel">Изображения</div>
+
+        <!-- Start Frame (обязательно) -->
+        <div class="upload-slot" id="uploadSlot1">
+          <div class="upload-slot-header">
+            <span class="upload-slot-tag required">обязательно</span>
+            <span class="upload-slot-title" id="slot1Title">🖼 Start Frame</span>
+          </div>
+          <div class="upload-area" id="uploadArea1" onclick="document.getElementById('fileInput1').click()">
+            <span class="u-icon" id="uIcon1">📷</span>
+            <span class="u-text" id="uText1">Нажмите для загрузки</span>
+            <span class="u-hint" id="uHint1">JPG, PNG • до 10MB</span>
+          </div>
+          <input type="file" id="fileInput1" accept="image/*" style="display:none" onchange="handleSlotUpload(1, this)">
+          <div class="upload-thumb-row" id="uploadThumb1"></div>
+        </div>
+
+        <!-- End Frame (опционально) -->
+        <div class="upload-slot" id="uploadSlot2" style="display:none">
+          <div class="upload-slot-header">
+            <span class="upload-slot-tag optional">опционально</span>
+            <span class="upload-slot-title" id="slot2Title">🖼 End Frame</span>
+          </div>
+          <div class="upload-area" id="uploadArea2" onclick="document.getElementById('fileInput2').click()">
+            <span class="u-icon" id="uIcon2">📷</span>
+            <span class="u-text" id="uText2">Нажмите для загрузки</span>
+            <span class="u-hint" id="uHint2">JPG, PNG • до 10MB</span>
+          </div>
+          <input type="file" id="fileInput2" accept="image/*" style="display:none" onchange="handleSlotUpload(2, this)">
+          <div class="upload-thumb-row" id="uploadThumb2"></div>
+        </div>
+
+        <div class="upload-note" id="uploadNote"></div>
+      </div>
+      <div class="config-section">
+        <div class="config-label">Соотношение сторон</div>
+        <div class="chip-row" id="ratioChips"></div>
+      </div>
+      <div class="config-section" id="durationSection">
+        <div class="config-label">Длительность (сек)</div>
+        <div class="chip-row" id="durationChips"></div>
+      </div>
+      <div class="config-section" id="audioSection" style="display:none">
+        <div class="config-label">Audio генерация</div>
+        <div class="toggle-row">
+          <span id="audioLabel" style="font-size:14px;color:var(--text-dim)">🔇 Выключено</span>
+          <div class="toggle-track" id="audioToggle" onclick="toggleAudio()">
+            <div class="toggle-thumb"></div>
+          </div>
+        </div>
+      </div>
+      <div class="config-section">
+        <div class="config-label">Промт</div>
+        <textarea class="prompt-area" id="promptInput" placeholder="Опишите ваше видео... Камера медленно движется, мягкие переходы, частицы света, спокойная атмосфера..." oninput="updatePromptCount()"></textarea>
+        <div class="prompt-count" id="promptCount">0 символов</div>
+      </div>
+
+      <div class="summary-card" id="summaryCard">
+        <div class="s-title">📋 Сводка</div>
+        <div id="summaryRows"></div>
+        <div class="summary-price">
+          <span class="sp-label">💰 Стоимость</span>
+          <span class="sp-value" id="summaryPrice">~56₽</span>
+        </div>
+      </div>
+
+      <button class="gen-btn" id="genBtn" onclick="startGeneration()">🚀 Начать генерацию</button>
+    </div>
+
+    <!-- ════════════ PROGRESS ════════════ -->
+    <div class="screen" id="screen-progress">
+      <div class="progress-wrap">
+        <div class="progress-ring">
+          <svg width="150" height="150" viewBox="0 0 150 150">
+            <defs>
+              <linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#8b5cf6"/>
+                <stop offset="100%" stop-color="#d946ef"/>
+              </linearGradient>
+            </defs>
+            <circle class="ring-bg" cx="75" cy="75" r="64"/>
+            <circle class="ring-fill" id="ringFill" cx="75" cy="75" r="64"/>
+          </svg>
+          <div class="progress-pct"><span class="num" id="pctNum">0</span><span class="pct">%</span></div>
+        </div>
+        <div class="progress-stage" id="stageLabel">🎬 Инициализация...</div>
+        <div class="progress-time" id="timeLabel">⏱ 0:00 • ⌛️ ~150s</div>
+        <div class="stage-list" id="stageList"></div>
+        <button class="cancel-btn" onclick="cancelGeneration()">Отменить</button>
+      </div>
+    </div>
+
+    <!-- ════════════ RESULT ════════════ -->
+    <div class="screen" id="screen-result">
+      <div style="height:12px"></div>
+      <div class="result-video"><div class="play-circle">▶</div></div>
+      <div class="result-info">
+        <div class="ri-title">✅ Генерация завершена</div>
+        <div id="resultRows"></div>
+      </div>
+      <div class="result-actions">
+        <button class="save-btn" onclick="saveResult()">💾 Сохранить</button>
+        <button class="share-btn" onclick="shareResult()">↗ Поделиться</button>
+      </div>
+      <button class="new-gen-btn" onclick="goScreen('screen-home')">← Новая генерация</button>
+    </div>
+
+    <!-- ════════════ PROFILE ════════════ -->
+    <div class="screen" id="screen-profile">
+      <div class="page-title" style="padding-top:8px">Профиль</div>
+      <div style="height:12px"></div>
+      <div class="profile-card">
+        <div class="profile-avatar" id="profileAvatar">U</div>
+        <div>
+          <div class="profile-name" id="profileName">User</div>
+          <div class="profile-id" id="profileId">ID: ---</div>
+        </div>
+      </div>
+      <div class="balance-card">
+        <div class="balance-row">
+          <span class="balance-label">Основной баланс</span>
+          <span class="balance-value">💎 <span id="balanceMain">0</span>₽</span>
+        </div>
+        <div class="balance-row" id="balanceBonusRow" style="display:none;margin-bottom:14px">
+          <span class="balance-label">🎁 Бонусный</span>
+          <span style="font-size:16px;font-weight:700;color:var(--green)">+<span id="balanceBonusVal">0</span>₽</span>
+        </div>
+        <button class="topup-btn" onclick="topupBalance()">⭐ Пополнить баланс</button>
+      </div>
+      <div class="menu-list">
+        <div class="menu-item" onclick="sendAction('get_history')">📜 История генераций<span class="menu-meta" id="menuHistCount"></span><span class="menu-arrow">›</span></div>
+        <div class="menu-item" onclick="sendAction('get_saved')">💾 Сохранённые<span class="menu-arrow">›</span></div>
+        <div class="menu-item" onclick="sendAction('get_ref')">🤝 Пригласить друга<span class="menu-meta" id="menuRefCount"></span><span class="menu-arrow">›</span></div>
+        <div class="menu-item" onclick="showPromoInput()">🎟 Промокод<span class="menu-arrow">›</span></div>
+        <div class="menu-item" onclick="openFreeScreen()">🆓 Лимиты бесплатных<span class="menu-arrow">›</span></div>
+        <div class="menu-item" onclick="switchToChat()">💬 Чат-режим (без WebApp)<span class="menu-arrow">›</span></div>
+      </div>
+
+      <!-- Promo input (hidden by default) -->
+      <div class="promo-input-wrap" id="promoWrap" style="display:none">
+        <div class="promo-input-row">
+          <input type="text" id="promoInput" placeholder="Введите промокод" maxlength="20" autocapitalize="characters" />
+          <button class="promo-apply-btn" onclick="applyPromo()">Применить</button>
+        </div>
+      </div>
+      <div style="height:120px"></div>
+    </div>
+
+    <!-- ════════════ CHAT ════════════ -->
+    <!-- ════════ CHAT SELECT ════════ -->
+    <div class="screen" id="screen-chat-select">
+      <button class="back-btn" onclick="goScreen('screen-home')">← Назад</button>
+      <div class="page-title" id="chatSelectTitle">🤖 AI Модели</div>
+      <div class="page-sub" id="chatSelectSub">Выберите модель для начала диалога</div>
+
+      <div class="chat-select-section" id="popularSection" style="display:none">
+        <div class="chat-select-label"><span>⭐</span> Недавние</div>
+        <div class="chat-select-grid" id="chatSelectPopular"></div>
+      </div>
+
+      <div class="chat-select-section" id="chatSelectChatSection">
+        <div class="chat-select-label"><span>💬</span> AI Chat</div>
+        <div class="chat-select-grid" id="chatSelectChat"></div>
+      </div>
+
+      <div class="chat-select-section" id="chatSelectCodeSection">
+        <div class="chat-select-label"><span>👨‍💻</span> AI Coder</div>
+        <div class="chat-select-grid" id="chatSelectCode"></div>
+      </div>
+    </div>
+
+    <div class="screen" id="screen-chat">
+      <div class="chat-container">
+        <!-- Chat header with model selector -->
+        <div class="chat-header-bar">
+          <button class="back-btn" onclick="goScreen('screen-chat-select');renderChatSelect()" style="position:static;padding:8px 12px;font-size:14px">←</button>
+          <div class="chat-model-btn" onclick="showLlmPicker()">
+            <span class="cmi" id="chatModelIcon">⚡</span>
+            <span class="cmn" id="chatModelName">Grok 4.1 Fast</span>
+            <span class="cma" id="chatModelCat">💬 Chat</span>
+            <span class="cma">▼</span>
+          </div>
+          <button class="chat-clear-btn" onclick="clearChat()" title="Очистить">🗑</button>
+        </div>
+
+        <!-- Messages area -->
+        <div class="chat-messages" id="chatMessages">
+          <div class="chat-welcome" id="chatWelcome">
+            <div class="chat-welcome-icon" id="chatWelcomeIcon">⚡</div>
+            <h3 id="chatWelcomeTitle">Grok 4.1 Fast</h3>
+            <p style="margin-bottom:4px">💬 Chat Mode</p>
+            <p>Задайте вопрос или выберите тему</p>
+            <div class="chat-suggestions">
+              <div class="chat-sug-chip" onclick="chatSuggest('Объясни квантовые вычисления')">🔬 Квантовые вычисления</div>
+              <div class="chat-sug-chip" onclick="chatSuggest('Придумай бизнес-идею')">💡 Бизнес-идея</div>
+              <div class="chat-sug-chip" onclick="chatSuggest('Помоги составить план')">📋 План</div>
+              <div class="chat-sug-chip" onclick="chatSuggest('Переведи на английский')">🌍 Перевод</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Input bar -->
+        <div class="chat-input-bar">
+          <textarea class="chat-input" id="chatInput" rows="1" placeholder="Сообщение..." 
+            oninput="autoResizeChat(this)" onkeydown="chatKeydown(event)"></textarea>
+          <button class="chat-send-btn" id="chatSendBtn" onclick="sendChatMessage()" disabled>➤</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════ LLM PICKER (overlay for chat) ════════ -->
+    <div id="llmPicker" class="action-sheet-overlay" style="display:none" onclick="hideLlmPicker()">
+      <div class="action-sheet" onclick="event.stopPropagation()" style="max-height:70vh">
+        <div class="as-handle"></div>
+        <div class="as-title">🤖 Выберите модель</div>
+        <div id="llmPickerGrid" style="padding:0 12px 20px;display:flex;flex-direction:column;gap:6px;overflow-y:auto"></div>
+      </div>
+    </div>
+
+    <!-- Keep llmMenu for browse mode -->
+    <div id="llmMenu" class="page" style="display:none">
+      <div class="page-header" style="display:flex;align-items:center;gap:12px;padding:16px">
+        <button onclick="hideLlmMenu()" style="background:var(--surface2);border:none;border-radius:10px;padding:8px 12px;color:var(--text);font-size:16px;cursor:pointer">←</button>
+        <div><div style="font-weight:700;font-size:18px">🤖 AI Models</div><div style="color:var(--text2);font-size:13px">4 Chat + 6 Coder</div></div>
+      </div>
+      <div id="llmGrid" class="model-grid" style="padding:0 16px 120px"></div>
+    </div>
+
+  </div>
+
+  <!-- ════════════ TAB BAR ════════════ -->
+  <div class="tab-bar">
+    <button class="tab-btn active" data-tab="home" onclick="switchTab('home')">
+      <div class="tab-icon">✦</div><div class="tab-label">Explore</div>
+    </button>
+    <button class="tab-btn" data-tab="create" onclick="showCreateSheet()">
+      <div class="tab-icon">✚</div><div class="tab-label">Create</div>
+    </button>
+    <button class="tab-btn" data-tab="edit" onclick="showEditSheet()">
+      <div class="tab-icon">✏</div><div class="tab-label">Edit</div>
+    </button>
+    <button class="tab-btn" data-tab="chat" onclick="switchTab('chat')">
+      <div class="tab-icon">💬</div><div class="tab-label">Chat</div>
+    </button>
+    <button class="tab-btn" data-tab="profile" onclick="switchTab('profile')">
+      <div class="tab-icon">●</div><div class="tab-label">Profile</div>
+    </button>
+  </div>
+
+  <!-- ════════ ACTION SHEET: Create ════════ -->
+  <div class="action-sheet-overlay" id="createSheet" onclick="hideSheets()">
+    <div class="action-sheet" onclick="event.stopPropagation()">
+      <div class="as-handle"></div>
+      <div class="as-title">✨ Create</div>
+      <div class="as-grid">
+        <div class="as-item" onclick="hideSheets();showCreateMenu('video')">
+          <div class="as-icon" style="background:linear-gradient(135deg,#6366f1,#8b5cf6)">🎬</div>
+          <div class="as-name">Create Video</div>
+          <div class="as-desc">17 AI моделей</div>
+        </div>
+        <div class="as-item" onclick="hideSheets();showCreateMenu('image')">
+          <div class="as-icon" style="background:linear-gradient(135deg,#d946ef,#e879a8)">📷</div>
+          <div class="as-name">Create Image</div>
+          <div class="as-desc">26 AI моделей</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════ ACTION SHEET: Edit ════════ -->
+  <div class="action-sheet-overlay" id="editSheet" onclick="hideSheets()">
+    <div class="action-sheet" onclick="event.stopPropagation()">
+      <div class="as-handle"></div>
+      <div class="as-title">✏️ Edit</div>
+      <div class="as-grid">
+        <div class="as-item" onclick="hideSheets();showEditMenu('video')">
+          <div class="as-icon" style="background:linear-gradient(135deg,#22d3ee,#60a5fa)">🎞</div>
+          <div class="as-name">Edit Video</div>
+          <div class="as-desc">4 AI модели</div>
+        </div>
+        <div class="as-item" onclick="hideSheets();showEditMenu('image')">
+          <div class="as-icon" style="background:linear-gradient(135deg,#fbbf24,#f97316)">✏️</div>
+          <div class="as-name">Edit Image</div>
+          <div class="as-desc">8 AI моделей</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- INSUFFICIENT FUNDS MODAL -->
+<div class="modal-overlay" id="insufficientModal">
+  <div class="modal-card">
+    <div class="modal-icon">💳</div>
+    <div class="modal-title">Недостаточно средств</div>
+    <div class="modal-body">
+      <div class="modal-row"><span>Стоимость</span><span class="modal-val" id="imPrice">—</span></div>
+      <div class="modal-row"><span>Ваш баланс</span><span class="modal-val" id="imBalance">—</span></div>
+      <div class="modal-row deficit"><span>Не хватает</span><span class="modal-val" id="imDeficit">—</span></div>
+    </div>
+    <button class="topup-btn" onclick="topupBalance()" style="margin-top:14px">⭐ Пополнить баланс</button>
+    <button class="modal-close-btn" onclick="hideInsufficientModal()">Закрыть</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     JAVASCRIPT
+     ═══════════════════════════════════════════════════════ -->
+<script>
+// ═════════ TELEGRAM WEBAPP INIT ═════════
+const tg = window.Telegram?.WebApp;
+let tgUser = null;
+let userBalance = 0;
+let userBonus = 0;
+
+if (tg) {
+  tg.ready();
+  tg.expand();
+  tg.enableClosingConfirmation();
+  tgUser = tg.initDataUnsafe?.user;
+
+  // Apply TG theme
+  if (tg.colorScheme === 'light') {
+    // Could add light theme support here
+  }
+
+  // Fill user info
+  if (tgUser) {
+    const name = [tgUser.first_name, tgUser.last_name].filter(Boolean).join(' ');
+    document.getElementById('profileName').textContent = name || 'User';
+    document.getElementById('profileId').textContent = 'ID: ' + tgUser.id;
+    document.getElementById('profileAvatar').textContent = (tgUser.first_name || 'U')[0].toUpperCase();
+  }
+}
+
+// ═════════ BALANCE FROM URL PARAMS ═════════
+(function initBalance() {
+  const params = new URLSearchParams(window.location.search);
+  userBalance = parseInt(params.get('b')) || 0;
+  userBonus = parseInt(params.get('n')) || 0;
+  updateBalanceUI();
+})();
+
+function updateBalanceUI() {
+  const total = userBalance + userBonus;
+  const fmt = total >= 1000 ? (total/1000).toFixed(1).replace('.0','') + 'K' : total.toString();
+  const el1 = document.getElementById('balanceTop');
+  const el2 = document.getElementById('balanceMain');
+  const el3 = document.getElementById('balanceBonusRow');
+  if (el1) el1.textContent = fmt;
+  if (el2) el2.textContent = total.toLocaleString('ru-RU');
+  if (el3) {
+    if (userBonus > 0) {
+      el3.style.display = 'flex';
+      document.getElementById('balanceBonusVal').textContent = userBonus.toLocaleString('ru-RU');
+    } else {
+      el3.style.display = 'none';
+    }
+  }
+  // Update badge color based on balance
+  const badge = document.querySelector('.credit-badge');
+  if (badge) {
+    if (total <= 0) {
+      badge.style.background = 'rgba(239,68,68,0.12)';
+      badge.style.color = '#f87171';
+      badge.style.borderColor = 'rgba(239,68,68,0.2)';
+    } else if (total < 50) {
+      badge.style.background = 'rgba(251,191,36,0.12)';
+      badge.style.color = '#fbbf24';
+      badge.style.borderColor = 'rgba(251,191,36,0.2)';
+    } else {
+      badge.style.background = '';
+      badge.style.color = '';
+      badge.style.borderColor = '';
+    }
+  }
+}
+
+function checkBalance(priceRub) {
+  const total = userBalance + userBonus;
+  if (total >= priceRub) return true;
+  showInsufficientFunds(priceRub, total);
+  return false;
+}
+
+function showInsufficientFunds(price, balance) {
+  const deficit = price - balance;
+  const modal = document.getElementById('insufficientModal');
+  if (!modal) return;
+  document.getElementById('imPrice').textContent = price + '₽';
+  document.getElementById('imBalance').textContent = balance + '₽';
+  document.getElementById('imDeficit').textContent = deficit + '₽';
+  modal.classList.add('show');
+}
+
+function hideInsufficientModal() {
+  const modal = document.getElementById('insufficientModal');
+  if (modal) modal.classList.remove('show');
+}
+
+// ═════════ PRICE ESTIMATION ═════════
+const USD_RATE_APPROX = 90;
+const PRICE_MARKUP = 1.8;
+
+function estimatePriceRub(priceBaseUsd, duration, configType) {
+  if (!priceBaseUsd) return 0;
+  let usd = priceBaseUsd;
+  // For video models, multiply by duration
+  if (configType === 'vid_create' || configType === 'vid_edit') {
+    usd = priceBaseUsd * (duration || 5);
+  }
+  return Math.ceil(usd * USD_RATE_APPROX * PRICE_MARKUP);
+}
+
+function formatPriceRub(rub) {
+  if (rub < 1) return rub.toFixed(2) + '₽';
+  if (rub < 10) return rub.toFixed(1) + '₽';
+  return Math.round(rub) + '₽';
+}
+
+
+// ═════════ DATA: ALL MODELS ═════════
+const VIDEO_MODELS = [
+  {
+    id: "kling", icon: "⚡", name: "Kling",
+    badge: "HOT", badgeColor: "var(--red)", badgeBg: "rgba(248,113,113,0.15)",
+    desc: "Kuaishou • 3-15s • 1080p",
+    price: "от 56₽",
+    subs: [
+      { id: "kling_25", name: "2.5 Turbo", price_base: 0.35 },
+      { id: "kling_26", name: "2.6 Pro", price_base: 0.35 },
+      { id: "kling_30", name: "3.0 Pro", price_base: 1.5 },
+      { id: "kling_o1", name: "O1 Video", price_base: 0.56 },
+      { id: "kling_o3", name: "O3 Video", price_base: 1.6 }
+    ],
+    configs: {
+      kling_25: {
+        ratios: ["16:9","9:16","1:1"], durs: [5,10], audio: false,
+        modes: ["📝 Text→Video","🖼 Image→Video"],
+        frames: "start_end",  // supports Start + optional End frame
+        endFrameKey: "last_image",  // API field name for second image
+        api_text: "kwaivgi/kling-v2.5-turbo-pro/text-to-video",
+        api_image: "kwaivgi/kling-v2.5-turbo-pro/image-to-video"
+      },
+      kling_26: {
+        ratios: ["16:9","9:16","1:1"], durs: [5,10], audio: true,
+        modes: ["📝 Text→Video","🖼 Image→Video"],
+        frames: "single",  // only 1 image allowed
+        api_text: "kwaivgi/kling-v2.6-pro/text-to-video",
+        api_image: "kwaivgi/kling-v2.6-pro/image-to-video"
+      },
+      kling_30: {
+        ratios: ["16:9","9:16","1:1"], durs: [3,4,5,6,7,8,9,10,11,12,13,14,15], audio: true,
+        modes: ["📝 Text→Video","🖼 Image→Video"],
+        frames: "start_end",
+        endFrameKey: "end_image",
+        api_text: "kwaivgi/kling-v3.0-pro/text-to-video",
+        api_image: "kwaivgi/kling-v3.0-pro/image-to-video"
+      },
+      kling_o1: {
+        ratios: ["16:9","9:16","1:1"], durs: [3,4,5,6,7,8,9,10], audio: false,
+        modes: ["📝 Text→Video","🖼 Image→Video"],
+        frames: "first_last",  // First/Last Frame mode
+        endFrameKey: "last_image",
+        dursWithEnd: [5,10],  // when 2 images: duration restricted to 5 or 10
+        api_text: "kwaivgi/kling-video-o1/text-to-video",
+        api_image: "kwaivgi/kling-video-o1/image-to-video"
+      },
+      kling_o3: {
+        ratios: ["16:9","9:16","1:1"], durs: [3,4,5,6,7,8,9,10,11,12,13,14,15], audio: true,
+        modes: ["📝 Text→Video","🖼 Image→Video"],
+        frames: "first_last",
+        endFrameKey: "end_image",
+        api_text: "kwaivgi/kling-video-o3-pro/text-to-video",
+        api_image: "kwaivgi/kling-video-o3-pro/image-to-video"
+      }
+    }
+  },
+  { id:"sora", icon:"🎬", name:"Sora 2", badge:"PRO", badgeColor:"var(--accent)", badgeBg:"var(--accent-soft)", desc:"OpenAI • Pro/Basic • T2V/I2V", price:"от 80₽", configType:"vid_create", soon:false },
+  { id:"grok_vid", icon:"🧠", name:"Grok 2 Video", badge:"NEW", badgeColor:"var(--green)", badgeBg:"rgba(91,235,160,0.15)", desc:"xAI • 6/10s • 480p/720p", price:"от 86₽", configType:"vid_create", soon:false },
+  { id:"minimax", icon:"🔥", name:"MiniMax/Hailuo", desc:"Hailuo 2.3 + Video-02", price:"от 48₽", configType:"vid_create", soon:false },
+  { id:"kandinsky", icon:"🌊", name:"Kandinsky 5", badge:"RU", badgeColor:"var(--blue)", badgeBg:"rgba(96,165,250,0.15)", desc:"Sber • T2V/I2V • 5s", price:"от 29₽", configType:"vid_create", soon:false },
+  { id:"wan_vid", icon:"💎", name:"Wan 2.5/2.6", desc:"Alibaba • T2V/I2V • Audio", price:"от 40₽", configType:"vid_create", soon:false },
+  { id:"veo", icon:"🌟", name:"Veo 3.1", desc:"Google • Base/Fast • T2V/I2V", price:"от 56₽", configType:"vid_create", soon:false },
+  { id:"seedance", icon:"📽", name:"Seedance 1.5", desc:"ByteDance • Pro/Fast • I2V/T2V", price:"от 32₽", configType:"vid_create", soon:false },
+  { id:"pixverse", icon:"✨", name:"Pixverse v5.5", desc:"T2V/I2V • Audio • Effects", price:"от 65₽", configType:"vid_create", soon:false },
+  { id:"dreamina_vid", icon:"🎭", name:"Dreamina V3 Pro", desc:"ByteDance • T2V", price:"от 32₽", configType:"vid_create", soon:false },
+  { id:"pika", icon:"🎞", name:"Pika V2.2", desc:"T2V/I2V • Stable", price:"от 29₽", configType:"vid_create", soon:false },
+  { id:"runway", icon:"🚀", name:"Runway Gen4", badge:"TOP", badgeColor:"var(--yellow)", badgeBg:"rgba(251,191,36,0.15)", desc:"Gen-4 Turbo • I2V", price:"от 72₽", configType:"vid_create", soon:false },
+  { id:"vidu", icon:"📽", name:"Vidu", desc:"Pro/Turbo • First/Last", price:"от 24₽", configType:"vid_create", soon:false },
+];
+
+const IMAGE_MODELS = [
+  { id:"gpt_img_create", icon:"💡", name:"GPT Image 1.5", desc:"OpenAI • low/med/high", price:"от 4₽", configType:"img_create", soon:false },
+  { id:"gemini3_create", icon:"💎", name:"Gemini 3 Pro", desc:"Google • Text→Image", price:"от 7₽", configType:"img_create", soon:false },
+  { id:"gemini25_create", icon:"💎", name:"Gemini 2.5 Flash", desc:"Google • Fast", price:"от 7₽", configType:"img_create", soon:false },
+  { id:"imagen4_fast", icon:"🔥", name:"Imagen4 Fast", desc:"Google • Fast gen", price:"от 10₽", configType:"img_create", soon:false },
+  { id:"imagen4_ultra", icon:"🔥", name:"Imagen4 Ultra", desc:"Google • Max quality", price:"от 20₽", configType:"img_create", soon:false },
+  { id:"dalle3", icon:"🎨", name:"DALL-E 3", desc:"OpenAI • HD • Styles", price:"от 22₽", configType:"img_create", soon:false },
+  { id:"grok_img", icon:"🧠", name:"Grok 2 Image", desc:"xAI • 9 ratios", price:"от 6₽", configType:"img_create", soon:false },
+  { id:"dreamina30", icon:"🎭", name:"Dreamina v3.0", desc:"ByteDance • Creative", price:"от 7₽", configType:"img_create", soon:false },
+  { id:"dreamina31", icon:"🎭", name:"Dreamina v3.1", desc:"ByteDance • Реализм", price:"от 7₽", configType:"img_create", soon:false },
+  { id:"reve_create", icon:"✏️", name:"Reve Image", desc:"Text→Image • 7 ratios", price:"от 7₽", configType:"img_create", soon:false },
+  { id:"seedream4", icon:"🌱", name:"Seedream v4", desc:"ByteDance • Fast", price:"от 7₽", configType:"img_create", soon:false },
+  { id:"seedream45", icon:"🌱", name:"Seedream v4.5", desc:"ByteDance • Pro quality", price:"от 12₽", configType:"img_create", soon:false },
+  { id:"runway_img_turbo", icon:"🚀", name:"Runway Gen4 Img Turbo", desc:"Text/Img→Image • Fast", price:"от 9₽", configType:"img_create", soon:false },
+  { id:"runway_img_base", icon:"🚀", name:"Runway Gen4 Image", desc:"Text/Img→Image • Quality", price:"от 9₽", configType:"img_create", soon:false },
+  { id:"banana_base", icon:"🍌", name:"Nano Banana Base", desc:"Google • Budget gen", price:"от 10₽", configType:"img_create", soon:false },
+  { id:"banana_ultra_c", icon:"🍌", name:"Banana Pro Ultra", desc:"Google • 4K/8K", price:"от 50₽", configType:"img_create", soon:false },
+  { id:"ideogram_q", icon:"🔤", name:"Ideogram V3 Quality", desc:"Best text render", price:"от 26₽", configType:"img_create", soon:false },
+  { id:"ideogram_b", icon:"🔤", name:"Ideogram V3 Balanced", desc:"Balanced", price:"от 17₽", configType:"img_create", soon:false },
+  { id:"ideogram_t", icon:"🔤", name:"Ideogram V3 Turbo", desc:"Fast text render", price:"от 9₽", configType:"img_create", soon:false },
+  { id:"stable_large", icon:"🖼", name:"SD 3.5 Large", desc:"Stability AI • Text/Img", price:"от 17₽", configType:"img_create", soon:false },
+  { id:"stable_turbo", icon:"🖼", name:"SD 3.5 Large Turbo", desc:"Stability AI • Fast", price:"от 17₽", configType:"img_create", soon:false },
+  { id:"stable_medium", icon:"🖼", name:"SD 3.5 Medium", desc:"Stability AI • Balanced", price:"от 12₽", configType:"img_create", soon:false },
+  { id:"wan25_img", icon:"💎", name:"Wan 2.5 Image", desc:"Alibaba • Text→Image", price:"от 9₽", configType:"img_create", soon:false },
+  { id:"wan26_img", icon:"💎", name:"Wan 2.6 Image", desc:"Alibaba • Text→Image", price:"от 9₽", configType:"img_create", soon:false },
+  { id:"soul", icon:"👤", name:"Higgsfield Soul", desc:"Image→Image • Styles", price:"от 9₽", configType:"img_create", soon:false },
+];
+
+const STAGES = [
+  { pct:15, label:"🎬 Анализ запроса", icon:"🎬" },
+  { pct:30, label:"🎨 Генерация кадров", icon:"🎨" },
+  { pct:45, label:"✨ Применение стилей", icon:"✨" },
+  { pct:60, label:"🎞 Создание анимации", icon:"🎞" },
+  { pct:75, label:"🎬 Рендеринг видео", icon:"🎬" },
+  { pct:90, label:"🎯 Финальная обработка", icon:"🎯" },
+];
+
+const EDIT_IMAGE_MODELS = [
+  { id:"gpt_img_edit", icon:"💡", name:"GPT Image 1.5 Edit", desc:"OpenAI • 1-10 фото • low/med/high", price:"от 4₽", configType:"img_edit", soon:false },
+  { id:"gemini_edit", icon:"💎", name:"Gemini 3 Pro Edit", desc:"Google • 1-10 фото • 1K/2K/4K", price:"от 38₽", configType:"img_edit", soon:false },
+  { id:"banana_edit", icon:"🍌", name:"Banana Pro Edit", desc:"Google • 1-10 фото • 1K/2K/4K", price:"от 32₽", configType:"img_edit", soon:false },
+  { id:"banana_ultra_e", icon:"🍌", name:"Banana Ultra Edit", desc:"Google • 1-10 фото • 4K/8K", price:"от 44₽", configType:"img_edit", soon:false },
+  { id:"dreamina_edit", icon:"🎭", name:"Dreamina v3 Edit", desc:"ByteDance • 1 фото • resize", price:"от 7₽", configType:"img_edit", soon:false },
+  { id:"reve_edit", icon:"✏️", name:"Reve Edit", desc:"1 фото • prompt only", price:"от 12₽", configType:"img_edit", soon:false },
+  { id:"seedream45_edit", icon:"🌱", name:"Seedream 4.5 Edit", desc:"ByteDance • 1-10 фото • 1K-4K", price:"от 12₽", configType:"img_edit", soon:false },
+  { id:"wan26_edit", icon:"💎", name:"Wan 2.6 Edit", desc:"Alibaba • 1-3 фото • prompt enhance", price:"от 10₽", configType:"img_edit", soon:false },
+];
+
+const EDIT_VIDEO_MODELS = [
+  { id:"runway_aleph", icon:"🚀", name:"Runway Gen4 Aleph", desc:"Video Edit • 5-30с • +Ref image", price:"от 290₽", configType:"vid_edit", soon:false },
+  { id:"kling_o1_edit", icon:"⚡", name:"Kling O1 Edit", desc:"Video Edit • 3-10с • $0.33/с", price:"от 14₽", configType:"vid_edit", soon:false },
+  { id:"kling_o1_fast", icon:"⚡", name:"Kling O1 Edit Fast", desc:"Fast Edit • 6-20с • $0.18/с", price:"от 16₽", configType:"vid_edit", soon:false },
+  { id:"kling_o3_edit", icon:"💥", name:"Kling O3 Edit", desc:"Pro Edit • 3-10с • $1.4/с", price:"от 60₽", configType:"vid_edit", soon:false },
+];
+
+// ═══════════════════════════════════════
+// MODEL PARAMS — extracted from .py files
+// ═══════════════════════════════════════
+const MODEL_PARAMS = {
+  // ════ VIDEO GENERATION ════
+  sora:         { modes:["📝 Text→Video","🖼 Image→Video"], ratios:["720*1280","1280*720","1024*1792","1792*1024"], durs:[4,8,12], resolution:["720p","1080p"] },
+  grok_vid:     { modes:["📝 Text→Video","🖼 Image→Video"], ratios:["16:9","9:16","1:1"], durs:[6,10], resolution:["480p","720p"] },
+  minimax:      { modes:["📝 Text→Video","🖼 Image→Video"], resolution:["768p","1080p"], durs:[6] },
+  kandinsky:    { modes:["📝 Text→Video","🖼 Image→Video"], ratios:["3:2","2:3","1:1"], durs:[5], resolution:["512p","1024p"] },
+  wan_vid:      { modes:["📝 Text→Video","🖼 Image→Video"], ratios:["1280*720","720*1280","1920*1080","1080*1920"], durs:[3,4,5,6,7,8,9,10], resolution:["480p","720p","1080p"] },
+  veo:          { modes:["📝 Text→Video","🖼 Image→Video"], ratios:["16:9","9:16"], durs:[4,6,8], resolution:["720p","1080p"], audio:true },
+  seedance:     { modes:["📝 Text→Video","🖼 Image→Video"], ratios:["21:9","16:9","4:3","1:1","3:4","9:16"], durs:[4,5,6,7,8,9,10,11,12], resolution:["720p","1080p"], audio:true },
+  pixverse:     { modes:["📝 Text→Video","🖼 Image→Video"], ratios:["16:9","1:1","9:16"], durs:[5,8], resolution:["540p","720p","1080p"], audio:true },
+  dreamina_vid: { modes:["📝 Text→Video"], durs:[5] },
+  pika:         { modes:["📝 Text→Video","🖼 Image→Video"], ratios:["1280*720","720*1280"], durs:[5,10] },
+  runway:       { modes:["🖼 Image→Video"], ratios:["16:9","9:16","1:1","4:3","3:4"], durs:[10] },
+  vidu:         { modes:["🖼 Image→Video"], ratios:["4:3","3:4"], durs:[1,2,3,4,5,6,7,8], resolution:["540p","720p","1080p"], frames:"first_last" },
+
+  // ════ IMAGE GENERATION ════
+  gpt_img_create:  { ratios:["auto","1024*1024","1024*1536","1536*1024"], quality:["low","medium","high"] },
+  gemini3_create:  { ratios:["1:1","3:4","4:3","9:16","16:9"] },
+  gemini25_create: { ratios:["1:1","3:4","4:3","9:16","16:9"] },
+  imagen4_fast:    { ratios:["1:1","3:4","4:3","9:16","16:9"], numImages:["1","2","3","4"] },
+  imagen4_ultra:   { ratios:["1:1","3:4","4:3","9:16","16:9"], resolution:["1K","2K","4K"], numImages:["1","2","3","4"] },
+  dalle3:          { ratios:["1024*1024","1024*1792","1792*1024"], quality:["standard","hd"], style:["vivid","natural"] },
+  grok_img:        { ratios:["1:1","2:3","3:2","3:4","4:3","9:16","16:9","4:5","5:4"] },
+  dreamina30:      { ratios:["1024*1024","1280*720","720*1280","1024*576","576*1024"] },
+  dreamina31:      { ratios:["1024*1024","1280*720","720*1280","1024*576","576*1024"] },
+  reve_create:     { ratios:["1:1","2:3","3:2","3:4","4:3","9:16","16:9"] },
+  seedream4:       { ratios:["1024*1024","1280*720","720*1280","2048*2048"] },
+  seedream45:      { ratios:["1024*1024","1280*720","720*1280","2048*2048","4096*4096"] },
+  stable_large:    { ratios:["1:1","16:9","9:16","4:3","3:4","21:9","9:21"], modes:["📝 Text→Image","🖼 Image→Image"] },
+  stable_turbo:    { ratios:["1:1","16:9","9:16","4:3","3:4","21:9","9:21"], modes:["📝 Text→Image","🖼 Image→Image"] },
+  stable_medium:   { ratios:["1:1","16:9","9:16","4:3","3:4"], modes:["📝 Text→Image","🖼 Image→Image"] },
+  ideogram_q:      { ratios:["1:1","3:4","4:3","16:9","9:16"], style:["REALISTIC","DESIGN","RENDER","GENERAL"], modes:["📝 Text→Image","🖼 Image+Ref→Image"] },
+  ideogram_b:      { ratios:["1:1","3:4","4:3","16:9","9:16"], style:["REALISTIC","DESIGN","RENDER","GENERAL"], modes:["📝 Text→Image","🖼 Image+Ref→Image"] },
+  ideogram_t:      { ratios:["1:1","3:4","4:3","16:9","9:16"], style:["REALISTIC","DESIGN","RENDER","GENERAL"], modes:["📝 Text→Image","🖼 Image+Ref→Image"] },
+  banana_base:     { ratios:["1:1","3:4","4:3","9:16","16:9"] },
+  banana_ultra_c:  { ratios:["1:1","3:4","4:3","9:16","16:9"], resolution:["4K","8K"] },
+  wan25_img:       { ratios:["1024*1024","1280*720","720*1280"] },
+  wan26_img:       { ratios:["1024*1024","1280*720","720*1280"] },
+  soul:            { quality:["medium","high"], needsImage:true, hasStyles:true },
+  runway_img_turbo:{ ratios:["16:9","9:16","1:1","4:3","3:4"], resolution:["720p","1080p"], modes:["📝 Text→Image","🖼 Image→Image"] },
+  runway_img_base: { ratios:["16:9","9:16","1:1","4:3","3:4"], resolution:["720p","1080p"], modes:["📝 Text→Image","🖼 Image→Image"] },
+
+  // ════ IMAGE EDIT ════
+  gpt_img_edit:    { ratios:["auto","1024*1024","1024*1536","1536*1024"], quality:["low","medium","high"], maxImages:10 },
+  gemini_edit:     { ratios:["1:1","3:2","2:3","3:4","4:3","4:5","5:4","9:16","16:9","21:9"], resolution:["1k","2k","4k"], maxImages:10 },
+  banana_edit:     { ratios:["1:1","3:2","2:3","3:4","4:3","4:5","5:4","9:16","16:9","21:9"], resolution:["1k","2k","4k"], maxImages:10 },
+  banana_ultra_e:  { ratios:["1:1","3:2","2:3","3:4","4:3","4:5","5:4","9:16","16:9","21:9"], resolution:["4k","8k"], maxImages:10 },
+  dreamina_edit:   { maxImages:1 },
+  reve_edit:       { maxImages:1 },
+  seedream45_edit: { resolution:["1024×1024","2048×2048","4096×4096"], maxImages:10 },
+  wan26_edit:      { maxImages:3 },
+
+  // ════ VIDEO EDIT ════
+  runway_aleph:    { durs:[5,10,15,20,25,30] },
+  kling_o1_edit:   { maxImages:4 },
+  kling_o1_fast:   { maxImages:4 },
+  kling_o3_edit:   { maxImages:4 },
+};
+
+const LLM_MODELS = [
+  // ── AI Chat (Universal assistants) ──
+  { id:"grok4", icon:"⚡", name:"Grok 4", desc:"xAI • Рассуждения + поиск в реальном времени", price:"💎 Premium", configType:"llm_chat", cat:"chat", soon:false },
+  { id:"grok41_fast", icon:"⚡", name:"Grok 4.1 Fast", desc:"xAI • 2M контекст • Быстрый и креативный", price:"от 0.05₽", configType:"llm_chat", cat:"chat", soon:false },
+  { id:"gpt52_chat", icon:"💚", name:"GPT-5.2 Chat", desc:"OpenAI • Быстрый ежедневный ассистент", price:"от 0.3₽", configType:"llm_chat", cat:"chat", soon:false },
+  { id:"gpt52_pro", icon:"💚", name:"GPT-5.2 Pro", desc:"OpenAI • Продвинутые рассуждения", price:"💎 Premium", configType:"llm_chat", cat:"chat", soon:false },
+  // ── AI Coder (Best for programming) ──
+  { id:"claude_opus46", icon:"🟣", name:"Claude Opus 4.6", desc:"Anthropic • Лучшая для кода и агентов", price:"💎 Premium", configType:"llm_chat", cat:"code", soon:false },
+  { id:"gemini31_pro", icon:"💎", name:"Gemini 3.1 Pro", desc:"Google • Мощные рассуждения и код", price:"от 0.3₽", configType:"llm_chat", cat:"code", soon:false },
+  { id:"claude_opus45", icon:"🟣", name:"Claude Opus 4.5", desc:"Anthropic • Продвинутый код и агенты", price:"💎 Premium", configType:"llm_chat", cat:"code", soon:false },
+  { id:"claude_sonnet45", icon:"🟣", name:"Claude Sonnet 4.5", desc:"Anthropic • Качество Opus за 1/5 цены", price:"от 0.5₽", configType:"llm_chat", cat:"code", soon:false },
+  { id:"gpt52_codex", icon:"💚", name:"GPT-5.2 Codex", desc:"OpenAI • Агентный кодинг-специалист", price:"💎 Premium", configType:"llm_chat", cat:"code", soon:false },
+  { id:"deepseek_v32", icon:"🔵", name:"DeepSeek V3.2", desc:"DeepSeek • Мощный и в 10× дешевле", price:"от 0.02₽", configType:"llm_chat", cat:"code", soon:false },
+];
+
+// ═════════ STATE ═════════
+let currentModel = null;
+let currentSubId = null;
+let currentConfig = null;
+let selectedMode = 0;      // 0 = text, 1 = image
+let selectedRatio = 0;
+let selectedDur = 0;
+let audioOn = false;
+let uploadedFiles = [null, null];  // [startFrame, endFrame]
+let heroIdx = 0;
+let heroTimer;
+let progressInterval = null;
+
+// ═════════ ACTION SHEETS ═════════
+
+function showCreateSheet() {
+  document.getElementById('createSheet').classList.add('show');
+}
+function showEditSheet() {
+  document.getElementById('editSheet').classList.add('show');
+}
+function hideSheets() {
+  document.getElementById('createSheet').classList.remove('show');
+  document.getElementById('editSheet').classList.remove('show');
+}
+
+function showCreateMenu(type) {
+  if (type === 'video') goScreen('screen-videos');
+  else if (type === 'image') goScreen('screen-images');
+}
+function showEditMenu(type) {
+  if (type === 'video') goScreen('screen-edit-videos');
+  else if (type === 'image') goScreen('screen-edit-images');
+}
+
+// ═════════ PARTICLES ═════════
+
+function initParticles() {
+  for (let h = 0; h < 3; h++) {
+    const container = document.getElementById('hp' + h);
+    if (!container) continue;
+    for (let i = 0; i < 8; i++) {
+      const p = document.createElement('div');
+      p.className = 'hero-particle';
+      p.style.left = (10 + Math.random() * 80) + '%';
+      p.style.bottom = (-10 + Math.random() * 20) + '%';
+      p.style.animationDuration = (3 + Math.random() * 4) + 's';
+      p.style.animationDelay = (Math.random() * 5) + 's';
+      p.style.width = p.style.height = (2 + Math.random() * 3) + 'px';
+      container.appendChild(p);
+    }
+  }
+}
+
+// ═════════ RENDER FUNCTIONS ═════════
+
+function renderModelCard(m, minWidth) {
+  const soon = m.soon ? ' coming-soon' : '';
+  const badge = m.badge ? `<div class="m-badge" style="background:${m.badgeBg||'var(--accent-soft)'};color:${m.badgeColor||'var(--accent)'}">${m.badge}</div>` : '';
+  return `
+    <div class="model-card${soon}" onclick="${m.soon ? '' : `openConfig('${m.id}')`}" ${minWidth ? `style="min-width:${minWidth}"` : 'style="min-width:0"'}>
+      ${badge}
+      <div class="m-icon">${m.icon}</div>
+      <div class="m-name">${m.name}</div>
+      <div class="m-desc">${m.desc}</div>
+      <div class="m-price">${m.price}</div>
+    </div>`;
+}
+
+function renderTrending() {
+  const allMedia = [...VIDEO_MODELS, ...IMAGE_MODELS, ...EDIT_IMAGE_MODELS, ...EDIT_VIDEO_MODELS];
+
+  const picks = [
+    { type:'media', id:'sora' },
+    { type:'media', id:'gpt_img_create' },
+    { type:'llm', id:'claude_opus46' },
+    { type:'media', id:'veo' },
+    { type:'media', id:'imagen4_ultra' },
+    { type:'llm', id:'grok41_fast' },
+    { type:'media', id:'wan_vid' },
+    { type:'media', id:'gemini_edit' },
+    { type:'llm', id:'gemini31_pro' },
+    { type:'media', id:'runway_aleph' },
+    { type:'media', id:'gpt_img_edit' },
+    { type:'llm', id:'gpt52_codex' },
+    { type:'media', id:'gemini3_create' },
+    { type:'media', id:'kling_o1_edit' },
+    { type:'llm', id:'deepseek_v32' },
+    { type:'media', id:'reve_edit' },
+  ];
+
+  const cards = picks.map(p => {
+    if (p.type === 'media') {
+      const m = allMedia.find(x => x.id === p.id);
+      if (!m) return '';
+      return `<div class="model-card" onclick="openConfig('${m.id}')">
+        <div class="m-icon">${m.icon}</div>
+        <div class="m-name">${m.name}</div>
+        <div class="m-price">${m.price}</div>
+      </div>`;
+    } else {
+      const m = LLM_MODELS.find(x => x.id === p.id);
+      if (!m) return '';
+      return `<div class="model-card" style="cursor:pointer" onclick="openChatWithModel('${m.id}')">
+        <div class="m-icon">${m.icon}</div>
+        <div class="m-name">${m.name}</div>
+        <div class="m-price">${m.price}</div>
+      </div>`;
+    }
+  }).join('');
+
+  document.getElementById('trendingWrap').innerHTML =
+    `<div class="trending-rows">${cards}</div>`;
+}
+
+function renderPopularHome() {
+  const el = document.getElementById('popularScroll');
+  if (!el) return;
+  const sorted = Object.entries(modelUsage).sort((a,b) => b[1] - a[1]).slice(0,5);
+  if (sorted.length === 0) {
+    el.innerHTML = '<div style="padding:20px;color:var(--text-dim);font-size:13px">Начните использовать модели — здесь появятся ваши избранные</div>';
+    return;
+  }
+  el.innerHTML = sorted.map(([id]) => {
+    const m = LLM_MODELS.find(x => x.id === id);
+    if (!m) return '';
+    return `<div class="model-card" style="min-width:150px;cursor:pointer" onclick="openChatWithModel('${m.id}')">
+      <div class="m-icon">${m.icon}</div>
+      <div class="m-name">${m.name}</div>
+      <div class="m-desc">${modelUsage[id]}× использовано</div>
+      <div class="m-price">${m.price}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderVideoGrid() {
+  document.getElementById('videoGrid').innerHTML =
+    VIDEO_MODELS.map(m => renderModelCard(m)).join('');
+}
+
+function renderImageGrid() {
+  document.getElementById('imageGrid').innerHTML =
+    IMAGE_MODELS.map(m => renderModelCard(m)).join('');
+}
+
+function renderEditGrids() {
+  document.getElementById('editImageGrid').innerHTML =
+    EDIT_IMAGE_MODELS.map(m => renderModelCard(m)).join('');
+  document.getElementById('editVideoGrid').innerHTML =
+    EDIT_VIDEO_MODELS.map(m => renderModelCard(m)).join('');
+}
+
+function renderLlmGrid() {
+  document.getElementById('llmGrid').innerHTML =
+    LLM_MODELS.map(m => renderModelCard(m)).join('');
+}
+
+function showLlmMenu() {
+  const menu = document.getElementById('llmMenu');
+  const home = document.getElementById('screen-home');
+  if (menu) menu.style.display = 'block';
+  if (home) home.style.display = 'none';
+  renderLlmGrid();
+}
+function hideLlmMenu() {
+  const menu = document.getElementById('llmMenu');
+  const home = document.getElementById('screen-home');
+  if (menu) menu.style.display = 'none';
+  if (home) home.style.display = '';
+}
+
+// ═══════════════════════════════════════
+// IN-APP LLM CHAT — WaveSpeed Any LLM
+// ═══════════════════════════════════════
+
+const LLM_API_URL = 'https://api.wavespeed.ai/api/v3/wavespeed-ai/any-llm';
+const LLM_POLL_URL = 'https://api.wavespeed.ai/api/v3/predictions/';
+const LLM_API_KEY = '1b7cb915044b0a5a0f94e2aad6e032fc9dfef0df65c21ceb2a3f692fd39d01bb';
+
+const LLM_MODEL_MAP = {
+  // ── AI Chat ──
+  grok4:          { api: 'x-ai/grok-4',                    icon: '⚡', name: 'Grok 4',            cat: 'chat' },
+  grok41_fast:    { api: 'x-ai/grok-4.1-fast',             icon: '⚡', name: 'Grok 4.1 Fast',     cat: 'chat' },
+  gpt52_chat:     { api: 'openai/gpt-5.2-chat',            icon: '💚', name: 'GPT-5.2 Chat',      cat: 'chat' },
+  gpt52_pro:      { api: 'openai/gpt-5.2-pro',             icon: '💚', name: 'GPT-5.2 Pro',       cat: 'chat' },
+  // ── AI Coder ──
+  claude_opus46:  { api: 'anthropic/claude-opus-4.6',       icon: '🟣', name: 'Claude Opus 4.6',  cat: 'code' },
+  gemini31_pro:   { api: 'google/gemini-3.1-pro-preview',   icon: '💎', name: 'Gemini 3.1 Pro',   cat: 'code' },
+  claude_opus45:  { api: 'anthropic/claude-opus-4.5',       icon: '🟣', name: 'Claude Opus 4.5',  cat: 'code' },
+  claude_sonnet45:{ api: 'anthropic/claude-sonnet-4.5',     icon: '🟣', name: 'Claude Sonnet 4.5', cat: 'code' },
+  gpt52_codex:    { api: 'openai/gpt-5.2-codex',           icon: '💚', name: 'GPT-5.2 Codex',    cat: 'code' },
+  deepseek_v32:   { api: 'deepseek/deepseek-v3.2',         icon: '🔵', name: 'DeepSeek V3.2',     cat: 'code' },
+};
+
+const SYSTEM_PROMPTS = {
+  chat: 'Ты полезный AI-ассистент. Отвечай на русском языке. Будь кратким и точным.',
+  code: 'Ты эксперт-программист. Пиши чистый, рабочий код. Объясняй кратко. Используй лучшие практики. Отвечай на русском, код — на языке запроса.'
+};
+
+let chatState = {
+  modelKey: 'grok41_fast',
+  messages: [],
+  isGenerating: false,
+};
+
+// ── Usage tracking (in-memory) ──
+let modelUsage = {}; // { modelId: count }
+
+// ── Model Picker ──
+function renderChatSelect(filterCat) {
+  const chatGrid = document.getElementById('chatSelectChat');
+  const codeGrid = document.getElementById('chatSelectCode');
+  const chatSection = document.getElementById('chatSelectChatSection');
+  const codeSection = document.getElementById('chatSelectCodeSection');
+  if (!chatGrid || !codeGrid) return;
+
+  const chatModels = LLM_MODELS.filter(m => m.cat === 'chat');
+  const codeModels = LLM_MODELS.filter(m => m.cat === 'code');
+
+  const renderCard = (m) => {
+    const bg = m.cat === 'code'
+      ? 'background:linear-gradient(135deg,rgba(99,102,241,0.12),rgba(59,130,246,0.08))'
+      : 'background:linear-gradient(135deg,rgba(168,85,247,0.12),rgba(236,72,153,0.08))';
+    return `<div class="chat-select-card" onclick="openChatWithModel('${m.id}')">
+      <div class="csc-icon" style="${bg}">${m.icon}</div>
+      <div class="csc-info">
+        <div class="csc-name">${m.name}</div>
+        <div class="csc-desc">${m.desc}</div>
+      </div>
+      <div class="csc-price">${m.price}</div>
+    </div>`;
+  };
+
+  chatGrid.innerHTML = chatModels.map(renderCard).join('');
+  codeGrid.innerHTML = codeModels.map(renderCard).join('');
+
+  // Popular section — show most used models
+  const popularSection = document.getElementById('popularSection');
+  const popularGrid = document.getElementById('chatSelectPopular');
+  const sorted = Object.entries(modelUsage).sort((a,b) => b[1] - a[1]).slice(0,3);
+  if (sorted.length > 0 && popularSection && popularGrid) {
+    popularSection.style.display = '';
+    popularGrid.innerHTML = sorted.map(([id]) => {
+      const m = LLM_MODELS.find(x => x.id === id);
+      return m ? renderCard(m) : '';
+    }).join('');
+  } else if (popularSection) {
+    popularSection.style.display = 'none';
+  }
+
+  // Show/hide sections based on filter
+  if (filterCat === 'chat') {
+    if (chatSection) chatSection.style.display = '';
+    if (codeSection) codeSection.style.display = 'none';
+  } else if (filterCat === 'code') {
+    if (chatSection) chatSection.style.display = 'none';
+    if (codeSection) codeSection.style.display = '';
+  } else {
+    if (chatSection) chatSection.style.display = '';
+    if (codeSection) codeSection.style.display = '';
+  }
+
+  // Update title
+  const title = document.getElementById('chatSelectTitle');
+  const sub = document.getElementById('chatSelectSub');
+  if (filterCat === 'chat') {
+    if (title) title.textContent = '💬 AI Chat';
+    if (sub) sub.textContent = '4 универсальных ассистента';
+  } else if (filterCat === 'code') {
+    if (title) title.textContent = '👨‍💻 AI Coder';
+    if (sub) sub.textContent = '6 моделей для программирования';
+  } else {
+    if (title) title.textContent = '🤖 AI Модели';
+    if (sub) sub.textContent = '4 Chat + 6 Coder';
+  }
+}
+
+function openChatSelect(cat) {
+  // Highlight chat tab
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  const btn = document.querySelector('[data-tab="chat"]');
+  if (btn) btn.classList.add('active');
+  goScreen('screen-chat-select');
+  renderChatSelect(cat);
+}
+
+function openChatWithModel(key) {
+  modelUsage[key] = (modelUsage[key] || 0) + 1;
+  selectChatModel(key);
+  clearChat();
+  goScreen('screen-chat');
+}
+
+function showLlmPicker() {
+  const grid = document.getElementById('llmPickerGrid');
+  if (!grid) return;
+  const curCat = LLM_MODEL_MAP[chatState.modelKey]?.cat || 'chat';
+
+  const renderSection = (label, icon, models) => {
+    if (!models.length) return '';
+    return `<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;color:var(--text-dim);padding:10px 4px 6px">${icon} ${label}</div>` +
+      models.map(([key, m]) => {
+        const active = key === chatState.modelKey ? 'border-color:var(--accent);background:var(--accent-soft)' : '';
+        const check = key === chatState.modelKey ? ' ✓' : '';
+        return `<div onclick="selectChatModel('${key}');hideLlmPicker()" style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:14px;background:var(--surface2);border:1.5px solid var(--border);cursor:pointer;${active}">
+          <span style="font-size:22px">${m.icon}</span>
+          <div style="flex:1"><div style="font-weight:600;font-size:14px">${m.name}${check}</div></div>
+        </div>`;
+      }).join('');
+  };
+
+  const entries = Object.entries(LLM_MODEL_MAP);
+  const chatModels = entries.filter(([,m]) => m.cat === 'chat');
+  const codeModels = entries.filter(([,m]) => m.cat === 'code');
+
+  // Show current category first
+  if (curCat === 'code') {
+    grid.innerHTML = renderSection('Coder', '👨‍💻', codeModels) + renderSection('Chat', '💬', chatModels);
+  } else {
+    grid.innerHTML = renderSection('Chat', '💬', chatModels) + renderSection('Coder', '👨‍💻', codeModels);
+  }
+  document.getElementById('llmPicker').style.display = 'flex';
+}
+
+function hideLlmPicker() {
+  const p = document.getElementById('llmPicker');
+  if (p) p.style.display = 'none';
+}
+
+function selectChatModel(key) {
+  chatState.modelKey = key;
+  const m = LLM_MODEL_MAP[key];
+  const icon = document.getElementById('chatModelIcon');
+  const name = document.getElementById('chatModelName');
+  const cat = document.getElementById('chatModelCat');
+  const wIcon = document.getElementById('chatWelcomeIcon');
+  const wTitle = document.getElementById('chatWelcomeTitle');
+  if (icon) icon.textContent = m.icon;
+  if (name) name.textContent = m.name;
+  if (cat) cat.textContent = m.cat === 'code' ? '👨‍💻 Coder' : '💬 Chat';
+  if (wIcon) wIcon.textContent = m.icon;
+  if (wTitle) wTitle.textContent = m.name;
+}
+
+// ── Chat Logic ──
+function chatSuggest(text) {
+  const inp = document.getElementById('chatInput');
+  if (inp) { inp.value = text; inp.dispatchEvent(new Event('input')); }
+  sendChatMessage();
+}
+
+function autoResizeChat(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+  const btn = document.getElementById('chatSendBtn');
+  if (btn) btn.disabled = !el.value.trim() || chatState.isGenerating;
+}
+
+function chatKeydown(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendChatMessage();
+  }
+}
+
+function clearChat() {
+  chatState.messages = [];
+  const msgs = document.getElementById('chatMessages');
+  if (!msgs) return;
+  const m = LLM_MODEL_MAP[chatState.modelKey];
+  const isCode = m.cat === 'code';
+  const suggestions = isCode
+    ? `<div class="chat-sug-chip" onclick="chatSuggest('Напиши Python скрипт парсера сайтов')">🐍 Python парсер</div>
+       <div class="chat-sug-chip" onclick="chatSuggest('Сделай React компонент таблицы')">⚛️ React таблица</div>
+       <div class="chat-sug-chip" onclick="chatSuggest('Найди баг в моём коде')">🐛 Найди баг</div>
+       <div class="chat-sug-chip" onclick="chatSuggest('Оптимизируй SQL запрос')">🗄 SQL оптимизация</div>`
+    : `<div class="chat-sug-chip" onclick="chatSuggest('Объясни квантовые вычисления')">🔬 Квантовые вычисления</div>
+       <div class="chat-sug-chip" onclick="chatSuggest('Придумай бизнес-идею')">💡 Бизнес-идея</div>
+       <div class="chat-sug-chip" onclick="chatSuggest('Помоги составить план')">📋 План</div>
+       <div class="chat-sug-chip" onclick="chatSuggest('Переведи на английский')">🌍 Перевод</div>`;
+  const modeLabel = isCode ? '👨‍💻 Coder Mode' : '💬 Chat Mode';
+  msgs.innerHTML = `<div class="chat-welcome" id="chatWelcome">
+    <div class="chat-welcome-icon" id="chatWelcomeIcon">${m.icon}</div>
+    <h3 id="chatWelcomeTitle">${m.name}</h3>
+    <p style="margin-bottom:4px">${modeLabel}</p>
+    <p>Задайте вопрос или выберите тему</p>
+    <div class="chat-suggestions">${suggestions}</div>
+  </div>`;
+}
+
+function addChatBubble(role, text, meta) {
+  const msgs = document.getElementById('chatMessages');
+  if (!msgs) return;
+  // Hide welcome on first message
+  const welcome = document.getElementById('chatWelcome');
+  if (welcome) welcome.style.display = 'none';
+
+  const m = LLM_MODEL_MAP[chatState.modelKey];
+  const avatar = role === 'user' ? '👤' : m.icon;
+  const metaHtml = meta ? `<div class="msg-meta">${meta}</div>` : '';
+
+  const row = document.createElement('div');
+  row.className = `msg-row ${role === 'user' ? 'user' : 'ai'}`;
+  row.innerHTML = `<div class="msg-avatar">${avatar}</div>
+    <div><div class="msg-bubble">${escapeHtml(text)}</div>${metaHtml}</div>`;
+  msgs.appendChild(row);
+  msgs.scrollTop = msgs.scrollHeight;
+  return row;
+}
+
+function addTypingIndicator() {
+  const msgs = document.getElementById('chatMessages');
+  if (!msgs) return null;
+  const m = LLM_MODEL_MAP[chatState.modelKey];
+  const row = document.createElement('div');
+  row.className = 'msg-row ai';
+  row.id = 'typingRow';
+  row.innerHTML = `<div class="msg-avatar">${m.icon}</div>
+    <div><div class="msg-bubble"><div class="typing-dots"><span></span><span></span><span></span></div></div></div>`;
+  msgs.appendChild(row);
+  msgs.scrollTop = msgs.scrollHeight;
+  return row;
+}
+
+function removeTypingIndicator() {
+  const t = document.getElementById('typingRow');
+  if (t) t.remove();
+}
+
+function escapeHtml(text) {
+  const d = document.createElement('div');
+  d.textContent = text;
+  return d.innerHTML;
+}
+
+// ── Build prompt from history ──
+function buildPrompt(userMsg) {
+  let parts = [];
+  for (const m of chatState.messages) {
+    parts.push(`${m.role === 'user' ? 'User' : 'Assistant'}: ${m.text}`);
+  }
+  parts.push(`User: ${userMsg}`);
+  parts.push('Assistant:');
+  return parts.join('\n');
+}
+
+// ── Send message ──
+async function sendChatMessage() {
+  const inp = document.getElementById('chatInput');
+  const btn = document.getElementById('chatSendBtn');
+  if (!inp || !inp.value.trim() || chatState.isGenerating) return;
+
+  const userText = inp.value.trim();
+  inp.value = '';
+  inp.style.height = 'auto';
+  if (btn) btn.disabled = true;
+  chatState.isGenerating = true;
+
+  // User bubble
+  addChatBubble('user', userText);
+  chatState.messages.push({ role: 'user', text: userText });
+
+  // Typing indicator
+  addTypingIndicator();
+
+  const m = LLM_MODEL_MAP[chatState.modelKey];
+  const prompt = buildPrompt(userText);
+  const startTime = Date.now();
+
+  try {
+    // ── Call WaveSpeed Any LLM ──
+    const resp = await fetch(LLM_API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${LLM_API_KEY}`
+      },
+      body: JSON.stringify({
+        prompt: prompt,
+        system_prompt: SYSTEM_PROMPTS[LLM_MODEL_MAP[chatState.modelKey].cat] || SYSTEM_PROMPTS.chat,
+        model: m.api,
+        enable_sync_mode: true,
+        max_tokens: 4096,
+        temperature: 0.7
+      })
+    });
+
+    const data = await resp.json();
+    let aiText = null;
+
+    if (data.data && data.data.status === 'completed' && data.data.outputs) {
+      // Sync mode — instant result
+      const out = data.data.outputs;
+      aiText = Array.isArray(out) ? out[0] : out;
+    } else if (data.data && data.data.id) {
+      // Async — need to poll
+      aiText = await pollLlmResult(data.data.id);
+    } else {
+      throw new Error(data.message || 'Unknown API error');
+    }
+
+    removeTypingIndicator();
+
+    if (aiText) {
+      // Clean up "Assistant:" prefix if present
+      aiText = aiText.replace(/^Assistant:\s*/i, '').trim();
+      const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+      addChatBubble('ai', aiText, `${m.name} • ${elapsed}s`);
+      chatState.messages.push({ role: 'ai', text: aiText });
+      // Keep history manageable
+      if (chatState.messages.length > 30) {
+        chatState.messages = chatState.messages.slice(-20);
+      }
+    } else {
+      addChatBubble('ai', '❌ Пустой ответ от модели. Попробуйте ещё раз.');
+    }
+
+  } catch (err) {
+    removeTypingIndicator();
+    addChatBubble('ai', `❌ Ошибка: ${err.message || 'Сеть недоступна'}`);
+  }
+
+  chatState.isGenerating = false;
+  if (btn) btn.disabled = false;
+}
+
+// ── Poll for async result ──
+async function pollLlmResult(taskId) {
+  const maxAttempts = 60;
+  for (let i = 0; i < maxAttempts; i++) {
+    await new Promise(r => setTimeout(r, 2000));
+    try {
+      const resp = await fetch(LLM_POLL_URL + taskId + '/result', {
+        headers: { 'Authorization': `Bearer ${LLM_API_KEY}` }
+      });
+      const data = await resp.json();
+      if (data.data && data.data.status === 'completed' && data.data.outputs) {
+        const out = data.data.outputs;
+        return Array.isArray(out) ? out[0] : out;
+      }
+      if (data.data && data.data.status === 'failed') {
+        throw new Error(data.data.error || 'Generation failed');
+      }
+    } catch (e) {
+      if (i === maxAttempts - 1) throw e;
+    }
+  }
+  throw new Error('Timeout — ответ не получен за 2 минуты');
+}
+
+// ═════════ CONFIG WIZARD ═════════
+
+function openConfig(modelId) {
+  // Search all model arrays
+  const allMedia = [...VIDEO_MODELS, ...IMAGE_MODELS, ...EDIT_IMAGE_MODELS, ...EDIT_VIDEO_MODELS];
+  const found = allMedia.find(m => m.id === modelId);
+  if (!found) return;
+
+  // LLM models go to chat
+  if (found.configType === 'llm_chat') {
+    openChatWithModel(modelId);
+    return;
+  }
+
+  // If model has full configs (Kling-style) → use detailed config
+  if (found.configs && found.subs) {
+    currentModel = found;
+    currentSubId = found.subs[0].id;
+    currentConfig = found.configs[currentSubId];
+    selectedMode = 0; selectedRatio = 0; selectedDur = 0;
+    audioOn = false; uploadedFiles = [null, null];
+    _universalModel = null;
+
+    document.getElementById('configHeader').innerHTML = `
+      <span class="ch-icon">${found.icon}</span>
+      <div><div class="ch-name">${found.name}</div><div class="ch-desc">${found.desc}</div></div>`;
+    document.getElementById('subModelChips').parentElement.style.display = '';
+    document.getElementById('subModelChips').innerHTML = found.subs.map((s, i) =>
+      `<div class="chip ${i===0?'active':''}" onclick="selectSub(${i})">${s.name}</div>`
+    ).join('');
+    renderConfigFields();
+    _setConfigBack(found);
+    goScreen('screen-config');
+    return;
+  }
+
+  // ═══ Universal config for all other models ═══
+  _universalModel = found;
+  currentModel = null; currentConfig = null;
+  selectedMode = 0; selectedRatio = 0; selectedDur = 0;
+  audioOn = false; uploadedFiles = [null, null];
+  _uQuality = null; _uResolution = null; _uStyle = null; _uNumImages = null;
+
+  const ct = found.configType || 'img_create';
+  const mp = MODEL_PARAMS[found.id] || {};
+
+  // Header
+  document.getElementById('configHeader').innerHTML = `
+    <span class="ch-icon">${found.icon}</span>
+    <div><div class="ch-name">${found.name}</div><div class="ch-desc">${found.desc}</div></div>`;
+
+  // Hide sub-model chips (not applicable)
+  document.getElementById('subModelChips').parentElement.style.display = 'none';
+
+  // Mode row
+  const modeRow = document.getElementById('modeRow');
+  if (mp.modes && mp.modes.length > 0) {
+    modeRow.parentElement.style.display = '';
+    modeRow.innerHTML = mp.modes.map((m, i) =>
+      `<div class="mode-btn ${i===0?'active':''}" onclick="selectModeBtn(${i})">${m}</div>`
+    ).join('');
+    // If only Image mode (e.g. Runway), preselect it
+    if (mp.modes.length === 1 && mp.modes[0].includes('Image')) selectedMode = 1;
+  } else {
+    modeRow.parentElement.style.display = 'none';
+  }
+
+  // Upload section
+  const uploadSec = document.getElementById('uploadSection');
+  resetUploadSlot(1); resetUploadSlot(2); uploadedFiles = [null, null];
+  document.getElementById('uploadSlot2').style.display = 'none';
+  const noteEl = document.getElementById('uploadNote');
+  noteEl.classList.remove('visible');
+
+  if (ct === 'img_edit') {
+    uploadSec.style.display = '';
+    document.getElementById('slot1Title').textContent = '🖼 Изображение';
+    document.getElementById('uploadSlot1').querySelector('.upload-slot-tag').textContent = 'обязательно';
+    document.getElementById('fileInput1').setAttribute('accept', 'image/*');
+    noteEl.textContent = '💡 Загрузите изображение для редактирования';
+    noteEl.classList.add('visible');
+  } else if (ct === 'vid_edit') {
+    uploadSec.style.display = '';
+    document.getElementById('slot1Title').textContent = '🎬 Видео';
+    document.getElementById('uploadSlot1').querySelector('.upload-slot-tag').textContent = 'обязательно';
+    document.getElementById('fileInput1').setAttribute('accept', 'video/*,image/*');
+    noteEl.textContent = '💡 Загрузите видео для редактирования';
+    noteEl.classList.add('visible');
+  } else if (mp.needsImage) {
+    uploadSec.style.display = '';
+    document.getElementById('slot1Title').textContent = '🖼 Изображение';
+    document.getElementById('uploadSlot1').querySelector('.upload-slot-tag').textContent = 'обязательно';
+    document.getElementById('fileInput1').setAttribute('accept', 'image/*');
+  } else if (selectedMode === 1) {
+    uploadSec.style.display = '';
+    document.getElementById('slot1Title').textContent = '🖼 Изображение';
+    document.getElementById('fileInput1').setAttribute('accept', 'image/*');
+  } else {
+    uploadSec.style.display = 'none';
+    document.getElementById('fileInput1').setAttribute('accept', 'image/*');
+  }
+
+  // Frames support (Vidu first/last)
+  if (mp.frames === 'first_last') {
+    document.getElementById('uploadSlot2').style.display = '';
+    document.getElementById('slot1Title').textContent = '🎬 First Frame';
+    document.getElementById('slot2Title').textContent = '🎬 Last Frame';
+    noteEl.textContent = '💡 Загрузите 1 или 2 фото для генерации';
+    noteEl.classList.add('visible');
+  }
+
+  // ── Ratios ──
+  const ratioSec = document.getElementById('ratioChips').parentElement;
+  if (mp.ratios && mp.ratios.length > 0) {
+    ratioSec.style.display = '';
+    document.getElementById('ratioChips').innerHTML = mp.ratios.map((r, i) =>
+      `<div class="chip ${i===0?'active':''}" onclick="selectChip(this,'ratio',${i})">${r}</div>`
+    ).join('');
+  } else {
+    ratioSec.style.display = 'none';
+  }
+
+  // ── Durations ──
+  const durSec = document.getElementById('durationSection');
+  const durChips = document.getElementById('durationChips');
+  const durLabel = durSec.querySelector('.config-label');
+  if (mp.durs && mp.durs.length > 1) {
+    durSec.style.display = '';
+    durLabel.textContent = 'Длительность (сек)';
+    durChips.innerHTML = mp.durs.map((d, i) =>
+      `<div class="chip ${i===0?'active':''}" onclick="selectChip(this,'dur',${i});updateSummary()">${d}s</div>`
+    ).join('');
+  } else if (mp.durs && mp.durs.length === 1) {
+    durSec.style.display = '';
+    durLabel.textContent = 'Длительность (сек)';
+    durChips.innerHTML = `<div class="chip active" style="opacity:0.7;pointer-events:none">⏱ ${mp.durs[0]}s — фиксированная</div>`;
+  } else if (ct === 'vid_create' || ct === 'vid_edit') {
+    durSec.style.display = '';
+    durLabel.textContent = 'Длительность (сек)';
+    durChips.innerHTML = `<div class="chip active" style="opacity:0.7;pointer-events:none">⏱ определяется моделью</div>`;
+  } else {
+    durSec.style.display = 'none';
+  }
+
+  // ── Quality ──
+  const extraHTML = [];
+  if (mp.quality) {
+    _uQuality = mp.quality[0];
+    extraHTML.push(`<div class="config-section" id="qualitySec"><div class="config-label">Качество</div><div class="chip-row" id="qualityChips">
+      ${mp.quality.map((q,i) => `<div class="chip ${i===0?'active':''}" onclick="_uQuality='${q}';this.parentElement.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));this.classList.add('active');updateSummary()">${q}</div>`).join('')}
+    </div></div>`);
+  }
+
+  // ── Resolution ──
+  if (mp.resolution) {
+    _uResolution = mp.resolution[0];
+    extraHTML.push(`<div class="config-section" id="resSec"><div class="config-label">Разрешение</div><div class="chip-row" id="resChips">
+      ${mp.resolution.map((r,i) => `<div class="chip ${i===0?'active':''}" onclick="_uResolution='${r}';this.parentElement.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));this.classList.add('active');updateSummary()">${r}</div>`).join('')}
+    </div></div>`);
+  }
+
+  // ── Style (DALL-E, Ideogram) ──
+  if (mp.style) {
+    _uStyle = mp.style[0];
+    extraHTML.push(`<div class="config-section" id="styleSec"><div class="config-label">Стиль</div><div class="chip-row" id="styleChips">
+      ${mp.style.map((s,i) => `<div class="chip ${i===0?'active':''}" onclick="_uStyle='${s}';this.parentElement.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));this.classList.add('active');updateSummary()">${s}</div>`).join('')}
+    </div></div>`);
+  }
+
+  // ── Num Images (Imagen4) ──
+  if (mp.numImages) {
+    _uNumImages = mp.numImages[0];
+    extraHTML.push(`<div class="config-section" id="numImgSec"><div class="config-label">Кол-во изображений</div><div class="chip-row" id="numImgChips">
+      ${mp.numImages.map((n,i) => `<div class="chip ${i===0?'active':''}" onclick="_uNumImages='${n}';this.parentElement.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));this.classList.add('active');updateSummary()">${n}</div>`).join('')}
+    </div></div>`);
+  }
+
+  // ── Max Images info (Edit models) ──
+  if (mp.maxImages && mp.maxImages > 1) {
+    extraHTML.push(`<div class="config-section" id="maxImgSec"><div class="config-label" style="color:var(--text-dim);font-size:11px">📷 До ${mp.maxImages} изображений</div></div>`);
+  }
+
+  // ── Soul styles hint ──
+  if (mp.hasStyles) {
+    extraHTML.push(`<div class="config-section" id="soulStyleSec"><div class="config-label" style="color:var(--text-dim);font-size:11px">🎨 113 стилей доступны через бот-меню</div></div>`);
+  }
+
+  // Insert extra sections before prompt
+  const promptSection = document.getElementById('promptInput').closest('.config-section');
+  // Remove old dynamic sections
+  document.querySelectorAll('#qualitySec,#resSec,#styleSec,#numImgSec,#maxImgSec,#soulStyleSec').forEach(el => el.remove());
+  if (extraHTML.length > 0) {
+    promptSection.insertAdjacentHTML('beforebegin', extraHTML.join(''));
+  }
+
+  // ── Audio ──
+  if (mp.audio) {
+    document.getElementById('audioSection').style.display = '';
+    audioOn = false;
+    document.getElementById('audioToggle').className = 'toggle-track';
+    document.getElementById('audioLabel').textContent = '🔇 Выключено';
+  } else {
+    document.getElementById('audioSection').style.display = 'none';
+  }
+
+  // Prompt placeholder
+  const promptEl = document.getElementById('promptInput');
+  promptEl.value = '';
+  if (ct === 'vid_create') promptEl.placeholder = 'Опишите видео... Камера плавно движется, мягкий свет, кинематографичные переходы...';
+  else if (ct === 'img_create') promptEl.placeholder = 'Опишите изображение... Стиль, цвета, композиция, настроение...';
+  else if (ct === 'img_edit') promptEl.placeholder = 'Опишите что изменить... Замени фон на закат, добавь эффект...';
+  else if (ct === 'vid_edit') promptEl.placeholder = 'Опишите изменения... Добавь эффект замедления, измени цвета...';
+  document.getElementById('promptCount').textContent = '0 символов';
+
+  // Summary — initial render, then updateSummary will keep it live
+  updateSummary();
+
+  _setConfigBack(found);
+  goScreen('screen-config');
+}
+
+// Track universal model separately
+let _universalModel = null;
+let _uQuality = null;
+let _uResolution = null;
+let _uStyle = null;
+let _uNumImages = null;
+
+function _setConfigBack(model) {
+  const backBtn = document.querySelector('#screen-config .back-btn');
+  if (!backBtn) return;
+  const ct = model.configType || '';
+  if (ct === 'vid_create' || (model.configs && model.subs)) backBtn.setAttribute('onclick', "goScreen('screen-videos')");
+  else if (ct === 'img_create') backBtn.setAttribute('onclick', "goScreen('screen-images')");
+  else if (ct === 'img_edit') backBtn.setAttribute('onclick', "goScreen('screen-edit-images')");
+  else if (ct === 'vid_edit') backBtn.setAttribute('onclick', "goScreen('screen-edit-videos')");
+  else backBtn.setAttribute('onclick', "goScreen('screen-home')");
+}
+
+function selectSub(idx) {
+  const sub = currentModel.subs[idx];
+  currentSubId = sub.id;
+  currentConfig = currentModel.configs[currentSubId];
+  selectedMode = 0;
+  selectedRatio = 0;
+  selectedDur = 0;
+  audioOn = false;
+  uploadedFiles = [null, null];
+
+  // Update active chip
+  document.querySelectorAll('#subModelChips .chip').forEach((c, i) => {
+    c.classList.toggle('active', i === idx);
+  });
+
+  renderConfigFields();
+}
+
+function renderConfigFields() {
+  const cfg = currentConfig;
+  if (!cfg) return;
+
+  // Reset visibility of sections that universal config may have hidden
+  document.getElementById('modeRow').parentElement.style.display = '';
+  document.getElementById('ratioChips').parentElement.style.display = '';
+  document.getElementById('fileInput1').setAttribute('accept', 'image/*');
+
+  // Mode
+  const modeRow = document.getElementById('modeRow');
+  if (modeRow) modeRow.innerHTML = cfg.modes.map((m, i) =>
+    `<div class="mode-btn ${i===0?'active':''}" onclick="selectModeBtn(${i})">${m}</div>`
+  ).join('');
+
+  // Upload section — reset
+  const uploadSec = document.getElementById('uploadSection');
+  if (uploadSec) uploadSec.style.display = 'none';
+  resetUploadSlot(1);
+  resetUploadSlot(2);
+  uploadedFiles = [null, null];
+
+  // Configure upload slots based on frame mode
+  const frameMode = cfg.frames || 'single';
+  const isFrameMode = (frameMode === 'start_end' || frameMode === 'first_last');
+
+  if (frameMode === 'first_last') {
+    document.getElementById('slot1Title').textContent = '🎬 First Frame';
+    document.getElementById('slot2Title').textContent = '🎬 Last Frame';
+  } else if (frameMode === 'start_end') {
+    document.getElementById('slot1Title').textContent = '🖼 Start Image';
+    document.getElementById('slot2Title').textContent = '🖼 End Image';
+  } else {
+    document.getElementById('slot1Title').textContent = '🖼 Изображение';
+  }
+
+  // Show/hide slot 2
+  document.getElementById('uploadSlot2').style.display = isFrameMode ? '' : 'none';
+
+  // Upload note
+  const noteEl = document.getElementById('uploadNote');
+  if (isFrameMode) {
+    let noteText = '💡 Загрузите 1 фото для обычного режима, или 2 фото для режима Start/End';
+    if (cfg.dursWithEnd) {
+      noteText += `. При 2 фото длительность ограничена: ${cfg.dursWithEnd.join(' или ')} сек`;
+    }
+    noteEl.textContent = noteText;
+    noteEl.classList.add('visible');
+  } else if (frameMode === 'single') {
+    noteEl.textContent = '💡 Загрузите 1 изображение для генерации видео';
+    noteEl.classList.add('visible');
+  } else {
+    noteEl.classList.remove('visible');
+  }
+
+  // Ratios
+  document.getElementById('ratioChips').innerHTML = cfg.ratios.map((r, i) =>
+    `<div class="chip ${i===0?'active':''}" onclick="selectChip(this,'ratio',${i})">${r}</div>`
+  ).join('');
+
+  // Durations
+  if (cfg.durs.length > 0) {
+    document.getElementById('durationSection').style.display = '';
+    renderDurationChips(cfg.durs);
+  } else {
+    document.getElementById('durationSection').style.display = 'none';
+  }
+
+  // Audio
+  if (cfg.audio) {
+    document.getElementById('audioSection').style.display = '';
+    audioOn = false;
+    document.getElementById('audioToggle').className = 'toggle-track';
+    document.getElementById('audioLabel').textContent = '🔇 Выключено';
+  } else {
+    document.getElementById('audioSection').style.display = 'none';
+  }
+
+  // Prompt
+  document.getElementById('promptInput').value = '';
+  updatePromptCount();
+
+  updateSummary();
+}
+
+function renderDurationChips(durs) {
+  document.getElementById('durationChips').innerHTML = durs.map((d, i) =>
+    `<div class="chip ${i===0?'active':''}" onclick="selectChip(this,'dur',${i})">${d}s</div>`
+  ).join('');
+  selectedDur = 0;
+}
+
+function resetUploadSlot(slot) {
+  const area = document.getElementById('uploadArea' + slot);
+  const thumb = document.getElementById('uploadThumb' + slot);
+  const icon = document.getElementById('uIcon' + slot);
+  const text = document.getElementById('uText' + slot);
+  const hint = document.getElementById('uHint' + slot);
+  if (!area || !thumb || !icon || !text || !hint) return;
+
+  area.classList.remove('has-file');
+  icon.textContent = '📷';
+  text.textContent = 'Нажмите для загрузки';
+  hint.textContent = 'JPG, PNG • до 10MB';
+  hint.style.display = '';
+  thumb.innerHTML = '';
+}
+
+function handleSlotUpload(slot, input) {
+  const file = input.files[0];
+  if (!file) return;
+
+  uploadedFiles[slot - 1] = file;
+
+  const area = document.getElementById('uploadArea' + slot);
+  const thumb = document.getElementById('uploadThumb' + slot);
+  const icon = document.getElementById('uIcon' + slot);
+  const text = document.getElementById('uText' + slot);
+  const hint = document.getElementById('uHint' + slot);
+
+  area.classList.add('has-file');
+  icon.textContent = '✅';
+  text.textContent = file.name.length > 24 ? file.name.slice(0,21) + '...' : file.name;
+  hint.style.display = 'none';
+
+  // Thumbnail with remove button
+  const url = URL.createObjectURL(file);
+  thumb.innerHTML = `
+    <div class="upload-thumb-wrap">
+      <img src="${url}" alt="preview">
+      <button class="upload-thumb-remove" onclick="removeSlotFile(${slot}, event)">✕</button>
+    </div>`;
+
+  // If O1 model and 2 images loaded — restrict duration to 5/10
+  checkDurationRestrictions();
+  updateSummary();
+
+  // Reset input so same file can be re-selected
+  input.value = '';
+}
+
+function removeSlotFile(slot, event) {
+  event.stopPropagation();
+  uploadedFiles[slot - 1] = null;
+  resetUploadSlot(slot);
+  document.getElementById('fileInput' + slot).value = '';
+  checkDurationRestrictions();
+  updateSummary();
+}
+
+function checkDurationRestrictions() {
+  const cfg = currentConfig;
+  const hasEnd = uploadedFiles[1] !== null;
+
+  if (hasEnd && cfg.dursWithEnd) {
+    // Restrict durations when 2 images are uploaded
+    renderDurationChips(cfg.dursWithEnd);
+    // Show restriction notice
+    const noteEl = document.getElementById('uploadNote');
+    noteEl.textContent = `⚠️ С двумя фото длительность ограничена: ${cfg.dursWithEnd.join(' или ')} сек`;
+    noteEl.classList.add('visible');
+  } else if (!hasEnd && cfg.dursWithEnd) {
+    // Restore full durations
+    renderDurationChips(cfg.durs);
+    const noteEl = document.getElementById('uploadNote');
+    noteEl.textContent = '💡 Загрузите 1 фото для обычного режима, или 2 фото для режима First/Last Frame';
+    noteEl.classList.add('visible');
+  }
+}
+
+function selectModeBtn(idx) {
+  selectedMode = idx;
+  document.querySelectorAll('#modeRow .mode-btn').forEach((b, i) => {
+    b.classList.toggle('active', i === idx);
+  });
+
+  // Universal model (no currentConfig)
+  if (_universalModel && !currentConfig) {
+    const isImage = idx === 1;
+    const el = document.getElementById('uploadSection');
+    if (el) el.style.display = isImage ? '' : 'none';
+    if (!isImage) {
+      uploadedFiles = [null, null];
+      resetUploadSlot(1); resetUploadSlot(2);
+    }
+    updateSummary();
+    return;
+  }
+
+  if (!currentConfig) return;
+  // Show/hide upload based on mode
+  const isImage = currentConfig.modes[idx].includes('Image');
+  const el = document.getElementById('uploadSection');
+  if (el) el.style.display = isImage ? '' : 'none';
+  // Reset uploads when switching mode
+  if (!isImage) {
+    uploadedFiles = [null, null];
+    resetUploadSlot(1);
+    resetUploadSlot(2);
+    // Restore full durations if restrictions were active
+    if (currentConfig.dursWithEnd) {
+      renderDurationChips(currentConfig.durs);
+    }
+  }
+  updateSummary();
+}
+
+function selectChip(el, type, idx) {
+  if (type === 'ratio') selectedRatio = idx;
+  if (type === 'dur') selectedDur = idx;
+  el.parentElement.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  updateSummary();
+}
+
+function toggleAudio() {
+  audioOn = !audioOn;
+  document.getElementById('audioToggle').className = 'toggle-track' + (audioOn ? ' on' : '');
+  document.getElementById('audioLabel').textContent = audioOn ? '🔉 Включено' : '🔇 Выключено';
+  updateSummary();
+}
+
+// File upload handled by handleSlotUpload above
+
+function updatePromptCount() {
+  const v = document.getElementById('promptInput').value;
+  document.getElementById('promptCount').textContent = v.length + ' символов';
+  updateSummary();
+}
+
+function getUploadSummaryText() {
+  const has1 = uploadedFiles[0] !== null;
+  const has2 = uploadedFiles[1] !== null;
+  if (has1 && has2) return '2 фото (Start + End)';
+  if (has1) return '1 фото (Start)';
+  return '0 — не загружено';
+}
+
+function updateSummary() {
+  // ═══ UNIVERSAL MODEL ═══
+  if (_universalModel && !currentConfig) {
+    const m = _universalModel;
+    const mp = MODEL_PARAMS[m.id] || {};
+    const ct = m.configType || 'img_create';
+    const typeLabel = ct === 'vid_create' ? '🎬 Видео' : ct === 'img_create' ? '🖼 Изображение' : ct === 'img_edit' ? '✏️ Редактирование' : '🎞 Видео Edit';
+
+    let rows = '';
+    rows += `<div class="summary-row"><span class="sk">Модель</span><span class="sv">${m.icon} ${m.name}</span></div>`;
+    rows += `<div class="summary-row"><span class="sk">Тип</span><span class="sv">${typeLabel}</span></div>`;
+
+    // Mode
+    if (mp.modes && mp.modes.length > 1) {
+      rows += `<div class="summary-row"><span class="sk">Режим</span><span class="sv">${mp.modes[selectedMode] || mp.modes[0]}</span></div>`;
+    }
+
+    // Ratio
+    if (mp.ratios && mp.ratios.length > 0) {
+      rows += `<div class="summary-row"><span class="sk">Соотношение</span><span class="sv">${mp.ratios[selectedRatio] || mp.ratios[0]}</span></div>`;
+    }
+
+    // Duration
+    if (mp.durs && mp.durs.length > 1) {
+      rows += `<div class="summary-row"><span class="sk">Длительность</span><span class="sv">${mp.durs[selectedDur] || mp.durs[0]}s</span></div>`;
+    } else if (mp.durs && mp.durs.length === 1) {
+      rows += `<div class="summary-row"><span class="sk">Длительность</span><span class="sv">${mp.durs[0]}s (фикс.)</span></div>`;
+    } else if (ct === 'vid_create' || ct === 'vid_edit') {
+      rows += `<div class="summary-row"><span class="sk">Длительность</span><span class="sv">авто</span></div>`;
+    }
+
+    // Resolution
+    if (_uResolution) rows += `<div class="summary-row"><span class="sk">Разрешение</span><span class="sv">${_uResolution}</span></div>`;
+
+    // Quality
+    if (_uQuality) rows += `<div class="summary-row"><span class="sk">Качество</span><span class="sv">${_uQuality}</span></div>`;
+
+    // Style
+    if (_uStyle) rows += `<div class="summary-row"><span class="sk">Стиль</span><span class="sv">${_uStyle}</span></div>`;
+
+    // Num images
+    if (_uNumImages) rows += `<div class="summary-row"><span class="sk">Кол-во</span><span class="sv">${_uNumImages} шт.</span></div>`;
+
+    // Audio
+    if (mp.audio) rows += `<div class="summary-row"><span class="sk">Audio</span><span class="sv">${audioOn ? '🔉 Вкл' : '🔇 Выкл'}</span></div>`;
+
+    // Uploads
+    const uploads = uploadedFiles.filter(Boolean).length;
+    if (uploads > 0) rows += `<div class="summary-row"><span class="sk">Файлы</span><span class="sv">${uploads} загружено</span></div>`;
+
+    // Balance
+    const total = userBalance + userBonus;
+    rows += `<div class="summary-row"><span class="sk">Баланс</span><span class="sv" style="color:var(--green)">${total.toLocaleString('ru-RU')}₽</span></div>`;
+
+    document.getElementById('summaryRows').innerHTML = rows;
+    document.getElementById('summaryPrice').textContent = m.price;
+    document.getElementById('summaryPrice').style.color = 'var(--accent)';
+    return;
+  }
+
+  // ═══ DETAILED CONFIG (Kling) ═══
+  if (!currentConfig) return;
+  const cfg = currentConfig;
+  const sub = currentModel.subs.find(s => s.id === currentSubId);
+  const ratio = cfg.ratios[selectedRatio] || cfg.ratios[0];
+  const dur = cfg.durs[selectedDur] || cfg.durs[0];
+  const mode = selectedMode === 0 ? 'Text→Video' : 'Image→Video';
+
+  // Price calculation (simplified)
+  let pricePerSec = sub.price_base || 0.35;
+  let totalPrice = estimatePriceRub(pricePerSec, dur, currentConfig.type);
+  const total = userBalance + userBonus;
+  const canAfford = total >= totalPrice;
+  const priceColor = canAfford ? 'var(--accent)' : '#f87171';
+
+  document.getElementById('summaryRows').innerHTML = `
+    <div class="summary-row"><span class="sk">Модель</span><span class="sv">${currentModel.icon} ${currentModel.name} ${sub.name}</span></div>
+    <div class="summary-row"><span class="sk">Режим</span><span class="sv">${mode}</span></div>
+    <div class="summary-row"><span class="sk">Соотношение</span><span class="sv">${ratio}</span></div>
+    <div class="summary-row"><span class="sk">Длительность</span><span class="sv">${dur}s</span></div>
+    ${cfg.audio ? `<div class="summary-row"><span class="sk">Audio</span><span class="sv">${audioOn ? '🔉 Вкл' : '🔇 Выкл'}</span></div>` : ''}
+    ${selectedMode === 1 ? `<div class="summary-row"><span class="sk">Фото</span><span class="sv">${getUploadSummaryText()}</span></div>` : ''}
+    <div class="summary-row"><span class="sk">Баланс</span><span class="sv" style="color:${canAfford?'var(--green)':'#f87171'}">${total}₽</span></div>
+  `;
+  document.getElementById('summaryPrice').textContent = `~${totalPrice}₽`;
+  document.getElementById('summaryPrice').style.color = priceColor;
+}
+
+// ═════════ GENERATION ═════════
+
+async function startGeneration() {
+  const prompt = document.getElementById('promptInput').value.trim();
+  if (!prompt) {
+    if (tg) tg.showAlert('Введите промт для генерации');
+    return;
+  }
+
+  const hasStartImage = uploadedFiles[0] !== null;
+  const hasEndImage = uploadedFiles[1] !== null;
+
+  // ═══ UNIVERSAL MODEL (no detailed configs) ═══
+  if (_universalModel && !currentConfig) {
+    const m = _universalModel;
+    const ct = m.configType || 'img_create';
+
+    // Validate required uploads
+    if ((ct === 'img_edit' || ct === 'vid_edit') && !hasStartImage) {
+      if (tg) tg.showAlert('Загрузите файл для редактирования');
+      return;
+    }
+    if (ct === 'vid_create' && selectedMode === 1 && !hasStartImage) {
+      if (tg) tg.showAlert('Загрузите изображение');
+      return;
+    }
+
+    const payload = {
+      action: "generate",
+      model_id: m.id,
+      mode: (ct === 'vid_create' && selectedMode === 1) ? "image" :
+            (ct === 'img_edit' || ct === 'vid_edit') ? "image" :
+            mp.needsImage ? "image" : "text",
+      prompt: prompt
+    };
+
+    // Add collected params
+    const pms = MODEL_PARAMS[m.id] || {};
+    if (pms.ratios && pms.ratios.length > 0) payload.ratio = pms.ratios[selectedRatio] || pms.ratios[0];
+    if (pms.durs && pms.durs.length > 0) payload.duration = pms.durs[selectedDur] || pms.durs[0];
+    if (_uQuality) payload.quality = _uQuality;
+    if (_uResolution) payload.resolution = _uResolution;
+    if (_uStyle) payload.style = _uStyle;
+    if (_uNumImages) payload.num_images = parseInt(_uNumImages);
+    if (pms.audio && audioOn) payload.audio = true;
+
+    // Attach images/videos
+    if (hasStartImage) {
+      const b64 = await fileToBase64(uploadedFiles[0]);
+      if (ct === 'vid_edit') payload.video = b64;
+      else payload.start_image = b64;
+    }
+
+    if (tg) {
+      try { tg.sendData(JSON.stringify(payload)); }
+      catch(e) { showLocalProgress(payload); }
+    } else {
+      showLocalProgress(payload);
+    }
+    return;
+  }
+
+  // ═══ DETAILED CONFIG MODEL (Kling-style) ═══
+  if (selectedMode === 1 && !hasStartImage) {
+    if (tg) tg.showAlert('Загрузите хотя бы Start Frame изображение');
+    return;
+  }
+
+  const cfg = currentConfig;
+  const sub = currentModel.subs.find(s => s.id === currentSubId);
+  const ratio = cfg.ratios[selectedRatio];
+  const dur = cfg.durs[selectedDur] || (cfg.dursWithEnd ? cfg.dursWithEnd[selectedDur] : cfg.durs[0]);
+
+  // ── BALANCE CHECK ──
+  const estPrice = estimatePriceRub(sub?.price_base || currentModel.price_base || 0.06, dur, currentConfig.type);
+  if (estPrice > 0 && !checkBalance(estPrice)) return;
+
+  // Prepare data for bot
+  const payload = {
+    action: "generate_video",
+    model_family: currentModel.id,
+    model_id: currentSubId,
+    sub_name: sub.name,
+    mode: selectedMode === 0 ? "text" : "image",
+    duration: dur,
+    ratio: ratio,
+    audio: audioOn,
+    prompt: prompt,
+    api_endpoint: selectedMode === 0 ? cfg.api_text : cfg.api_image,
+    frame_mode: cfg.frames || "single",
+    end_frame_key: cfg.endFrameKey || null
+  };
+
+  // Convert images to base64 if image mode
+  if (selectedMode === 1) {
+    if (hasStartImage) {
+      payload.start_image = await fileToBase64(uploadedFiles[0]);
+    }
+    if (hasEndImage) {
+      payload.end_image = await fileToBase64(uploadedFiles[1]);
+    }
+    payload.image_count = (hasStartImage ? 1 : 0) + (hasEndImage ? 1 : 0);
+  }
+
+  // Send to Telegram bot
+  if (tg) {
+    try {
+      tg.sendData(JSON.stringify(payload));
+    } catch(e) {
+      console.error('sendData error:', e);
+      showLocalProgress(payload);
+    }
+  } else {
+    showLocalProgress(payload);
+  }
+}
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+// Local progress simulation (for demo / when WebApp stays open)
+function showLocalProgress(payload) {
+  goScreen('screen-progress');
+
+  const ring = document.getElementById('ringFill');
+  const circ = 2 * Math.PI * 64;
+  ring.setAttribute('stroke-dasharray', circ);
+  ring.setAttribute('stroke-dashoffset', circ);
+
+  document.getElementById('stageList').innerHTML = STAGES.map((s, i) =>
+    `<div class="stage-item pending" id="si${i}"><div class="stage-dot">${s.icon}</div><span class="stage-label">${s.label}</span></div>`
+  ).join('');
+
+  let pct = 0, elapsed = 0, stageIdx = 0;
+
+  progressInterval = setInterval(() => {
+    elapsed++;
+    pct = Math.min(pct + Math.random() * 3.2 + 0.5, 100);
+    const newStg = STAGES.findIndex(s => s.pct > pct);
+    stageIdx = newStg === -1 ? STAGES.length - 1 : Math.max(0, newStg - 1);
+
+    ring.setAttribute('stroke-dashoffset', circ * (1 - pct / 100));
+    document.getElementById('pctNum').textContent = Math.round(pct);
+    document.getElementById('stageLabel').textContent = STAGES[stageIdx].label;
+
+    const m = Math.floor(elapsed / 60), s2 = elapsed % 60;
+    const eta = Math.max(0, Math.round((100 - pct) * 1.5));
+    document.getElementById('timeLabel').textContent = `⏱ ${m}:${String(s2).padStart(2, '0')} • ⌛️ ~${eta}s`;
+
+    STAGES.forEach((s, i) => {
+      const el = document.getElementById('si' + i);
+      if (i < stageIdx) { el.className = 'stage-item done'; el.querySelector('.stage-dot').textContent = '✓'; }
+      else if (i === stageIdx) el.className = 'stage-item current';
+      else el.className = 'stage-item pending';
+    });
+
+    if (pct >= 100) {
+      clearInterval(progressInterval);
+      progressInterval = null;
+
+      let resultHTML = '';
+      if (_universalModel && !currentConfig) {
+        const m = _universalModel;
+        resultHTML = `
+          <div class="result-row"><span class="rk">Модель</span><span class="rv">${m.icon} ${m.name}</span></div>
+          <div class="result-row"><span class="rk">Время</span><span class="rv">${elapsed} сек</span></div>
+          <div class="result-row"><span class="rk">Стоимость</span><span class="rv" style="color:var(--accent)">${m.price}</span></div>
+        `;
+      } else {
+        const sub = currentModel.subs.find(s => s.id === currentSubId);
+        const cfg = currentConfig;
+        const ratio = cfg.ratios[selectedRatio];
+        const dur = cfg.durs[selectedDur];
+        resultHTML = `
+          <div class="result-row"><span class="rk">Модель</span><span class="rv">${currentModel.icon} ${currentModel.name} ${sub.name}</span></div>
+          <div class="result-row"><span class="rk">Режим</span><span class="rv">${selectedMode === 0 ? 'Text→Video' : 'Image→Video'}</span></div>
+          <div class="result-row"><span class="rk">Длительность</span><span class="rv">${dur}s</span></div>
+          <div class="result-row"><span class="rk">Соотношение</span><span class="rv">${ratio}</span></div>
+          <div class="result-row"><span class="rk">Время</span><span class="rv">${elapsed} сек</span></div>
+          <div class="result-row"><span class="rk">Стоимость</span><span class="rv" style="color:var(--accent)">-${Math.round(dur * (sub.price_base||0.35) * 160)}₽</span></div>
+        `;
+      }
+      document.getElementById('resultRows').innerHTML = resultHTML;
+      setTimeout(() => goScreen('screen-result'), 500);
+    }
+  }, 600);
+}
+
+function cancelGeneration() {
+  if (progressInterval) { clearInterval(progressInterval); progressInterval = null; }
+  goScreen('screen-home');
+}
+
+function saveResult() {
+  if (tg) tg.showAlert('Видео сохранено в историю');
+}
+
+function shareResult() {
+  if (tg) tg.showAlert('Функция скоро будет доступна');
+}
+
+function topupBalance() {
+  if (tg) {
+    tg.sendData(JSON.stringify({ action: "topup" }));
+  }
+}
+
+function requestTopupStars(stars, rub) {
+  if (tg) {
+    tg.sendData(JSON.stringify({ action: "topup_stars", stars: stars, rub: rub }));
+  }
+}
+
+function sendAction(action, extra) {
+  if (tg) {
+    const payload = { action, ...(extra || {}) };
+    tg.sendData(JSON.stringify(payload));
+  }
+}
+
+// Gen count from URL
+(function initGenCount() {
+  const params = new URLSearchParams(window.location.search);
+  const gc = parseInt(params.get('gc')) || 0;
+  const el = document.getElementById('menuHistCount');
+  if (el && gc > 0) el.textContent = gc;
+})();
+
+function switchToChat() {
+  if (tg) {
+    tg.sendData(JSON.stringify({ action: "switch_to_chat" }));
+  }
+}
+
+function showPromoInput() {
+  const wrap = document.getElementById('promoWrap');
+  if (!wrap) return;
+  wrap.style.display = wrap.style.display === 'none' ? 'block' : 'none';
+  if (wrap.style.display !== 'none') {
+    document.getElementById('promoInput')?.focus();
+  }
+}
+
+function applyPromo() {
+  const input = document.getElementById('promoInput');
+  const code = (input?.value || '').trim();
+  if (!code) {
+    if (tg) tg.showAlert('Введите промокод');
+    return;
+  }
+  sendAction('use_promo', { code: code });
+}
+
+// ═════════ FREE MODELS ═════════
+
+const FREE_MODEL_CONFIG = {
+  chat: {
+    limit: 30,
+    models: [
+      { id: "grok41_fast", icon: "⚡", name: "Grok 4.1 Fast", desc: "xAI • 2M контекст • Быстрый" },
+      { id: "deepseek_v32", icon: "🔮", name: "DeepSeek V3.2", desc: "DeepSeek • 128K • Мощный" },
+      { id: "gemini31_pro", icon: "💎", name: "Gemini 3.1 Pro", desc: "Google • Рассуждения и код" },
+    ]
+  },
+  image: {
+    limit: 5,
+    models: [
+      { id: "stable_turbo", icon: "🎨", name: "Stable Diffusion Turbo", desc: "Stability • Быстрый • 4 формата" },
+      { id: "ideogram_turbo", icon: "✏️", name: "Ideogram Turbo", desc: "Ideogram • Текст на изображениях" },
+    ]
+  },
+  video: {
+    limit: 2,
+    models: [
+      { id: "kling_25", icon: "⚡", name: "Kling 2.5 Turbo", desc: "Kuaishou • 5s • Быстрое видео" },
+    ]
+  }
+};
+
+let freeUsage = { chat: 0, image: 0, video: 0 };
+
+// Read free usage from URL params (?fc=5&fi=2&fv=1)
+(function initFreeUsage() {
+  const params = new URLSearchParams(window.location.search);
+  freeUsage.chat = parseInt(params.get('fc')) || 0;
+  freeUsage.image = parseInt(params.get('fi')) || 0;
+  freeUsage.video = parseInt(params.get('fv')) || 0;
+  updateFreeBadges();
+})();
+
+function updateFreeBadges() {
+  for (const [type, cfg] of Object.entries(FREE_MODEL_CONFIG)) {
+    const used = freeUsage[type] || 0;
+    const remaining = Math.max(0, cfg.limit - used);
+    // Home badges
+    const badge = document.getElementById('freeBadge' + type.charAt(0).toUpperCase() + type.slice(1));
+    if (badge) {
+      badge.textContent = remaining > 0 ? `${remaining} ост.` : 'Исчерпано';
+      badge.style.color = remaining > 0 ? '' : '#f87171';
+    }
+  }
+}
+
+function updateFreeScreen() {
+  for (const [type, cfg] of Object.entries(FREE_MODEL_CONFIG)) {
+    const used = freeUsage[type] || 0;
+    const pct = Math.min(100, (used / cfg.limit) * 100);
+    const remaining = Math.max(0, cfg.limit - used);
+    const exhausted = remaining <= 0;
+
+    // Progress bars
+    const fill = document.getElementById('fl' + type.charAt(0).toUpperCase() + type.slice(1));
+    const count = document.getElementById('fl' + type.charAt(0).toUpperCase() + type.slice(1) + 'Count');
+    if (fill) {
+      fill.style.width = pct + '%';
+      if (pct > 75) fill.classList.add('warn');
+      else fill.classList.remove('warn');
+    }
+    if (count) count.textContent = `${used}/${cfg.limit}`;
+
+    // Model cards
+    const gridId = type === 'chat' ? 'freeChatGrid' : type === 'image' ? 'freeImageGrid' : 'freeVideoGrid';
+    const grid = document.getElementById(gridId);
+    if (grid) {
+      grid.innerHTML = cfg.models.map(m => {
+        const cls = exhausted ? ' exhausted' : '';
+        const badgeCls = exhausted ? ' exhausted' : '';
+        const badgeText = exhausted ? 'Исчерпано' : `${remaining} ост.`;
+        const onclick = exhausted ? '' :
+          (type === 'chat' ? `openChatWithModel('${m.id}')` : `openConfig('${m.id}')`);
+        return `<div class="free-model-card${cls}" onclick="${onclick}">
+          <div class="fmc-icon">${m.icon}</div>
+          <div class="fmc-info">
+            <div class="fmc-name">${m.name}</div>
+            <div class="fmc-desc">${m.desc}</div>
+          </div>
+          <div class="fmc-badge${badgeCls}">${badgeText}</div>
+        </div>`;
+      }).join('');
+    }
+  }
+}
+
+function openFreeScreen(type) {
+  updateFreeScreen();
+  goScreen('screen-free');
+  // Scroll to relevant section
+  if (type) {
+    setTimeout(() => {
+      const gridId = type === 'chat' ? 'freeChatGrid' : type === 'image' ? 'freeImageGrid' : 'freeVideoGrid';
+      document.getElementById(gridId)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 200);
+  }
+}
+
+// ═════════ NAVIGATION ═════════
+
+function goScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const el = document.getElementById(id);
+  if (el) el.classList.add('active');
+  const sc = document.getElementById('scrollContainer');
+  if (sc) sc.scrollTop = 0;
+}
+
+function switchTab(tab) {
+  hideSheets();
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  const btn = document.querySelector(`[data-tab="${tab}"]`);
+  if (btn) btn.classList.add('active');
+
+  const map = {
+    home: 'screen-home',
+    create: 'screen-videos',
+    edit: 'screen-edit-images',
+    chat: 'screen-chat-select',
+    profile: 'screen-profile'
+  };
+  goScreen(map[tab] || 'screen-home');
+  if (tab === 'chat') renderChatSelect();
+  if (tab === 'home') renderPopularHome();
+}
+
+// ═════════ HERO CAROUSEL ═════════
+
+function setHero(i) {
+  heroIdx = i;
+  const cards = document.querySelectorAll('.hero-card');
+  if (!cards.length) return;
+  const w = cards[0].offsetWidth + 40;
+  document.getElementById('heroTrack').style.transform = `translateX(-${heroIdx * w}px)`;
+  document.querySelectorAll('.hero-dot').forEach((d, j) => d.classList.toggle('active', j === heroIdx));
+}
+
+function autoHero() {
+  heroTimer = setInterval(() => {
+    heroIdx = (heroIdx + 1) % 3;
+    setHero(heroIdx);
+  }, 4000);
+}
+
+// Touch swipe for hero
+let touchStartX = 0;
+document.querySelector('.hero-wrap')?.addEventListener('touchstart', e => {
+  touchStartX = e.touches[0].clientX;
+  clearInterval(heroTimer);
+}, { passive: true });
+document.querySelector('.hero-wrap')?.addEventListener('touchend', e => {
+  const diff = touchStartX - e.changedTouches[0].clientX;
+  if (Math.abs(diff) > 40) {
+    if (diff > 0 && heroIdx < 2) setHero(heroIdx + 1);
+    else if (diff < 0 && heroIdx > 0) setHero(heroIdx - 1);
+  }
+  autoHero();
+}, { passive: true });
+
+// ═════════ INIT ═════════
+
+function init() {
+  renderTrending();
+  renderPopularHome();
+  renderVideoGrid();
+  renderImageGrid();
+  renderEditGrids();
+  initParticles();
+  autoHero();
+
+  // Hide swipe hint after first trending scroll
+  const tw = document.querySelector('.trending-wrap');
+  if (tw) {
+    tw.addEventListener('scroll', function h() {
+      const hint = document.getElementById('swipeHint');
+      if (hint) hint.style.display = 'none';
+      tw.removeEventListener('scroll', h);
+    }, { passive: true });
+  }
+}
+
+init();
+</script>
+
+</body>
+</html>
