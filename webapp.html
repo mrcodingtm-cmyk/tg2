@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>AI Studio</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -40,37 +40,57 @@
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-html { height: 100%; }
+html {
+  height: 100%;
+  height: 100vh;
+  height: 100dvh;
+  width: 100%;
+  overflow: hidden;
+}
 
 body {
   background: var(--bg);
   font-family: var(--font);
   color: var(--text);
-  min-height: 100vh;
+  height: 100%;
+  height: 100vh;
+  height: 100dvh;
+  width: 100%;
+  max-width: 100vw;
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  -webkit-text-size-adjust: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
 }
 
 /* ═══════════════════════════════════════
    APP SHELL
    ═══════════════════════════════════════ */
 #app {
-  flex: 1;
+  flex: 1 1 0%;
   display: flex;
   flex-direction: column;
   overflow: hidden;
   position: relative;
+  width: 100%;
+  min-height: 0;
 }
 
 .screen-container {
-  flex: 1;
+  flex: 1 1 0%;
   overflow-y: auto;
   overflow-x: hidden;
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-y: contain;
   scrollbar-width: none;
+  min-height: 0;
+  position: relative;
 }
 .screen-container::-webkit-scrollbar { display: none; }
 
@@ -1083,6 +1103,9 @@ body {
         <div class="credit-badge" onclick="switchTab('profile')">💎 <span id="balanceTop">0</span>₽</div>
       </div>
 
+      <!-- Low balance warning banner -->
+      <div id="lowBalanceBanner" style="display:none;padding:10px 14px;border-radius:12px;font-size:13px;margin:0 0 10px;border:1px solid transparent;line-height:1.4"></div>
+
       <div class="hero-wrap">
         <div class="hero-track" id="heroTrack">
           <div class="hero-card" style="background:linear-gradient(135deg,#061222 0%,#152d52 50%,#070c16 100%)">
@@ -1655,6 +1678,33 @@ if (tg) {
   tg.enableClosingConfirmation();
   tgUser = tg.initDataUnsafe?.user;
 
+  // Request fullscreen if available (TG WebApp 8.0+)
+  try { if (tg.requestFullscreen) tg.requestFullscreen(); } catch(e) {}
+
+  // Disable vertical swipes to prevent accidental close while scrolling
+  try { if (tg.disableVerticalSwipes) tg.disableVerticalSwipes(); } catch(e) {}
+
+  // Set header/background color
+  try {
+    tg.setHeaderColor('#06060a');
+    tg.setBackgroundColor('#06060a');
+  } catch(e) {}
+
+  // Viewport height fix — set real height from TG
+  function setAppHeight() {
+    const h = tg.viewportStableHeight || tg.viewportHeight || window.innerHeight;
+    document.documentElement.style.setProperty('height', h + 'px', 'important');
+    document.body.style.setProperty('height', h + 'px', 'important');
+    const app = document.getElementById('app');
+    if (app) app.style.setProperty('height', h + 'px', 'important');
+  }
+  setAppHeight();
+  tg.onEvent('viewportChanged', setAppHeight);
+  window.addEventListener('resize', setAppHeight);
+  // Delayed re-check for slow WebViews
+  setTimeout(setAppHeight, 100);
+  setTimeout(setAppHeight, 500);
+
   // Apply TG theme
   if (tg.colorScheme === 'light') {
     // Could add light theme support here
@@ -1667,6 +1717,20 @@ if (tg) {
     document.getElementById('profileId').textContent = 'ID: ' + tgUser.id;
     document.getElementById('profileAvatar').textContent = (tgUser.first_name || 'U')[0].toUpperCase();
   }
+}
+
+// Fallback for non-Telegram environments (browser testing)
+if (!tg) {
+  function setAppHeightFallback() {
+    const h = window.innerHeight;
+    document.documentElement.style.setProperty('height', h + 'px', 'important');
+    document.body.style.setProperty('height', h + 'px', 'important');
+    const app = document.getElementById('app');
+    if (app) app.style.setProperty('height', h + 'px', 'important');
+  }
+  setAppHeightFallback();
+  window.addEventListener('resize', setAppHeightFallback);
+  window.addEventListener('orientationchange', () => setTimeout(setAppHeightFallback, 200));
 }
 
 // ═════════ BALANCE FROM URL PARAMS ═════════
@@ -1708,6 +1772,26 @@ function updateBalanceUI() {
       badge.style.background = '';
       badge.style.color = '';
       badge.style.borderColor = '';
+    }
+  }
+
+  // Low-balance warning banner on home screen
+  const banner = document.getElementById('lowBalanceBanner');
+  if (banner) {
+    if (total <= 0) {
+      banner.innerHTML = '💳 Баланс: <b>0₽</b> — генерация платных моделей недоступна. <span onclick="topupBalance()" style="text-decoration:underline;cursor:pointer">Пополнить</span>';
+      banner.style.display = 'block';
+      banner.style.background = 'rgba(239,68,68,0.1)';
+      banner.style.borderColor = 'rgba(239,68,68,0.3)';
+      banner.style.color = '#f87171';
+    } else if (total < 20) {
+      banner.innerHTML = '⚠️ Низкий баланс: <b>' + total + '₽</b>. <span onclick="topupBalance()" style="text-decoration:underline;cursor:pointer">Пополнить</span>';
+      banner.style.display = 'block';
+      banner.style.background = 'rgba(251,191,36,0.08)';
+      banner.style.borderColor = 'rgba(251,191,36,0.3)';
+      banner.style.color = '#fbbf24';
+    } else {
+      banner.style.display = 'none';
     }
   }
 }
@@ -1752,6 +1836,31 @@ function formatPriceRub(rub) {
   if (rub < 1) return rub.toFixed(2) + '₽';
   if (rub < 10) return rub.toFixed(1) + '₽';
   return Math.round(rub) + '₽';
+}
+
+function updateGenButton(canAfford, isFree, estPrice, totalBalance) {
+  const btn = document.getElementById('genBtn');
+  if (!btn) return;
+  if (isFree) {
+    btn.textContent = '🆓 Бесплатная генерация';
+    btn.style.opacity = '1';
+    btn.style.pointerEvents = 'auto';
+    btn.style.background = 'var(--green)';
+    btn.onclick = startGeneration;
+  } else if (canAfford) {
+    btn.textContent = estPrice > 0 ? `🚀 Генерация (~${formatPriceRub(estPrice)})` : '🚀 Начать генерацию';
+    btn.style.opacity = '1';
+    btn.style.pointerEvents = 'auto';
+    btn.style.background = '';
+    btn.onclick = startGeneration;
+  } else {
+    const deficit = estPrice - totalBalance;
+    btn.textContent = `💳 Не хватает ${formatPriceRub(deficit)} — Пополнить`;
+    btn.style.opacity = '0.85';
+    btn.style.pointerEvents = 'auto';
+    btn.style.background = 'linear-gradient(135deg, #ef4444, #dc2626)';
+    btn.onclick = function() { topupBalance(); };
+  }
 }
 
 
@@ -1942,6 +2051,60 @@ const MODEL_PARAMS = {
   kling_o1_fast:   { maxImages:4 },
   kling_o3_edit:   { maxImages:4 },
 };
+
+// ═════════ USD PRICE MAP — цена за 1 генерацию ═════════
+const MODEL_USD_PRICES = {
+  // ── VIDEO ──
+  sora: 0.40, sora_basic: 0.20,
+  grok_vid: 0.50,
+  minimax: 0.30, hailuo: 0.25, hailuo_fast: 0.15,
+  kandinsky: 0.20,
+  wan_vid: 0.15, wan25_vid: 0.12,
+  veo: 0.60, veo_fast: 0.30,
+  seedance: 0.35, seedance_fast: 0.20,
+  pixverse: 0.15,
+  dreamina_vid: 0.25,
+  pika: 0.20,
+  runway: 0.25,
+  vidu: 0.25, vidu_turbo: 0.15,
+  pixel: 0.15,
+  soul_vid: 0.30,
+  // ── IMAGE ──
+  gpt_img_create: 0.026, dalle3: 0.04,
+  gemini3_create: 0.12, gemini25_create: 0.08,
+  imagen4_fast: 0.08, imagen4_ultra: 0.12,
+  grok_img: 0.10,
+  dreamina30: 0.06, dreamina31: 0.06,
+  reve_create: 0.06,
+  seedream4: 0.06, seedream45: 0.06,
+  stable_large: 0.10, stable_turbo: 0.06, stable_medium: 0.06,
+  ideogram_q: 0.18, ideogram_b: 0.12, ideogram_t: 0.06,
+  banana_base: 0.04, banana_ultra_c: 0.08,
+  wan25_img: 0.04, wan26_img: 0.04,
+  soul: 0.30,
+  runway_img_turbo: 0.06, runway_img_base: 0.10,
+  // ── EDIT ──
+  gpt_img_edit: 0.026, gemini_edit: 0.26,
+  banana_edit: 0.22, banana_ultra_e: 0.30,
+  dreamina_edit: 0.08, reve_edit: 0.08,
+  seedream45_edit: 0.08, wan26_edit: 0.07,
+  runway_aleph: 0.40,
+  kling_o1_edit: 0.33, kling_o1_fast: 0.18, kling_o3_edit: 1.40,
+};
+
+// Бесплатные модели (совпадают с FREE_MODELS в database.py)
+const FREE_MODEL_IDS = new Set([
+  'grok41_fast', 'deepseek_v32', 'gemini31_pro',  // chat
+  'stable_turbo', 'ideogram_t',                     // image
+  'kling_25',                                        // video (через Kling sub)
+]);
+
+function getModelPrice(modelId, configType, duration) {
+  if (FREE_MODEL_IDS.has(modelId)) return 0;
+  const usd = MODEL_USD_PRICES[modelId];
+  if (!usd) return 0; // Unknown — пусть бэкенд проверит
+  return estimatePriceRub(usd, duration, configType);
+}
 
 const LLM_MODELS = [
   // ── AI Chat (Universal assistants) ──
@@ -3053,13 +3216,45 @@ function updateSummary() {
     const uploads = uploadedFiles.filter(Boolean).length;
     if (uploads > 0) rows += `<div class="summary-row"><span class="sk">Файлы</span><span class="sv">${uploads} загружено</span></div>`;
 
-    // Balance
+    // ── 💰 PRICE CALCULATION ──
+    const dur = (mp.durs && mp.durs.length > 0) ? (mp.durs[selectedDur] || mp.durs[0]) : 5;
+    const isFree = FREE_MODEL_IDS.has(m.id);
+    const estPrice = isFree ? 0 : getModelPrice(m.id, ct, dur);
     const total = userBalance + userBonus;
-    rows += `<div class="summary-row"><span class="sk">Баланс</span><span class="sv" style="color:var(--green)">${total.toLocaleString('ru-RU')}₽</span></div>`;
+    const canAfford = isFree || total >= estPrice;
+
+    // Price row
+    if (isFree) {
+      rows += `<div class="summary-row"><span class="sk">Стоимость</span><span class="sv" style="color:var(--green)">🆓 Бесплатно</span></div>`;
+    } else if (estPrice > 0) {
+      rows += `<div class="summary-row"><span class="sk">Стоимость</span><span class="sv" style="color:${canAfford?'var(--accent)':'#f87171'}">~${formatPriceRub(estPrice)}</span></div>`;
+    }
+
+    // Balance row
+    rows += `<div class="summary-row"><span class="sk">Баланс</span><span class="sv" style="color:${canAfford?'var(--green)':'#f87171'}">${total.toLocaleString('ru-RU')}₽</span></div>`;
+
+    // Deficit
+    if (!canAfford && estPrice > 0) {
+      const deficit = estPrice - total;
+      rows += `<div class="summary-row"><span class="sk">Не хватает</span><span class="sv" style="color:#f87171;font-weight:700">+${formatPriceRub(deficit)}</span></div>`;
+    }
 
     document.getElementById('summaryRows').innerHTML = rows;
-    document.getElementById('summaryPrice').textContent = m.price;
-    document.getElementById('summaryPrice').style.color = 'var(--accent)';
+
+    // Summary price badge
+    if (isFree) {
+      document.getElementById('summaryPrice').textContent = '🆓';
+      document.getElementById('summaryPrice').style.color = 'var(--green)';
+    } else if (estPrice > 0) {
+      document.getElementById('summaryPrice').textContent = `~${formatPriceRub(estPrice)}`;
+      document.getElementById('summaryPrice').style.color = canAfford ? 'var(--accent)' : '#f87171';
+    } else {
+      document.getElementById('summaryPrice').textContent = m.price;
+      document.getElementById('summaryPrice').style.color = 'var(--accent)';
+    }
+
+    // ── Generate button state ──
+    updateGenButton(canAfford, isFree, estPrice, total);
     return;
   }
 
@@ -3089,6 +3284,7 @@ function updateSummary() {
   `;
   document.getElementById('summaryPrice').textContent = `~${totalPrice}₽`;
   document.getElementById('summaryPrice').style.color = priceColor;
+  updateGenButton(canAfford, false, totalPrice, total);
 }
 
 // ═════════ GENERATION ═════════
@@ -3118,17 +3314,23 @@ async function startGeneration() {
       return;
     }
 
+    // ── 💰 BALANCE CHECK (блокирует генерацию при 0₽) ──
+    const pms = MODEL_PARAMS[m.id] || {};
+    const dur = (pms.durs && pms.durs.length > 0) ? (pms.durs[selectedDur] || pms.durs[0]) : 5;
+    const isFree = FREE_MODEL_IDS.has(m.id);
+    const estPrice = isFree ? 0 : getModelPrice(m.id, ct, dur);
+    if (estPrice > 0 && !checkBalance(estPrice)) return;
+
     const payload = {
       action: "generate",
       model_id: m.id,
       mode: (ct === 'vid_create' && selectedMode === 1) ? "image" :
             (ct === 'img_edit' || ct === 'vid_edit') ? "image" :
-            mp.needsImage ? "image" : "text",
+            pms.needsImage ? "image" : "text",
       prompt: prompt
     };
 
     // Add collected params
-    const pms = MODEL_PARAMS[m.id] || {};
     if (pms.ratios && pms.ratios.length > 0) payload.ratio = pms.ratios[selectedRatio] || pms.ratios[0];
     if (pms.durs && pms.durs.length > 0) payload.duration = pms.durs[selectedDur] || pms.durs[0];
     if (_uQuality) payload.quality = _uQuality;
