@@ -179,29 +179,28 @@ body {
 /* ===== SECTION TITLES ===== */
 .section-title {
   display: flex; align-items: center; gap: 8px;
-  padding: 20px 20px 12px; font-size: 13px; font-weight: 600;
+  padding: 8px 12px 4px; font-size: 10px; font-weight: 600;
   color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.8px;
 }
 
 /* ===== CATEGORY GRID ===== */
 .cat-grid {
-  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;
-  padding: 0 16px; margin-bottom: 4px;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 5px;
+  padding: 0 10px; margin-bottom: 2px;
 }
 .cat-card {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--radius); padding: 16px 12px;
-  cursor: pointer; transition: all 0.25s; text-align: center;
-  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  border-radius: 12px; overflow: hidden; position: relative;
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: flex-end; cursor: pointer; transition: all 0.2s;
+  text-align: center; height: 110px;
 }
-.cat-card:active {
-  background: var(--surface-hover);
-  border-color: var(--border-active);
-  transform: scale(0.96);
-}
-.cat-icon { font-size: 26px; display: block; }
-.cat-title { font-size: 13px; font-weight: 600; }
-.cat-sub { font-size: 10px; color: var(--text-dim); }
+.cat-card:active { transform: scale(0.96); }
+.cat-card .cat-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; }
+.cat-card video.cat-vid { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; }
+.cat-card .cat-ov { position: absolute; inset: 0; z-index: 1; background: linear-gradient(0deg, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.08) 50%, rgba(0,0,0,0.28) 100%); }
+.cat-icon { font-size: 20px; display: block; position: relative; z-index: 2; line-height: 1; }
+.cat-title { font-size: 12px; font-weight: 700; line-height: 1.2; position: relative; z-index: 2; text-shadow: 0 1px 3px rgba(0,0,0,0.6); }
+.cat-sub { font-size: 9px; color: rgba(255,255,255,0.5); position: relative; z-index: 2; margin-bottom: 8px; }
 
 /* ===== SECTION HEAD ===== */
 .section-head {
@@ -216,23 +215,24 @@ body {
 
 /* ===== FREE BOT SECTION ===== */
 .free-grid {
-  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;
-  padding: 0 16px; margin-bottom: 4px;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 5px;
+  padding: 0 10px; margin-bottom: 2px;
 }
 .free-card {
-  background: rgba(91,235,160,0.04);
-  border: 1px solid rgba(91,235,160,0.1);
-  border-radius: var(--radius); padding: 14px 12px;
+  border-radius: 12px; overflow: hidden; position: relative;
   cursor: pointer; text-align: center;
-  display: flex; flex-direction: column; align-items: center; gap: 5px;
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: flex-end; height: 110px;
 }
-.free-card .cat-icon { font-size: 24px; }
-.free-card .cat-title { font-size: 12px; font-weight: 600; }
-.free-card .cat-sub { font-size: 10px; color: var(--green); opacity: 0.7; }
+.free-card .cat-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; }
+.free-card .cat-ov { position: absolute; inset: 0; z-index: 1; background: linear-gradient(0deg, rgba(0,20,10,0.88) 0%, rgba(0,40,20,0.15) 50%, rgba(0,0,0,0.35) 100%); border: 1px solid rgba(91,235,160,0.12); border-radius: 12px; }
+.free-card .cat-icon { font-size: 20px; position: relative; z-index: 2; }
+.free-card .cat-title { font-size: 12px; font-weight: 700; line-height: 1.2; position: relative; z-index: 2; text-shadow: 0 1px 3px rgba(0,0,0,0.5); }
+.free-card .cat-sub { font-size: 9px; color: #6ee7b7; position: relative; z-index: 2; margin-bottom: 8px; }
 
 /* ===== MODEL CARDS (horizontal) ===== */
 .model-scroll {
-  display: flex; gap: 10px; overflow-x: auto; padding: 0 16px 6px;
+  display: flex; gap: 8px; overflow-x: auto; padding: 0 16px 6px;
   scroll-snap-type: x mandatory; scrollbar-width: none;
 }
 .model-scroll::-webkit-scrollbar { display: none; }
@@ -251,6 +251,59 @@ body {
 .model-card .m-desc { font-size: 10px; color: var(--text-dim); line-height: 1.4; }
 .model-card .m-price { font-size: 12px; font-weight: 600; color: var(--accent); opacity: 0.7; margin-top: auto; }
 .model-card .m-subs { font-size: 9px; color: var(--accent); opacity: 0.6; }
+
+/* ===== VCARD (Higgsfield media cards) ===== */
+.vcard {
+  min-width: 95px; flex-shrink: 0; border-radius: 8px; overflow: hidden;
+  cursor: pointer; transition: transform 0.2s; position: relative;
+  scroll-snap-align: start; aspect-ratio: 3/4; background: #111;
+}
+.vcard:active { transform: scale(0.97); }
+.vcard .vc-poster {
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;
+}
+.vcard video.vc-vid {
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;
+}
+.vcard .vc-grad {
+  position: absolute; inset: 0; z-index: 1;
+  background: linear-gradient(0deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.05) 45%, rgba(0,0,0,0.3) 100%);
+}
+.vcard .vc-play {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); z-index: 2;
+  width: 28px; height: 28px; border-radius: 50%;
+  background: rgba(255,255,255,0.1); backdrop-filter: blur(10px);
+  border: 1.5px solid rgba(255,255,255,0.12);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; transition: background 0.2s;
+}
+.vcard:hover .vc-play { background: rgba(255,255,255,0.2); }
+.vcard .vc-badges {
+  position: absolute; top: 6px; left: 6px; z-index: 3; display: flex; gap: 3px;
+}
+.vcard .vc-tag {
+  font-size: 7px; font-weight: 700; padding: 2px 5px; border-radius: 4px;
+  text-transform: uppercase; letter-spacing: 0.6px; backdrop-filter: blur(6px);
+}
+.vcard .vc-tag.vid { background: rgba(139,92,246,0.4); color: #ddd6fe; border: 1px solid rgba(139,92,246,0.2); }
+.vcard .vc-tag.img { background: rgba(59,130,246,0.4); color: #bfdbfe; border: 1px solid rgba(59,130,246,0.2); }
+.vcard .vc-tag.edt { background: rgba(251,191,36,0.35); color: #fef3c7; border: 1px solid rgba(251,191,36,0.2); }
+.vcard .vc-tag.aud { background: rgba(16,185,129,0.35); color: #a7f3d0; border: 1px solid rgba(16,185,129,0.15); }
+.vcard .vc-hot {
+  position: absolute; top: 6px; right: 6px; z-index: 3;
+  font-size: 7px; font-weight: 700; padding: 2px 8px; border-radius: 5px;
+  text-transform: uppercase; letter-spacing: 0.7px; backdrop-filter: blur(6px);
+}
+.vcard .vc-info {
+  position: absolute; bottom: 0; left: 0; right: 0; z-index: 3; padding: 8px 10px 10px;
+}
+.vcard .vc-name { font-size: 13px; font-weight: 700; letter-spacing: -0.3px; text-shadow: 0 1px 3px rgba(0,0,0,0.5); }
+.vcard .vc-subs { font-size: 9px; color: rgba(255,255,255,0.5); margin-top: 2px; }
+.vcard .vc-meta {
+  display: flex; gap: 6px; align-items: center; margin-top: 3px; font-size: 9px; color: rgba(255,255,255,0.35);
+}
+.vcard .vc-price { color: var(--accent); font-weight: 700; }
+
 .m-badge {
   position: absolute; top: 10px; right: 10px;
   font-size: 8px; font-weight: 800; letter-spacing: 0.8px;
@@ -259,7 +312,7 @@ body {
 
 /* ===== SOUL CARDS ===== */
 .soul-scroll {
-  display: flex; gap: 10px; overflow-x: auto; padding: 0 16px 6px;
+  display: flex; gap: 8px; overflow-x: auto; padding: 0 16px 6px;
   scrollbar-width: none;
 }
 .soul-scroll::-webkit-scrollbar { display: none; }
@@ -278,8 +331,8 @@ body {
 
 /* ===== GRID MODEL LIST ===== */
 .grid-list {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
-  padding: 0 16px 120px;
+  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px;
+  padding: 0 10px 120px;
 }
 .back-btn {
   background: none; border: none; color: var(--text-dim);
@@ -585,64 +638,76 @@ body {
 
       <div class="hero-wrap">
         <div class="hero-track" id="heroTrack">
-          <div class="hero-card" style="background: linear-gradient(135deg, #0c0320 0%, #211555 50%, #0a0a18 100%)" onclick="openConfig('kling')">
-            <video class="hero-video" autoplay muted loop playsinline poster="https://cdn.higgsfield.ai/soul-style/acf8f24d-f567-4b7a-bede-aa63cb7c90dd.jpg">
-              <source src="https://cdn.higgsfield.ai/card/5b32b70e-556b-45b2-863f-bd7e68cab348.mp4" type="video/mp4">
-            </video>
-            <div class="hero-overlay"></div>
-            <div class="badge">HOT</div>
-            <h2>⚡ Kling 3.0 + O3</h2>
-            <p>5 моделей • Audio • до 10 секунд</p>
-          </div>
-          <div class="hero-card" style="background: linear-gradient(135deg, #061222 0%, #152d52 50%, #070c16 100%)" onclick="openConfig('veo')">
-            <video class="hero-video" autoplay muted loop playsinline poster="https://cdn.higgsfield.ai/soul-style/0e82377e-e3dd-48a8-94fd-04a4ed038be4.webp">
-              <source src="https://cdn.higgsfield.ai/card/da936978-f325-4206-ab97-e1e1407c5c55.mp4" type="video/mp4">
-            </video>
-            <div class="hero-overlay"></div>
-            <div class="badge">NEW</div>
-            <h2>🌟 Veo 3.1 + Audio</h2>
-            <p>Google AI • Синхронный звук</p>
-          </div>
-          <div class="hero-card" style="background: linear-gradient(135deg, #150808 0%, #3d1515 50%, #0a0404 100%)" onclick="goScreen('screen-soul')">
-            <video class="hero-video" autoplay muted loop playsinline poster="https://cdn.higgsfield.ai/soul-style/ce4416fd-37a7-42fe-af0d-10167d2cfa0a.webp">
-              <source src="https://cdn.higgsfield.ai/card/d4d86efb-42ba-42fb-b439-4dd4843b641c.mp4" type="video/mp4">
-            </video>
-            <div class="hero-overlay"></div>
-            <div class="badge">PRO</div>
-            <h2>👤 Soul 2.0</h2>
-            <p>AI Character Engine • 18 стилей</p>
-          </div>
-        </div>
+          <div class="hero-card" style="background:linear-gradient(135deg,#0c0320,#211555,#0a0a18)" onclick="openConfig('kling')">
+            <video class="hero-video" autoplay muted loop playsinline poster="https://cdn.higgsfield.ai/card/831011af-a320-40a8-bf95-ebc55ff59900.webp"><source src="https://cdn.higgsfield.ai/card/05d430f6-0d7d-4ded-834a-5d38c9a1e2bd.mp4" type="video/mp4"></video>
+            <div class="hero-overlay"></div><div class="badge">HOT</div><h2>⚡ Kling 3.0 Pro</h2><p>5 моделей • Audio • до 10 секунд</p></div>
+          <div class="hero-card" style="background:linear-gradient(135deg,#061222,#152d52,#070c16)" onclick="openConfig('veo')">
+            <video class="hero-video" autoplay muted loop playsinline poster="https://static.higgsfield.ai/ai-video/veo-3.1.webp"><source src="https://static.higgsfield.ai/ai-video/4.mp4" type="video/mp4"></video>
+            <div class="hero-overlay"></div><div class="badge">NEW</div><h2>🌟 Veo 3.1 + Audio</h2><p>Google AI • Синхронный звук</p></div>
+          <div class="hero-card" style="background:linear-gradient(135deg,#150505,#3d1010,#0a0404)" onclick="openConfig('sora')">
+            <video class="hero-video" autoplay muted loop playsinline poster="https://static.higgsfield.ai/ai-video/sora-2.webp"><source src="https://static.higgsfield.ai/ai-video/1.mp4" type="video/mp4"></video>
+            <div class="hero-overlay"></div><div class="badge">PRO</div><h2>🎬 Sora 2</h2><p>OpenAI • 4-12s • 1080p</p></div>
+          <div class="hero-card" style="background:linear-gradient(135deg,#0a1810,#103828,#060e08)" onclick="openConfig('seedance')">
+            <video class="hero-video" autoplay muted loop playsinline poster="https://static.higgsfield.ai/ai-video/seedance-1.5-pro.webp"><source src="https://static.higgsfield.ai/ai-video/5.mp4" type="video/mp4"></video>
+            <div class="hero-overlay"></div><div class="badge">NEW</div><h2>📽 Seedance Pro</h2><p>ByteDance • Audio-Visual Sync</p></div>
+          <div class="hero-card" style="background:linear-gradient(135deg,#181008,#382810,#0e0a06)" onclick="openConfig('wan')">
+            <video class="hero-video" autoplay muted loop playsinline poster="https://static.higgsfield.ai/ai-video/wan-2.5.webp"><source src="https://static.higgsfield.ai/ai-video/3.mp4" type="video/mp4"></video>
+            <div class="hero-overlay"></div><div class="badge">TOP</div><h2>💎 Wan 2.6</h2><p>Alibaba • Multi-shot • Audio</p></div>
+          <div class="hero-card" style="background:linear-gradient(135deg,#10081c,#281038,#08060e)" onclick="openConfig('minimax')">
+            <video class="hero-video" autoplay muted loop playsinline poster="https://static.higgsfield.ai/ai-video/2-thumbnail.webp"><source src="https://static.higgsfield.ai/ai-video/2.mp4" type="video/mp4"></video>
+            <div class="hero-overlay"></div><div class="badge">PRO</div><h2>🎥 MiniMax Hailuo</h2><p>Video-02 • 1080p • до 10с</p></div></div>
         <div class="hero-dots" id="heroDots">
           <div class="hero-dot active" onclick="setHero(0)"></div>
           <div class="hero-dot" onclick="setHero(1)"></div>
           <div class="hero-dot" onclick="setHero(2)"></div>
-        </div>
+          <div class="hero-dot" onclick="setHero(3)"></div>
+          <div class="hero-dot" onclick="setHero(4)"></div>
+          <div class="hero-dot" onclick="setHero(5)"></div></div>
       </div>
 
       <!-- MEDIA -->
       <div class="section-title">🎬 Media</div>
-      <div class="cat-grid" style="grid-template-columns: 1fr 1fr;">
-        <div class="cat-card" onclick="goScreen('screen-videos')"><span class="cat-icon">🎬</span><div class="cat-title">Create Video</div><div class="cat-sub">12 моделей</div></div>
-        <div class="cat-card" onclick="goScreen('screen-images')"><span class="cat-icon">🖼</span><div class="cat-title">Create Image</div><div class="cat-sub">13 моделей</div></div>
-        <div class="cat-card" onclick="goScreen('screen-image-edit')"><span class="cat-icon">✏️</span><div class="cat-title">Edit Image</div><div class="cat-sub">8 моделей</div></div>
-        <div class="cat-card" onclick="goScreen('screen-video-edit')"><span class="cat-icon">🎞</span><div class="cat-title">Edit Video</div><div class="cat-sub">3 модели</div></div>
+      <div class="cat-grid">
+        <div class="cat-card" onclick="goScreen('screen-videos')">
+          <video class="cat-vid" autoplay muted loop playsinline poster="https://static.higgsfield.ai/ai-video/kling-mini-thumbnail.webp"><source src="https://static.higgsfield.ai/ai-video/kling-mini.mp4" type="video/mp4"></video>
+          <div class="cat-ov"></div><span class="cat-icon">🎬</span><div class="cat-title">Create Video</div><div class="cat-sub">12 моделей</div></div>
+        <div class="cat-card" onclick="goScreen('screen-images')">
+          <img class="cat-bg" src="https://cdn.higgsfield.ai/card/02a55528-f1b7-4cf7-a176-4e1ea9171eee.webp" loading="lazy">
+          <div class="cat-ov"></div><span class="cat-icon">🖼</span><div class="cat-title">Create Image</div><div class="cat-sub">14 моделей</div></div>
+        <div class="cat-card" onclick="goScreen('screen-image-edit')">
+          <img class="cat-bg" src="https://static.higgsfield.ai/ai-video/grid-2.webp" loading="lazy">
+          <div class="cat-ov"></div><span class="cat-icon">✏️</span><div class="cat-title">Edit Image</div><div class="cat-sub">8 моделей</div></div>
+        <div class="cat-card" onclick="goScreen('screen-video-edit')">
+          <video class="cat-vid" autoplay muted loop playsinline poster="https://cdn.higgsfield.ai/card/424836bc-64a8-4b6e-b52c-384673212340.webp"><source src="https://cdn.higgsfield.ai/card/a2271541-664e-4c1e-97a3-cf14309c1786.mp4" type="video/mp4"></video>
+          <div class="cat-ov"></div><span class="cat-icon">🎞</span><div class="cat-title">Edit Video</div><div class="cat-sub">3 модели</div></div>
       </div>
 
       <!-- AI BOTS -->
       <div class="section-title">🤖 AI Bots</div>
-      <div class="cat-grid" style="grid-template-columns: 1fr 1fr;">
-        <div class="cat-card" onclick="openChat('ai_chat')"><span class="cat-icon">💬</span><div class="cat-title">AI Chat</div><div class="cat-sub">4 модели</div></div>
-        <div class="cat-card" onclick="openChat('ai_coder')"><span class="cat-icon">👨‍💻</span><div class="cat-title">AI Coder</div><div class="cat-sub">6 моделей</div></div>
+      <div class="cat-grid">
+        <div class="cat-card" onclick="openChat('ai_chat')">
+          <img class="cat-bg" src="https://images.unsplash.com/photo-1677442136019-21780ecad995?w=400&h=200&fit=crop&q=80" loading="lazy">
+          <div class="cat-ov"></div><span class="cat-icon">💬</span><div class="cat-title">AI Chat • GPT-5</div><div class="cat-sub">ChatGPT, Gemini, Grok, DeepSeek</div></div>
+        <div class="cat-card" onclick="openChat('ai_coder')">
+          <img class="cat-bg" src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=400&h=160&fit=crop" loading="lazy">
+          <div class="cat-ov"></div><span class="cat-icon">👨‍💻</span><div class="cat-title">AI Coder • Opus 4</div><div class="cat-sub">Claude, GPT, Gemini, Codex, DeepSeek</div></div>
       </div>
 
       <!-- FREE -->
       <div class="section-title">🆓 Free (ежедневно)</div>
-      <div class="free-grid" style="grid-template-columns: 1fr 1fr;">
-        <div class="free-card" onclick="openChat('gpt5_free')"><span class="cat-icon">💬</span><div class="cat-title">GPT-5.2 Chat</div><div class="cat-sub" id="freeChatLeft">30 ост.</div></div>
-        <div class="free-card" onclick="openChat('grok4_free')"><span class="cat-icon">🤖</span><div class="cat-title">Grok-4 Chat</div><div class="cat-sub" id="freeChatLeft2">30 ост.</div></div>
-        <div class="free-card" onclick="openModel('free_image','image')"><span class="cat-icon">🖼</span><div class="cat-title">Фото</div><div class="cat-sub" id="freeImageLeft">1 ост.</div></div>
-        <div class="free-card" onclick="openModel('free_video','video')"><span class="cat-icon">🎬</span><div class="cat-title">Видео</div><div class="cat-sub" id="freeVideoLeft">1 ост.</div></div>
+      <div class="free-grid">
+        <div class="free-card" onclick="openChat('gpt5_free')">
+          <img class="cat-bg" src="https://images.unsplash.com/photo-1677442136019-21780ecad995?w=300&h=120&fit=crop&q=70" loading="lazy">
+          <div class="cat-ov"></div><span class="cat-icon">💬</span><div class="cat-title">GPT-5.2 Chat</div><div class="cat-sub" id="freeChatLeft">30 ост.</div></div>
+        <div class="free-card" onclick="openChat('grok4_free')">
+          <img class="cat-bg" src="https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=300&h=120&fit=crop&q=70" loading="lazy">
+          <div class="cat-ov"></div><span class="cat-icon">🤖</span><div class="cat-title">Grok-4 Chat</div><div class="cat-sub" id="freeChatLeft2">30 ост.</div></div>
+        <div class="free-card" onclick="openModel('free_image','image')">
+          <img class="cat-bg" src="https://images.unsplash.com/photo-1547891654-e66ed7ebb968?w=300&h=120&fit=crop&q=70" loading="lazy">
+          <div class="cat-ov"></div><span class="cat-icon">🖼</span><div class="cat-title">Фото</div><div class="cat-sub" id="freeImageLeft">1 ост.</div></div>
+        <div class="free-card" onclick="openModel('free_video','video')">
+          <img class="cat-bg" src="https://images.unsplash.com/photo-1536240478700-b869070f9279?w=300&h=120&fit=crop&q=70" loading="lazy">
+          <div class="cat-ov"></div><span class="cat-icon">🎬</span><div class="cat-title">Видео</div><div class="cat-sub" id="freeVideoLeft">1 ост.</div></div>
       </div>
 
       <!-- TRENDING -->
@@ -790,7 +855,7 @@ body {
     <button class="tab-btn" data-tab="chat" onclick="switchTab('chat')"><div class="tab-icon">💬</div><div class="tab-label">Chat</div></button>
     <button class="tab-btn" data-tab="profile" onclick="switchTab('profile')"><div class="tab-icon">●</div><div class="tab-label">Profile</div></button>
   </div>
-</div>
+
 
 <script>
 // ═══════════════════════════════════════════
@@ -1160,17 +1225,76 @@ let selectedSoul = null;
 // ═══════════════════════════════════════════
 // RENDER
 // ═══════════════════════════════════════════
-function renderTrending() {
-  document.getElementById('trendingScroll').innerHTML = VIDEO_MODELS.slice(0,5).map(m => `
-    <div class="model-card" onclick="openConfig('${m.id}')">
-      ${m.badge ? `<div class="m-badge" style="background:${m.badgeBg||'var(--accent-soft)'};color:${m.badgeColor||'var(--accent)'}">${m.badge}</div>` : ''}
-      <div class="m-icon">${m.icon}</div>
-      <div class="m-name">${m.name}</div>
-      <div class="m-desc">${m.desc}</div>
-      <div class="m-price">${m.price}</div>
-    </div>
-  `).join('');
+// ═══ MEDIA MAP & CARD BUILDER ═══
+const M = {
+  // VIDEO (unique poster + video per model)
+  sora:{p:'https://static.higgsfield.ai/ai-video/sora-2.webp',v:'https://static.higgsfield.ai/ai-video/1.mp4'},
+  kling:{p:'https://static.higgsfield.ai/ai-video/kling-3.webp',v:'https://static.higgsfield.ai/ai-video/kling-mini.mp4'},
+  minimax:{p:'https://static.higgsfield.ai/ai-video/2-thumbnail.webp',v:'https://static.higgsfield.ai/ai-video/2.mp4'},
+  wan:{p:'https://static.higgsfield.ai/ai-video/wan-2.5.webp',v:'https://static.higgsfield.ai/ai-video/3.mp4'},
+  veo:{p:'https://static.higgsfield.ai/ai-video/veo-3.1.webp',v:'https://static.higgsfield.ai/ai-video/4.mp4'},
+  seedance:{p:'https://static.higgsfield.ai/ai-video/seedance-1.5-pro.webp',v:'https://static.higgsfield.ai/ai-video/5.mp4'},
+  pixverse:{p:'https://static.higgsfield.ai/ai-video/mixed-media-mini-thumbnail.webp',v:'https://static.higgsfield.ai/ai-video/mixed-media-mini.mp4'},
+  dreamina:{p:'https://static.higgsfield.ai/ai-video/4-thumbnail.webp'},
+  pika:{p:'https://static.higgsfield.ai/ai-video/5-thumbnail.webp'},
+  runway:{p:'https://static.higgsfield.ai/ai-video/3-thumbnail.webp'},
+  kandinsky:{p:'https://cdn.higgsfield.ai/card/424836bc-64a8-4b6e-b52c-384673212340.webp'},
+  grok:{p:'https://static.higgsfield.ai/ai-video/grok-mini-thumbnail.webp',v:'https://static.higgsfield.ai/ai-video/grok-mini.mp4'},
+  // IMAGE — model-specific from higgsfield pages
+  seedream:{p:'https://cdn.higgsfield.ai/card/02a55528-f1b7-4cf7-a176-4e1ea9171eee.webp'},
+  dreamina_img:{p:'https://static.higgsfield.ai/ai-video/cinema-feature-1.webp'},
+  banana:{p:'https://static.higgsfield.ai/ai-video/cinema-feature-2.webp'},
+  imagen4:{p:'https://static.higgsfield.ai/ai-video/cinema-feature-3.webp'},
+  gemini:{p:'https://static.higgsfield.ai/ai-video/grid-4.webp'},
+  dalle:{p:'https://static.higgsfield.ai/ai-video/cinema-feature-5.webp'},
+  gpt_img:{p:'https://static.higgsfield.ai/ai-video/grid-1.webp'},
+  ideogram:{p:'https://static.higgsfield.ai/ai-video/grid-2.webp'},
+  runway_img:{p:'https://static.higgsfield.ai/ai-video/grid-3.webp'},
+  stable:{p:'https://static.higgsfield.ai/ai-video/showcase-3-v3-thumbnail.webp'},
+  wan_img:{p:'https://static.higgsfield.ai/ai-video/showcase-5-v3-thumbnail.webp'},
+  grok_img:{p:'https://static.higgsfield.ai/ai-video/cinema-feature-4.webp'},
+  reve:{p:'https://static.higgsfield.ai/ai-video/showcase-1-v3-thumbnail.webp'},
+  soul_img:{p:'https://cdn.higgsfield.ai/card/c2124f76-f96f-4df1-870c-03e5ad15fae4.webp'},
+  // VIDEO EDIT
+  kling_o1_edit:{p:'https://static.higgsfield.ai/ai-video/kling-o1.webp'},
+  kling_o3_edit:{p:'https://static.higgsfield.ai/ai-video/kling-2.6.webp'},
+  gen4_aleph:{p:'https://static.higgsfield.ai/ai-video/showcase-2-v3-thumbnail.webp'},
+  // IMAGE EDIT
+  seedream_edit:{p:'https://static.higgsfield.ai/ai-video/showcase-4-v3-thumbnail.webp'},
+  dreamina_edit:{p:'https://static.higgsfield.ai/ai-video/main-cinema-thumbnail.webp'},
+  banana_edit:{p:'https://static.higgsfield.ai/ai-video/director-2-mini-thumbnail.webp'},
+  banana_ultra_edit:{p:'https://static.higgsfield.ai/ai-video/marketing-mini-thumbnail.webp'},
+  wan_edit:{p:'https://static.higgsfield.ai/ai-video/content-thumbnail.webp'},
+  gpt_edit:{p:'https://static.higgsfield.ai/ai-video/ecommerce-1-mini-thumbnail.webp'},
+  gemini_edit:{p:'https://cdn.higgsfield.ai/card/1c566079-eba7-446e-9af1-0da50d31227c.webp'},
+  reve_edit:{p:'https://cdn.higgsfield.ai/card/831011af-a320-40a8-bf95-ebc55ff59900.webp'},
+};
+function vcard(m, type) {
+  const d = M[m.id] || {};
+  const p = d.p || ''; const v = d.v || '';
+  const audioB = m.audio ? '<div class="vc-tag aud">🔊</div>' : '';
+  const durT = (m.durs||[]).length ? '⏱'+(m.durs||[]).join('/')+'s' : '';
+  const qualsT = (m.quals||[]).slice(0,2).join('/');
+  const badge = m.badge ? '<div class="vc-hot" style="background:'+(m.badgeBg||'var(--accent-soft)')+';color:'+(m.badgeColor||'var(--accent)')+'">'+m.badge+'</div>' : '';
+  const tc = type==='video'?'vid':type==='image'?'img':'edt';
+  const pi = type==='video'?'▶':type==='image'?(((m.modes||[]).some(x=>x.includes('Image→')))?'🖼':'📝'):'✂️';
+  const media = v ?
+    '<video class="vc-vid" autoplay muted loop playsinline poster="'+p+'"><source src="'+v+'" type="video/mp4"></video>' :
+    (p ? '<img class="vc-poster" src="'+p+'" loading="lazy">' : '');
+  return '<div class="vcard" onclick="openConfig(\''+m.id+'\')">'+media+
+    '<div class="vc-grad"></div><div class="vc-play">'+pi+'</div>'+
+    '<div class="vc-badges"><div class="vc-tag '+tc+'">'+type+'</div>'+audioB+'</div>'+badge+
+    '<div class="vc-info"><div class="vc-name">'+m.icon+' '+m.name+'</div>'+
+    '<div class="vc-subs">'+(m.subs||[]).join(' · ')+'</div>'+
+    '<div class="vc-meta"><span>'+durT+'</span><span>'+qualsT+'</span><span class="vc-price">'+m.price+'</span></div></div></div>';
 }
+
+function renderTrending() {
+  document.getElementById('trendingScroll').innerHTML = VIDEO_MODELS.slice(0,6).map(m => vcard(m,'video')).join('');
+}
+
+
+
 function renderSoulPreview() {
   document.getElementById('soulScroll').innerHTML = SOUL_STYLES.slice(0,6).map(s => `
     <div class="soul-card" onclick="goScreen('screen-soul')">
@@ -1180,47 +1304,26 @@ function renderSoulPreview() {
   `).join('');
 }
 function renderVideoGrid() {
-  document.getElementById('videoGrid').innerHTML = VIDEO_MODELS.map(m => {
-    const audioB = m.audio ? ' 🔊' : '';
-    const durT = (m.durs||[]).join('/') + 's';
-    return `
-    <div class="model-card" onclick="openConfig('${m.id}')" style="min-width:0">
-      ${m.badge ? `<div class="m-badge" style="background:${m.badgeBg||'var(--accent-soft)'};color:${m.badgeColor||'var(--accent)'}">${m.badge}</div>` : ''}
-      <div class="m-icon">${m.icon}</div>
-      <div class="m-name">${m.name}${audioB}</div>
-      <div class="m-desc">${(m.subs||[]).join(' • ')}<br><span style="font-size:9px">⏱${durT} · ${(m.quals||[]).join('/')}</span></div>
-      <div class="m-price">${m.price}</div>
-    </div>`;
-  }).join('');
+  document.getElementById('videoGrid').innerHTML = VIDEO_MODELS.map(m => vcard(m,'video')).join('');
 }
+
+
+
 function renderImageGrid() {
-  document.getElementById('imageGrid').innerHTML = IMAGE_MODELS.map(m => {
-    const subsLine = m.subs && m.subs.length > 1 ? '<br><span class="m-subs">' + m.subs.join(' · ') + '</span>' : '';
-    return '<div class="model-card" onclick="openConfig(\'' + m.id + '\')" style="min-width:0">' +
-      '<div class="m-icon">' + m.icon + '</div>' +
-      '<div class="m-name">' + m.name + '</div>' +
-      '<div class="m-desc">' + m.desc + subsLine + '</div>' +
-      '<div class="m-price">' + m.price + '</div></div>';
-  }).join('');
+  document.getElementById('imageGrid').innerHTML = IMAGE_MODELS.map(m => vcard(m,'image')).join('');
 }
+
+
 function renderVideoEditGrid() {
-  document.getElementById('videoEditGrid').innerHTML = VIDEO_EDIT_MODELS.map(m =>
-    '<div class="model-card" onclick="openConfig(\'' + m.id + '\')" style="min-width:0">' +
-    '<div class="m-icon">' + m.icon + '</div>' +
-    '<div class="m-name">' + m.name + '</div>' +
-    '<div class="m-desc">' + m.desc + '</div>' +
-    '<div class="m-price">' + m.price + '</div></div>'
-  ).join('');
+  document.getElementById('videoEditGrid').innerHTML = VIDEO_EDIT_MODELS.map(m => vcard(m,'edit')).join('');
 }
+
+
 function renderImageEditGrid() {
-  document.getElementById('imageEditGrid').innerHTML = IMAGE_EDIT_MODELS.map(m =>
-    '<div class="model-card" onclick="openConfig(\'' + m.id + '\')" style="min-width:0">' +
-    '<div class="m-icon">' + m.icon + '</div>' +
-    '<div class="m-name">' + m.name + '</div>' +
-    '<div class="m-desc">' + m.desc + '</div>' +
-    '<div class="m-price">' + m.price + '</div></div>'
-  ).join('');
+  document.getElementById('imageEditGrid').innerHTML = IMAGE_EDIT_MODELS.map(m => vcard(m,'edit')).join('');
 }
+
+
 function renderSoulGrid(filter='') {
   const filtered = filter ? SOUL_STYLES.filter(s => s.name.toLowerCase().includes(filter.toLowerCase())) : SOUL_STYLES;
   document.getElementById('soulGrid').innerHTML = filtered.map(s => `
