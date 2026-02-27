@@ -1876,7 +1876,7 @@ let coderBusy = false;
 // ── API URL — ЗАМЕНИТЬ НА ВАШ ──
 const CHAT_API_URL = (window.location.hostname === 'localhost')
   ? 'http://localhost:5050'
-  : 'https://YOUR_DOMAIN/api';  // ← сюда ваш домен
+  : 'https://127.0.0.1/api';  // ← сюда ваш домен
 
 function startChat(id, name, sub) {
   currentChatModel = {id, name, sub};
