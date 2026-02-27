@@ -155,15 +155,17 @@ body {
   content: ''; position: absolute; inset: 0;
   background: radial-gradient(ellipse at 70% 15%, rgba(168,130,255,0.12) 0%, transparent 65%);
 }
+.hero-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; opacity: 0.4; pointer-events: none; }
+.hero-overlay { position: absolute; inset: 0; background: linear-gradient(0deg, rgba(0,0,0,0.7) 0%, transparent 50%, rgba(0,0,0,0.3) 100%); z-index: 1; pointer-events: none; }
 .hero-card .badge {
   position: absolute; top: 14px; right: 14px;
   background: rgba(255,255,255,0.07); border-radius: 7px;
   padding: 4px 11px; font-size: 9px; font-weight: 700;
   letter-spacing: 1.2px; text-transform: uppercase;
-  color: rgba(255,255,255,0.55); backdrop-filter: blur(10px);
+  color: rgba(255,255,255,0.55); backdrop-filter: blur(10px); z-index: 2;
 }
-.hero-card h2 { font-size: 26px; font-weight: 800; letter-spacing: -0.5px; position: relative; }
-.hero-card p { font-size: 13px; color: var(--text-dim); margin-top: 4px; position: relative; font-weight: 400; }
+.hero-card h2 { font-size: 26px; font-weight: 800; letter-spacing: -0.5px; position: relative; z-index: 2; }
+.hero-card p { font-size: 13px; color: var(--text-dim); margin-top: 4px; position: relative; font-weight: 400; z-index: 2; }
 .hero-dots {
   display: flex; gap: 6px; justify-content: center; padding: 12px 0 4px;
 }
@@ -583,20 +585,32 @@ body {
 
       <div class="hero-wrap">
         <div class="hero-track" id="heroTrack">
-          <div class="hero-card" style="background: linear-gradient(135deg, #0c0320 0%, #211555 50%, #0a0a18 100%)">
-            <div class="badge">NEW</div>
-            <h2>Soul 2.0</h2>
-            <p>AI Character Engine • 100+ стилей</p>
-          </div>
-          <div class="hero-card" style="background: linear-gradient(135deg, #061222 0%, #152d52 50%, #070c16 100%)">
+          <div class="hero-card" style="background: linear-gradient(135deg, #0c0320 0%, #211555 50%, #0a0a18 100%)" onclick="openConfig('kling')">
+            <video class="hero-video" autoplay muted loop playsinline poster="https://cdn.higgsfield.ai/soul-style/acf8f24d-f567-4b7a-bede-aa63cb7c90dd.jpg">
+              <source src="https://cdn.higgsfield.ai/card/5b32b70e-556b-45b2-863f-bd7e68cab348.mp4" type="video/mp4">
+            </video>
+            <div class="hero-overlay"></div>
             <div class="badge">HOT</div>
-            <h2>Kling 3.0 Pro</h2>
-            <p>Cinematic Video • до 15 секунд</p>
+            <h2>⚡ Kling 3.0 + O3</h2>
+            <p>5 моделей • Audio • до 10 секунд</p>
           </div>
-          <div class="hero-card" style="background: linear-gradient(135deg, #150808 0%, #3d1515 50%, #0a0404 100%)">
+          <div class="hero-card" style="background: linear-gradient(135deg, #061222 0%, #152d52 50%, #070c16 100%)" onclick="openConfig('veo')">
+            <video class="hero-video" autoplay muted loop playsinline poster="https://cdn.higgsfield.ai/soul-style/0e82377e-e3dd-48a8-94fd-04a4ed038be4.webp">
+              <source src="https://cdn.higgsfield.ai/card/da936978-f325-4206-ab97-e1e1407c5c55.mp4" type="video/mp4">
+            </video>
+            <div class="hero-overlay"></div>
+            <div class="badge">NEW</div>
+            <h2>🌟 Veo 3.1 + Audio</h2>
+            <p>Google AI • Синхронный звук</p>
+          </div>
+          <div class="hero-card" style="background: linear-gradient(135deg, #150808 0%, #3d1515 50%, #0a0404 100%)" onclick="goScreen('screen-soul')">
+            <video class="hero-video" autoplay muted loop playsinline poster="https://cdn.higgsfield.ai/soul-style/ce4416fd-37a7-42fe-af0d-10167d2cfa0a.webp">
+              <source src="https://cdn.higgsfield.ai/card/d4d86efb-42ba-42fb-b439-4dd4843b641c.mp4" type="video/mp4">
+            </video>
+            <div class="hero-overlay"></div>
             <div class="badge">PRO</div>
-            <h2>Veo 3.1 + Audio</h2>
-            <p>Google Video AI • Синхронный звук</p>
+            <h2>👤 Soul 2.0</h2>
+            <p>AI Character Engine • 18 стилей</p>
           </div>
         </div>
         <div class="hero-dots" id="heroDots">
@@ -940,133 +954,173 @@ if (tg) {
 // DATA
 // ═══════════════════════════════════════════
 const VIDEO_MODELS = [
-  {id:"sora",icon:"🎬",name:"Sora 2",badge:"PRO",badgeColor:"var(--accent)",badgeBg:"var(--accent-soft)",desc:"OpenAI • 4-12s",price:"от 80₽",
+  {id:"sora",icon:"🎬",name:"Sora 2",badge:"PRO",badgeColor:"var(--accent)",badgeBg:"var(--accent-soft)",desc:"OpenAI • 4-12s • 1080p",price:"от 80₽",
    subs:["Sora 2 Pro","Sora 2 Basic"],modes:["📝 Text→Video","🖼 Image→Video"],
-   ratios:["720×1280","1280×720","1024×1792","1792×1024"],durs:[4,8,12],quals:["720p","1080p"],audio:false},
+   ratios:["720×1280","1280×720","1024×1792","1792×1024"],durs:[4,8,12],quals:["720p","1080p"],audio:false,
+   features:["Image→Video: 1 фото"]},
 
-  {id:"kling",icon:"⚡",name:"Kling",badge:"HOT",badgeColor:"var(--red)",badgeBg:"rgba(248,113,113,0.15)",desc:"Kuaishou • 5-10s",price:"от 56₽",
+  {id:"kling",icon:"⚡",name:"Kling",badge:"HOT",badgeColor:"var(--red)",badgeBg:"rgba(248,113,113,0.15)",desc:"Kuaishou • 5-10s • Audio",price:"от 56₽",
    subs:["2.5 Turbo","2.6 Pro","3.0 Pro","O1 Video","O3 Video"],modes:["📝 Text→Video","🖼 Image→Video"],
-   ratios:["16:9","9:16","1:1"],durs:[5,10],quals:[],audio:true},
+   ratios:["16:9","9:16","1:1"],durs:[5,10],quals:["720p","1080p"],audio:true,
+   features:["🔊 Audio: 2.6/3.0/O3","Image→Video: 1-2 фото"]},
 
-  {id:"minimax",icon:"🔥",name:"MiniMax",badge:null,desc:"Hailuo 2.3",price:"от 48₽",
+  {id:"minimax",icon:"🔥",name:"MiniMax",badge:null,desc:"Hailuo 2.3 • 6-10s",price:"от 48₽",
    subs:["Video-02","Hailuo 2.3"],modes:["📝 Text→Video","🖼 Image→Video"],
-   ratios:[],durs:[],quals:[],audio:false},
+   ratios:["16:9","9:16","1:1"],durs:[5,10],quals:["720p","1080p"],audio:false,
+   features:["Prompt Expansion: On/Off"]},
 
-  {id:"wan",icon:"💎",name:"Wan",badge:"NEW",badgeColor:"var(--green)",badgeBg:"rgba(91,235,160,0.15)",desc:"Alibaba • 540-1080p",price:"от 40₽",
+  {id:"wan",icon:"💎",name:"Wan",badge:"NEW",badgeColor:"var(--green)",badgeBg:"rgba(91,235,160,0.15)",desc:"Alibaba • Audio sync",price:"от 40₽",
    subs:["Wan 2.5","Wan 2.6"],modes:["📝 Text→Video","🖼 Image→Video"],
-   ratios:["16:9","9:16","4:3","3:4","1:1","21:9"],durs:[],quals:["540p","720p","1080p"],audio:false},
+   ratios:["16:9","9:16","1:1"],durs:[5,10],quals:["720p","1080p"],audio:true,
+   features:["🔊 Audio: Wan 2.6"]},
 
   {id:"veo",icon:"🌟",name:"Veo 3.1",badge:null,desc:"Google • Audio",price:"от 56₽",
    subs:["3.1 Base","3.1 Fast"],modes:["📝 Text→Video","🖼 Image→Video"],
-   ratios:[],durs:[],quals:[],audio:true},
+   ratios:["16:9","9:16","1:1"],durs:[4,5,8],quals:["720p","1080p"],audio:true,
+   features:["🔊 Audio Generation"]},
 
-  {id:"seedance",icon:"📽",name:"Seedance",badge:null,desc:"ByteDance • 540-1080p",price:"от 32₽",
-   subs:["Seedance Pro/Fast","Dreamina Pro/Fast","Vidu Premium"],modes:["📝 Text→Video","🖼 Image→Video"],
-   ratios:["16:9","9:16","4:3","3:4","1:1","21:9"],durs:[],quals:["540p","720p","1080p"],audio:false},
+  {id:"seedance",icon:"📽",name:"Seedance",badge:null,desc:"ByteDance • 4-12s",price:"от 32₽",
+   subs:["Seedance Pro","Seedance Fast","Vidu Premium"],modes:["📝 Text→Video","🖼 Image→Video"],
+   ratios:["16:9","9:16","1:1","4:3","3:4"],durs:[4,8,12],quals:["720p","1080p"],audio:true,
+   features:["🔊 Audio: Vidu Premium"]},
 
-  {id:"pixverse",icon:"✨",name:"Pixverse",badge:null,desc:"V5.5 • 5-10s",price:"от 24₽",
+  {id:"pixverse",icon:"✨",name:"Pixverse",badge:null,desc:"V5.5 • Creative",price:"от 24₽",
    subs:["V5.5"],modes:["📝 Text→Video","🖼 Image→Video"],
-   ratios:[],durs:[5,8,10],quals:["360p","540p","720p","1080p"],audio:true},
+   ratios:["16:9","9:16","1:1","4:3","3:4"],durs:[5,8,10],quals:["720p","1080p"],audio:true,
+   features:["🔊 Audio: On/Off","Prompt Enhance: Auto/Yes/No"]},
 
-  {id:"dreamina",icon:"🎭",name:"Dreamina",badge:null,desc:"ByteDance V3 • 540-1080p",price:"от 32₽",
+  {id:"dreamina",icon:"🎭",name:"Dreamina",badge:null,desc:"ByteDance V3",price:"от 32₽",
    subs:["Dreamina Pro","Dreamina Fast"],modes:["📝 Text→Video","🖼 Image→Video"],
-   ratios:["16:9","9:16","4:3","3:4","1:1","21:9"],durs:[],quals:["540p","720p","1080p"],audio:false},
+   ratios:["16:9","9:16","1:1","4:3","3:4"],durs:[4,8,12],quals:["720p","1080p"],audio:false,
+   features:[]},
 
-  {id:"pika",icon:"🎞",name:"Pika",badge:null,desc:"V2.2 • 5-10s",price:"от 32₽",
+  {id:"pika",icon:"🎞",name:"Pika",badge:null,desc:"V2.2 • Stable",price:"от 32₽",
    subs:["V2.2"],modes:["📝 Text→Video","🖼 Image→Video"],
-   ratios:[],durs:[5,10],quals:[],audio:false},
+   ratios:["1280×720","720×1280"],durs:[5,10],quals:["720p"],audio:false,
+   features:[]},
 
   {id:"runway",icon:"🚀",name:"Runway",badge:"TOP",badgeColor:"var(--yellow)",badgeBg:"rgba(251,191,36,0.15)",desc:"Gen-4 Turbo",price:"от 64₽",
    subs:["Gen-4 Turbo"],modes:["🖼 Image→Video"],
-   ratios:["16:9","4:3","1:1","3:4","9:16"],durs:[],quals:[],audio:false},
+   ratios:["16:9","9:16","1:1","4:3","3:4"],durs:[5,10],quals:["720p","1080p"],audio:false,
+   features:["⚠️ Только Image→Video"]},
 
   {id:"kandinsky",icon:"🌊",name:"Kandinsky",badge:"RU",badgeColor:"var(--blue)",badgeBg:"rgba(96,165,250,0.15)",desc:"Sber • Русский",price:"от 32₽",
-   subs:["Kandinsky"],modes:["📝 Text→Video","🖼 Image→Video"],
-   ratios:[],durs:[],quals:["512p","1024p"],audio:false},
+   subs:["5 Pro"],modes:["📝 Text→Video","🖼 Image→Video"],
+   ratios:["1:1"],durs:[5],quals:["512p","1024p"],audio:false,
+   features:[]},
 
-  {id:"grok_vid",icon:"🤖",name:"Grok 2",badge:null,desc:"X AI • 6-10s",price:"от 80₽",
+  {id:"grok",icon:"🤖",name:"Grok 2",badge:null,desc:"X AI • 6-10s",price:"от 80₽",
    subs:["Grok 2"],modes:["📝 Text→Video","🖼 Image→Video"],
-   ratios:["1:1","16:9","9:16"],durs:[6,10],quals:["480p","720p"],audio:false},
+   ratios:["1:1","16:9","9:16"],durs:[6,10],quals:["480p","720p"],audio:false,
+   features:[]},
 ];
 const IMAGE_MODELS = [
   {id:"seedream",icon:"🌱",name:"Seedream",desc:"4K • ByteDance",price:"от 16₽",
    subs:["Seedream 4.0","Seedream 4.5"],modes:["📝 Text→Image"],
-   ratios:["1:1","9:16","16:9","3:4","4:3","4K"]},
+   ratios:["1:1","16:9","9:16","4:3","3:4"],quals:["2048×2048","2560×1440","1440×2560"],
+   features:["Seedream 4.5: до 14 картинок"]},
 
   {id:"dreamina_img",icon:"🎭",name:"Dreamina",desc:"Реализм",price:"от 16₽",
    subs:["Dreamina 3.0","Dreamina 3.1"],modes:["📝 Text→Image"],
-   ratios:["1:1","9:16","16:9","3:4","4:3","2K"]},
+   ratios:["1:1","16:9","9:16"],quals:["1024px","2048px"],
+   features:[]},
 
   {id:"banana",icon:"🍌",name:"Nano Banana",desc:"Fast • Ultra",price:"от 8₽",
    subs:["Nano Banana","Nano Banana Ultra"],modes:["📝 Text→Image"],
-   ratios:["1:1","3:2","2:3","3:4","4:3","4:5","5:4","9:16","16:9","21:9"],quals:["4K","8K"]},
+   ratios:["1:1","3:2","2:3","3:4","4:3","4:5","5:4","9:16","16:9","21:9"],quals:["1024px"],
+   features:[]},
 
   {id:"imagen4",icon:"🔥",name:"Imagen4",desc:"Google",price:"от 16₽",
    subs:["Imagen4 Fast","Imagen4 Ultra"],modes:["📝 Text→Image"],
-   ratios:["1:1","3:4","4:3","9:16","16:9"],quals:["×1","×2","×3","×4"]},
+   ratios:["1:1","3:4","4:3","9:16","16:9"],quals:["1024px"],
+   features:["Ultra: количество 1-4 шт"]},
 
   {id:"gemini",icon:"💎",name:"Gemini",desc:"Google AI",price:"от 24₽",
    subs:["Gemini 2.5 Flash","Gemini 3 Pro"],modes:["📝 Text→Image"],
-   ratios:["1:1","3:2","2:3","3:4","4:3","4:5","5:4","9:16","16:9","21:9"]},
+   ratios:["1:1","16:9","9:16"],quals:["1024px"],
+   features:[]},
 
   {id:"dalle",icon:"🎨",name:"DALL-E 3",desc:"OpenAI",price:"от 24₽",
    subs:["DALL-E 3"],modes:["📝 Text→Image"],
-   ratios:["1024×1024","1024×1792","1792×1024"],quals:["Standard","HD"],styles:["Vivid","Natural"]},
+   ratios:["1024×1024","1024×1792","1792×1024"],quals:["Standard","HD"],
+   features:["🎨 Стиль: Vivid / Natural","Качество: Standard / HD"]},
+
+  {id:"gpt_img",icon:"💡",name:"GPT Image 1.5",desc:"OpenAI",price:"от 32₽",
+   subs:["GPT Image 1.5"],modes:["🖼 Image→Image"],
+   ratios:["1024×1024","1024×1536","1536×1024"],quals:["Low","Medium","High"],
+   features:["📷 Требуются фото","Качество: Low/Medium/High"]},
 
   {id:"ideogram",icon:"🔤",name:"Ideogram 3",desc:"Text+Image",price:"от 16₽",
    subs:["V3 Turbo","V3 Quality"],modes:["📝 Text→Image","🖼 Image→Image"],
-   ratios:["1:1","3:4","4:3","16:9","9:16"],styles:["Auto","General","Realistic","Design"]},
+   ratios:["1:1","3:4","4:3","16:9","9:16","10:16","16:10"],quals:["1024px"],
+   features:["🎨 Стили: Auto/General/Realistic/Design","📎 Референсные фото: опционально"]},
 
   {id:"runway_img",icon:"🚀",name:"Runway Gen4",desc:"Img Gen",price:"от 24₽",
    subs:["Gen4 Turbo","Gen4 Base"],modes:["📝 Text→Image","🖼 Image→Image"],
-   ratios:["1:1","3:4","4:3","16:9","9:16"],quals:["720p","1080p"]},
+   ratios:["1:1","16:9","9:16"],quals:["1024px"],
+   features:[]},
 
   {id:"stable",icon:"🖼",name:"Stable Diff 3.5",desc:"Stability AI",price:"от 16₽",
-   subs:["SD Large","SD Large Turbo","SD Medium"],modes:["📝 Text→Image","🖼 Image→Image"],
-   ratios:[]},
+   subs:["SD Large","SD Large Turbo","SD Medium"],modes:["📝 Text→Image"],
+   ratios:["1:1","16:9","9:16","4:3","3:4"],quals:["1024px"],
+   features:[]},
 
   {id:"wan_img",icon:"💎",name:"Wan AI Image",desc:"Alibaba",price:"от 16₽",
    subs:["Wan 2.5","Wan 2.6"],modes:["📝 Text→Image"],
-   ratios:[]},
+   ratios:["1:1","16:9","9:16"],quals:["1024px"],
+   features:[]},
 
   {id:"grok_img",icon:"🤖",name:"Grok 2 Image",desc:"X AI",price:"от 24₽",
    subs:["Grok 2"],modes:["📝 Text→Image"],
-   ratios:["1:1","1:2","2:1","2:3","3:2","3:4","4:3","9:16","9:20"]},
+   ratios:["1:1"],quals:["1024px"],
+   features:[]},
 
   {id:"reve",icon:"✏️",name:"Reve Image",desc:"Design",price:"от 12₽",
    subs:["Reve Image"],modes:["📝 Text→Image"],
-   ratios:["1:1","16:9","9:16","3:4","4:3","21:9","9:21"]},
+   ratios:["1:1","16:9"],quals:["1024px"],
+   features:[]},
 
   {id:"soul_img",icon:"👤",name:"Soul 2.0",desc:"Character AI",price:"от 24₽",
    subs:["Soul 2.0"],modes:["🖼 Image→Image"],
-   ratios:["960×1696","1088×1632","1536×1536","1632×1088","1696×960","2048×1152"],quals:["Medium","High"]},
-
+   ratios:["960×1696","1088×1632","1152×1536","1536×1536","1536×2048","2048×1152","2048×1536"],quals:["HD"],
+   features:["📷 Требуется фото","18 стилей Soul Styles"]},
 ];
 const VIDEO_EDIT_MODELS = [
   {id:"kling_o1_edit",icon:"⚡",name:"Kling O1 Editor",desc:"Video Edit",price:"от 80₽",
-   subs:["O1 Editor"],modes:["🎬 Video→Video"],ratios:[]},
+   subs:["O1 Editor"],modes:["🎬 Video→Video"],ratios:["16:9","9:16","1:1"],quals:["720p","1080p"],
+   features:["📹 Требуется видео файл"]},
   {id:"kling_o3_edit",icon:"⚡",name:"Kling O3 Editor",desc:"Video Edit",price:"от 120₽",
-   subs:["O3 Editor"],modes:["🎬 Video→Video"],ratios:[]},
+   subs:["O3 Editor"],modes:["🎬 Video→Video"],ratios:["16:9","9:16","1:1"],quals:["720p","1080p"],
+   features:["📹 Требуется видео файл"]},
   {id:"gen4_aleph",icon:"🚀",name:"Runway Gen4 Aleph",desc:"Video Edit",price:"от 96₽",
-   subs:["Gen4 Aleph"],modes:["🎬 Video→Video"],ratios:[]},
+   subs:["Gen4 Aleph"],modes:["🎬 Video→Video"],ratios:["16:9","9:16","1:1","4:3","3:4"],quals:["720p","1080p"],
+   features:["📹 Требуется видео файл"]},
 ];
 const IMAGE_EDIT_MODELS = [
   {id:"seedream_edit",icon:"🌱",name:"Seedream 4.5 Edit",desc:"Image Edit",price:"от 16₽",
-   subs:["Seedream 4.5"],modes:["🖼 Image→Image"],ratios:["1024×1024","2048×2048","4096×4096"]},
+   subs:["Seedream 4.5"],modes:["🖼 Image→Image"],ratios:["1024×1024","2048×2048","4096×4096"],quals:["4K"],
+   features:["📷 Требуется фото","Размер: до 4096px"]},
   {id:"dreamina_edit",icon:"🎭",name:"Dreamina Edit",desc:"Image Edit",price:"от 16₽",
-   subs:["Dreamina V3"],modes:["🖼 Image→Image"],ratios:["1024×1024","2048×2048","4096×4096"]},
+   subs:["Dreamina V3"],modes:["🖼 Image→Image"],ratios:["1:1","16:9","9:16"],quals:["1024px"],
+   features:["📷 Требуется фото"]},
   {id:"banana_edit",icon:"🍌",name:"Banana Pro Edit",desc:"Image Edit",price:"от 16₽",
-   subs:["Banana Pro"],modes:["🖼 Image→Image"],ratios:[]},
+   subs:["Banana Pro"],modes:["🖼 Image→Image"],ratios:["1:1","3:2","2:3","16:9","9:16"],quals:["1024px"],
+   features:["📷 Требуется фото"]},
   {id:"banana_ultra_edit",icon:"🍌",name:"Banana Ultra Edit",desc:"Image Edit",price:"от 24₽",
-   subs:["Banana Ultra"],modes:["🖼 Image→Image"],ratios:[]},
+   subs:["Banana Ultra"],modes:["🖼 Image→Image"],ratios:["1:1","3:2","2:3","16:9","9:16"],quals:["1024px"],
+   features:["📷 Требуется фото"]},
   {id:"wan_edit",icon:"💎",name:"Wan 2.6 Edit",desc:"Image Edit",price:"от 16₽",
-   subs:["Wan 2.6"],modes:["🖼 Image→Image"],ratios:[]},
-  {id:"gpt_edit",icon:"💡",name:"GPT Image 1.5",desc:"Image Edit",price:"от 32₽",
-   subs:["GPT Image 1.5"],modes:["🖼 Image→Image"],ratios:["auto","1024×1024","1024×1536","1536×1024"],quals:["Low","Medium","High"]},
+   subs:["Wan 2.6"],modes:["🖼 Image→Image"],ratios:["1:1","16:9","9:16"],quals:["1024px"],
+   features:["📷 Требуется фото"]},
+  {id:"gpt_edit",icon:"💡",name:"GPT Image 1.5 Edit",desc:"Image Edit",price:"от 32₽",
+   subs:["GPT Image 1.5"],modes:["🖼 Image→Image"],ratios:["1024×1024","1024×1536","1536×1024"],quals:["Low","Medium","High"],
+   features:["📷 Требуется фото","Качество: Low/Medium/High"]},
   {id:"gemini_edit",icon:"💎",name:"Gemini 3 Pro Edit",desc:"Image Edit",price:"от 24₽",
-   subs:["Gemini 3 Pro"],modes:["🖼 Image→Image"],ratios:[]},
+   subs:["Gemini 3 Pro"],modes:["🖼 Image→Image"],ratios:["1:1","16:9","9:16"],quals:["1024px"],
+   features:["📷 Требуется фото"]},
   {id:"reve_edit",icon:"✏️",name:"Reve Edit",desc:"Image Edit",price:"от 16₽",
-   subs:["Reve Edit"],modes:["🖼 Image→Image"],ratios:[]},
+   subs:["Reve Edit"],modes:["🖼 Image→Image"],ratios:["1:1","16:9"],quals:["1024px"],
+   features:["📷 Требуется фото"]},
 ];
 const SOUL_STYLES = [
   {id:"b3c8075a",name:"Creatures",img:"https://cdn.higgsfield.ai/soul-style/ce4416fd-37a7-42fe-af0d-10167d2cfa0a.webp"},
@@ -1126,15 +1180,18 @@ function renderSoulPreview() {
   `).join('');
 }
 function renderVideoGrid() {
-  document.getElementById('videoGrid').innerHTML = VIDEO_MODELS.map(m => `
+  document.getElementById('videoGrid').innerHTML = VIDEO_MODELS.map(m => {
+    const audioB = m.audio ? ' 🔊' : '';
+    const durT = (m.durs||[]).join('/') + 's';
+    return `
     <div class="model-card" onclick="openConfig('${m.id}')" style="min-width:0">
       ${m.badge ? `<div class="m-badge" style="background:${m.badgeBg||'var(--accent-soft)'};color:${m.badgeColor||'var(--accent)'}">${m.badge}</div>` : ''}
       <div class="m-icon">${m.icon}</div>
-      <div class="m-name">${m.name}</div>
-      <div class="m-desc">${m.desc}</div>
+      <div class="m-name">${m.name}${audioB}</div>
+      <div class="m-desc">${(m.subs||[]).join(' • ')}<br><span style="font-size:9px">⏱${durT} · ${(m.quals||[]).join('/')}</span></div>
       <div class="m-price">${m.price}</div>
-    </div>
-  `).join('');
+    </div>`;
+  }).join('');
 }
 function renderImageGrid() {
   document.getElementById('imageGrid').innerHTML = IMAGE_MODELS.map(m => {
