@@ -605,10 +605,10 @@ body {
       <!-- MEDIA -->
       <div class="section-title">🎬 Media</div>
       <div class="cat-grid" style="grid-template-columns: 1fr 1fr;">
-        <div class="cat-card" onclick="goScreen('screen-videos')"><span class="cat-icon">🎬</span><div class="cat-title">Create Video</div><div class="cat-sub">17 моделей</div></div>
-        <div class="cat-card" onclick="goScreen('screen-images')"><span class="cat-icon">🖼</span><div class="cat-title">Create Image</div><div class="cat-sub">26 моделей</div></div>
-        <div class="cat-card" onclick="goScreen('screen-images')"><span class="cat-icon">✏️</span><div class="cat-title">Edit Image</div><div class="cat-sub">8 моделей</div></div>
-        <div class="cat-card" onclick="goScreen('screen-videos')"><span class="cat-icon">🎞</span><div class="cat-title">Edit Video</div><div class="cat-sub">3 модели</div></div>
+        <div class="cat-card" onclick="goScreen('screen-videos')"><span class="cat-icon">🎬</span><div class="cat-title">Create Video</div><div class="cat-sub">12 моделей</div></div>
+        <div class="cat-card" onclick="goScreen('screen-images')"><span class="cat-icon">🖼</span><div class="cat-title">Create Image</div><div class="cat-sub">14 моделей</div></div>
+        <div class="cat-card" onclick="goScreen('screen-image-edit')"><span class="cat-icon">✏️</span><div class="cat-title">Edit Image</div><div class="cat-sub">8 моделей</div></div>
+        <div class="cat-card" onclick="goScreen('screen-video-edit')"><span class="cat-icon">🎞</span><div class="cat-title">Edit Video</div><div class="cat-sub">3 модели</div></div>
       </div>
 
       <!-- AI BOTS -->
@@ -642,7 +642,7 @@ body {
     <div class="screen" id="screen-videos">
       <button class="back-btn" onclick="goScreen('screen-home')">← Назад</button>
       <div class="page-title">Create Videos</div>
-      <div class="page-sub">17 AI моделей для генерации видео</div>
+      <div class="page-sub">12 AI моделей для генерации видео</div>
       <div class="grid-list" id="videoGrid"></div>
     </div>
 
@@ -650,8 +650,24 @@ body {
     <div class="screen" id="screen-images">
       <button class="back-btn" onclick="goScreen('screen-home')">← Назад</button>
       <div class="page-title">Create Images</div>
-      <div class="page-sub">26 AI моделей для генерации изображений</div>
+      <div class="page-sub">14 AI моделей для генерации изображений</div>
       <div class="grid-list" id="imageGrid"></div>
+    </div>
+
+    <!-- VIDEO EDIT -->
+    <div class="screen" id="screen-video-edit">
+      <button class="back-btn" onclick="goScreen('screen-home')">← Назад</button>
+      <div class="page-title">Edit Video</div>
+      <div class="page-sub">3 AI модели для редактирования видео</div>
+      <div class="grid-list" id="videoEditGrid"></div>
+    </div>
+
+    <!-- IMAGE EDIT -->
+    <div class="screen" id="screen-image-edit">
+      <button class="back-btn" onclick="goScreen('screen-home')">← Назад</button>
+      <div class="page-title">Edit Image</div>
+      <div class="page-sub">8 AI моделей для редактирования изображений</div>
+      <div class="grid-list" id="imageEditGrid"></div>
     </div>
 
     <!-- SOUL GALLERY -->
@@ -665,7 +681,7 @@ body {
 
     <!-- CONFIG WIZARD -->
     <div class="screen" id="screen-config">
-      <button class="back-btn" onclick="goScreen('screen-videos')">← Назад</button>
+      <button class="back-btn" onclick="goScreen('screen-home')">← Назад</button>
       <div id="configHeader" style="padding: 0 16px 16px; display: flex; align-items: center; gap: 12px;"></div>
       <div class="config-section"><div class="config-label">Версия модели</div><div class="chip-row" id="subModelChips"></div></div>
       <div class="config-section"><div class="config-label">Режим</div><div class="mode-row" id="modeRow"></div></div>
@@ -913,30 +929,48 @@ if (tg) {
 // ═══════════════════════════════════════════
 const VIDEO_MODELS = [
   {id:"sora",icon:"🎬",name:"Sora 2",badge:"PRO",badgeColor:"var(--accent)",badgeBg:"var(--accent-soft)",desc:"OpenAI • 4-20s • 1080p",price:"от 80₽",subs:["Sora 2 Pro","Sora 2 Basic"],ratios:["16:9","9:16","1:1"],durs:[5,10],quals:["720p","1080p"],audio:true,modes:["📝 Text→Video","🖼 Image→Video"]},
-  {id:"kling",icon:"⚡",name:"Kling",badge:"HOT",badgeColor:"var(--red)",badgeBg:"rgba(248,113,113,0.15)",desc:"Kuaishou • 3-15s • 1080p",price:"от 56₽",subs:["2.5 Turbo","2.6 Pro","3.0 Pro","O1 Video"],ratios:["16:9","9:16","1:1","4:3","3:4"],durs:[3,5,7,10,15],quals:["720p","1080p"],audio:true,modes:["📝 Text→Video","🖼 Image→Video"]},
+  {id:"kling",icon:"⚡",name:"Kling",badge:"HOT",badgeColor:"var(--red)",badgeBg:"rgba(248,113,113,0.15)",desc:"Kuaishou • 3-15s • 1080p",price:"от 56₽",subs:["2.5 Turbo","2.6 Pro","3.0 Pro","O1 Video","O3 Video"],ratios:["16:9","9:16","1:1","4:3","3:4"],durs:[3,5,7,10,15],quals:["720p","1080p"],audio:true,modes:["📝 Text→Video","🖼 Image→Video"]},
   {id:"minimax",icon:"🔥",name:"MiniMax",badge:null,desc:"Hailuo 2.3 • 6-10s",price:"от 48₽",subs:["Video-02","Hailuo 2.3"],ratios:["16:9","9:16","1:1"],durs:[5,10],quals:["720p","1080p"],audio:false,modes:["📝 Text→Video","🖼 Image→Video"]},
   {id:"wan",icon:"💎",name:"Wan 2.6",badge:"NEW",badgeColor:"var(--green)",badgeBg:"rgba(91,235,160,0.15)",desc:"Alibaba • Audio sync",price:"от 40₽",subs:["Wan 2.5","Wan 2.6"],ratios:["16:9","9:16","1:1"],durs:[5,10],quals:["720p","1080p"],audio:true,modes:["📝 Text→Video","🖼 Image→Video"]},
   {id:"veo",icon:"🌟",name:"Veo 3.1",badge:null,desc:"Google • Audio",price:"от 56₽",subs:["3.1 Base","3.1 Fast"],ratios:["16:9","9:16","1:1"],durs:[4,5,8],quals:["720p","1080p"],audio:true,modes:["📝 Text→Video","🖼 Image→Video"]},
-  {id:"seedance",icon:"📽",name:"Seedance",badge:null,desc:"ByteDance • 4-12s",price:"от 32₽",subs:["Pro","Fast"],ratios:["16:9","9:16","1:1"],durs:[4,8,12],quals:["720p","1080p"],audio:false,modes:["📝 Text→Video","🖼 Image→Video"]},
+  {id:"seedance",icon:"📽",name:"Seedance",badge:null,desc:"ByteDance • 4-12s",price:"от 32₽",subs:["Seedance Pro","Seedance Fast","Vidu Premium"],ratios:["16:9","9:16","1:1"],durs:[4,8,12],quals:["720p","1080p"],audio:false,modes:["📝 Text→Video","🖼 Image→Video"]},
   {id:"pixverse",icon:"✨",name:"Pixverse",badge:null,desc:"V5.5 • Creative",price:"от 24₽",subs:["V5.5"],ratios:["16:9","9:16","1:1"],durs:[4,6,8],quals:["720p","1080p"],audio:false,modes:["📝 Text→Video","🖼 Image→Video"]},
-  {id:"dreamina",icon:"🎭",name:"Dreamina",badge:null,desc:"ByteDance V3",price:"от 32₽",subs:["V3.0 Pro"],ratios:["16:9","9:16","1:1"],durs:[4,8,12],quals:["720p","1080p"],audio:false,modes:["📝 Text→Video"]},
+  {id:"dreamina",icon:"🎭",name:"Dreamina",badge:null,desc:"ByteDance V3",price:"от 32₽",subs:["Dreamina Pro","Dreamina Fast"],ratios:["16:9","9:16","1:1"],durs:[4,8,12],quals:["720p","1080p"],audio:false,modes:["📝 Text→Video","🖼 Image→Video"]},
   {id:"pika",icon:"🎞",name:"Pika",badge:null,desc:"V2.2 • Stable",price:"от 32₽",subs:["V2.2"],ratios:["16:9","9:16","1:1"],durs:[4,6],quals:["720p","1080p"],audio:false,modes:["📝 Text→Video","🖼 Image→Video"]},
   {id:"runway",icon:"🚀",name:"Runway",badge:"TOP",badgeColor:"var(--yellow)",badgeBg:"rgba(251,191,36,0.15)",desc:"Gen-4 Turbo",price:"от 64₽",subs:["Gen-4 Turbo"],ratios:["16:9","9:16","1:1"],durs:[5,10],quals:["720p","1080p"],audio:false,modes:["🖼 Image→Video"]},
   {id:"kandinsky",icon:"🌊",name:"Kandinsky",badge:"RU",badgeColor:"var(--blue)",badgeBg:"rgba(96,165,250,0.15)",desc:"Sber • Русский",price:"от 32₽",subs:["5 Pro"],ratios:["16:9","9:16","1:1"],durs:[5],quals:["720p"],audio:false,modes:["📝 Text→Video","🖼 Image→Video"]},
   {id:"grok",icon:"🤖",name:"Grok 2",badge:null,desc:"X AI • 6-10s",price:"от 80₽",subs:["Grok 2"],ratios:["16:9","9:16","1:1"],durs:[6,10],quals:["720p"],audio:false,modes:["🖼 Image→Video"]},
 ];
 const IMAGE_MODELS = [
-  {id:"dreamina_img",icon:"🎭",name:"Dreamina v3.1",desc:"Реализм",price:"от 16₽"},
-  {id:"banana",icon:"🍌",name:"Nano Banana",desc:"Ultra",price:"от 8₽"},
-  {id:"seedream",icon:"🌱",name:"Seedream 4.5",desc:"4K",price:"от 16₽"},
-  {id:"dalle",icon:"🎨",name:"DALL-E 3",desc:"OpenAI",price:"от 24₽"},
-  {id:"gpt_img",icon:"💡",name:"GPT Image",desc:"1.5",price:"от 32₽"},
-  {id:"ideogram",icon:"🔤",name:"Ideogram 3",desc:"Text",price:"от 16₽"},
-  {id:"gemini",icon:"💎",name:"Gemini 3 Pro",desc:"Google",price:"от 24₽"},
-  {id:"stable",icon:"🖼",name:"Stable Ultra",desc:"SD",price:"от 16₽"},
-  {id:"reve",icon:"✏️",name:"Reve Image",desc:"Design",price:"от 12₽"},
-  {id:"imagen4",icon:"🔥",name:"Imagen4",desc:"Google",price:"от 16₽"},
-  {id:"soul_img",icon:"👤",name:"Soul 2.0",desc:"Character",price:"от 24₽"},
+  {id:"seedream",icon:"🌱",name:"Seedream",desc:"4K • ByteDance",price:"от 16₽",subs:["Seedream 4.0","Seedream 4.5"],modes:["📝 Text→Image"],ratios:["1:1","16:9","9:16","4:3","3:4"]},
+  {id:"dreamina_img",icon:"🎭",name:"Dreamina",desc:"Реализм",price:"от 16₽",subs:["Dreamina 3.0","Dreamina 3.1"],modes:["📝 Text→Image"],ratios:["1:1","16:9","9:16","4:3","3:4"]},
+  {id:"banana",icon:"🍌",name:"Nano Banana",desc:"Fast • Ultra",price:"от 8₽",subs:["Nano Banana","Nano Banana Ultra"],modes:["📝 Text→Image"],ratios:["1:1","3:2","2:3","3:4","4:3","4:5","5:4","9:16","16:9","21:9"]},
+  {id:"imagen4",icon:"🔥",name:"Imagen4",desc:"Google",price:"от 16₽",subs:["Imagen4 Fast","Imagen4 Ultra"],modes:["📝 Text→Image"],ratios:["1:1","16:9","9:16","4:3","3:4"]},
+  {id:"gemini",icon:"💎",name:"Gemini",desc:"Google AI",price:"от 24₽",subs:["Gemini 2.5 Flash","Gemini 3 Pro"],modes:["📝 Text→Image"],ratios:["1:1","16:9","9:16"]},
+  {id:"dalle",icon:"🎨",name:"DALL-E 3",desc:"OpenAI",price:"от 24₽",subs:["DALL-E 3"],modes:["📝 Text→Image"],ratios:["1:1","16:9","9:16"]},
+  {id:"gpt_img",icon:"💡",name:"GPT Image 1.5",desc:"OpenAI",price:"от 32₽",subs:["GPT Image 1.5"],modes:["🖼 Image→Image"],ratios:["1:1","16:9","9:16"]},
+  {id:"ideogram",icon:"🔤",name:"Ideogram 3",desc:"Text+Image",price:"от 16₽",subs:["V3 Turbo","V3 Quality"],modes:["📝 Text→Image","🖼 Image→Image"],ratios:["1:1","16:9","9:16","4:3","3:4","10:16","16:10"]},
+  {id:"runway_img",icon:"🚀",name:"Runway Gen4",desc:"Img Gen",price:"от 24₽",subs:["Gen4 Turbo","Gen4 Base"],modes:["📝 Text→Image","🖼 Image→Image"],ratios:["1:1","16:9","9:16","4:3","3:4"]},
+  {id:"stable",icon:"🖼",name:"Stable Diff 3.5",desc:"Stability AI",price:"от 16₽",subs:["SD Large","SD Large Turbo","SD Medium"],modes:["📝 Text→Image"],ratios:["1:1","16:9","9:16","4:3","3:4"]},
+  {id:"wan_img",icon:"💎",name:"Wan AI Image",desc:"Alibaba",price:"от 16₽",subs:["Wan 2.5","Wan 2.6"],modes:["📝 Text→Image"],ratios:["1:1","16:9","9:16"]},
+  {id:"grok_img",icon:"🤖",name:"Grok 2 Image",desc:"X AI",price:"от 24₽",subs:["Grok 2"],modes:["📝 Text→Image"],ratios:["1:1","16:9","9:16"]},
+  {id:"reve",icon:"✏️",name:"Reve Image",desc:"Design",price:"от 12₽",subs:["Reve Image"],modes:["📝 Text→Image"],ratios:["1:1","16:9","9:16","4:3","3:4"]},
+  {id:"soul_img",icon:"👤",name:"Soul 2.0",desc:"Character AI",price:"от 24₽",subs:["Soul 2.0"],modes:["🖼 Image→Image"],ratios:["1:1"]},
+];
+const VIDEO_EDIT_MODELS = [
+  {id:"kling_o1_edit",icon:"⚡",name:"Kling O1 Editor",desc:"Video Edit",price:"от 80₽",subs:["O1 Editor"],modes:["🎬 Video→Video"],ratios:["16:9","9:16","1:1"]},
+  {id:"kling_o3_edit",icon:"⚡",name:"Kling O3 Editor",desc:"Video Edit",price:"от 120₽",subs:["O3 Editor"],modes:["🎬 Video→Video"],ratios:["16:9","9:16","1:1"]},
+  {id:"gen4_aleph",icon:"🚀",name:"Runway Gen4 Aleph",desc:"Video Edit",price:"от 96₽",subs:["Gen4 Aleph"],modes:["🎬 Video→Video"],ratios:["16:9","9:16","1:1","4:3","3:4"]},
+];
+const IMAGE_EDIT_MODELS = [
+  {id:"seedream_edit",icon:"🌱",name:"Seedream 4.5 Edit",desc:"Image Edit",price:"от 16₽",subs:["Seedream 4.5"],modes:["🖼 Image→Image"],ratios:["1:1","16:9","9:16"]},
+  {id:"dreamina_edit",icon:"🎭",name:"Dreamina Edit",desc:"Image Edit",price:"от 16₽",subs:["Dreamina V3"],modes:["🖼 Image→Image"],ratios:["1:1","16:9","9:16"]},
+  {id:"banana_edit",icon:"🍌",name:"Banana Pro Edit",desc:"Image Edit",price:"от 16₽",subs:["Banana Pro"],modes:["🖼 Image→Image"],ratios:["1:1","3:2","2:3","16:9","9:16"]},
+  {id:"banana_ultra_edit",icon:"🍌",name:"Banana Ultra Edit",desc:"Image Edit",price:"от 24₽",subs:["Banana Ultra"],modes:["🖼 Image→Image"],ratios:["1:1","3:2","2:3","16:9","9:16"]},
+  {id:"wan_edit",icon:"💎",name:"Wan 2.6 Edit",desc:"Image Edit",price:"от 16₽",subs:["Wan 2.6"],modes:["🖼 Image→Image"],ratios:["1:1","16:9","9:16"]},
+  {id:"gpt_edit",icon:"💡",name:"GPT Image 1.5 Edit",desc:"Image Edit",price:"от 32₽",subs:["GPT Image 1.5"],modes:["🖼 Image→Image"],ratios:["1:1","16:9","9:16"]},
+  {id:"gemini_edit",icon:"💎",name:"Gemini 3 Pro Edit",desc:"Image Edit",price:"от 24₽",subs:["Gemini 3 Pro"],modes:["🖼 Image→Image"],ratios:["1:1","16:9","9:16"]},
+  {id:"reve_edit",icon:"✏️",name:"Reve Edit",desc:"Image Edit",price:"от 16₽",subs:["Reve Edit"],modes:["🖼 Image→Image"],ratios:["1:1","16:9","9:16"]},
 ];
 const SOUL_STYLES = [
   {id:"b3c8075a",name:"Creatures",img:"https://cdn.higgsfield.ai/soul-style/ce4416fd-37a7-42fe-af0d-10167d2cfa0a.webp"},
@@ -1008,7 +1042,27 @@ function renderVideoGrid() {
 }
 function renderImageGrid() {
   document.getElementById('imageGrid').innerHTML = IMAGE_MODELS.map(m => `
-    <div class="model-card" onclick="openModel('${m.id}','image')" style="min-width:0">
+    <div class="model-card" onclick="openConfig('${m.id}')" style="min-width:0">
+      <div class="m-icon">${m.icon}</div>
+      <div class="m-name">${m.name}</div>
+      <div class="m-desc">${m.desc}${m.subs&&m.subs.length>1 ? '<br><span style="color:var(--accent);font-size:9px">'+m.subs.join(' • ')+'</span>' : ''}</div>
+      <div class="m-price">${m.price}</div>
+    </div>
+  `).join('');
+}
+function renderVideoEditGrid() {
+  document.getElementById('videoEditGrid').innerHTML = VIDEO_EDIT_MODELS.map(m => `
+    <div class="model-card" onclick="openConfig('${m.id}')" style="min-width:0">
+      <div class="m-icon">${m.icon}</div>
+      <div class="m-name">${m.name}</div>
+      <div class="m-desc">${m.desc}</div>
+      <div class="m-price">${m.price}</div>
+    </div>
+  `).join('');
+}
+function renderImageEditGrid() {
+  document.getElementById('imageEditGrid').innerHTML = IMAGE_EDIT_MODELS.map(m => `
+    <div class="model-card" onclick="openConfig('${m.id}')" style="min-width:0">
       <div class="m-icon">${m.icon}</div>
       <div class="m-name">${m.name}</div>
       <div class="m-desc">${m.desc}</div>
@@ -1033,21 +1087,26 @@ function selectSoul(id) { selectedSoul = selectedSoul===id ? null : id; renderSo
 // CONFIG WIZARD
 // ═══════════════════════════════════════════
 function openConfig(modelId) {
-  currentModel = VIDEO_MODELS.find(m => m.id === modelId);
+  const ALL = [...VIDEO_MODELS, ...IMAGE_MODELS, ...VIDEO_EDIT_MODELS, ...IMAGE_EDIT_MODELS];
+  currentModel = ALL.find(m => m.id === modelId);
   if (!currentModel) return;
   document.getElementById('configHeader').innerHTML = `<span style="font-size:34px">${currentModel.icon}</span><div><div style="font-size:20px;font-weight:800">${currentModel.name}</div><div style="font-size:12px;color:var(--text-dim)">${currentModel.desc}</div></div>`;
-  document.getElementById('subModelChips').innerHTML = currentModel.subs.map((s,i) => `<div class="chip ${i===0?'active':''}" onclick="activateChip(this)">${s}</div>`).join('');
-  document.getElementById('modeRow').innerHTML = currentModel.modes.map((m,i) => `<div class="mode-btn ${i===0?'active':''}" onclick="activateMode(this);toggleUpload(this.textContent)">${m}</div>`).join('');
-  document.getElementById('ratioChips').innerHTML = currentModel.ratios.map((r,i) => `<div class="chip ${i===0?'active':''}" onclick="activateChip(this)">${r}</div>`).join('');
-  document.getElementById('durationChips').innerHTML = currentModel.durs.map((d,i) => `<div class="chip ${i===0?'active':''}" onclick="activateChip(this)">${d}s</div>`).join('');
-  document.getElementById('qualityChips').innerHTML = currentModel.quals.map((q,i) => `<div class="chip ${i===0?'active':''}" onclick="activateChip(this)">${q}</div>`).join('');
+  document.getElementById('subModelChips').innerHTML = (currentModel.subs||[currentModel.name]).map((s,i) => `<div class="chip ${i===0?'active':''}" onclick="activateChip(this)">${s}</div>`).join('');
+  const modes = currentModel.modes || ['📝 Text→Image'];
+  document.getElementById('modeRow').innerHTML = modes.map((m,i) => `<div class="mode-btn ${i===0?'active':''}" onclick="activateMode(this);toggleUpload(this.textContent)">${m}</div>`).join('');
+  const ratios = currentModel.ratios || ['1:1','16:9','9:16'];
+  document.getElementById('ratioChips').innerHTML = ratios.map((r,i) => `<div class="chip ${i===0?'active':''}" onclick="activateChip(this)">${r}</div>`).join('');
+  const durs = currentModel.durs || [];
+  document.getElementById('durationChips').innerHTML = durs.map((d,i) => `<div class="chip ${i===0?'active':''}" onclick="activateChip(this)">${d}s</div>`).join('');
+  const quals = currentModel.quals || ['1024px'];
+  document.getElementById('qualityChips').innerHTML = quals.map((q,i) => `<div class="chip ${i===0?'active':''}" onclick="activateChip(this)">${q}</div>`).join('');
   document.getElementById('audioSection').style.display = currentModel.audio ? 'block' : 'none';
   document.getElementById('uploadSection').style.display = 'none';
-  document.getElementById('durationSection').style.display = currentModel.durs.length ? 'block' : 'none';
+  document.getElementById('durationSection').style.display = durs.length ? 'block' : 'none';
   document.getElementById('summaryRows').innerHTML = `
     <div class="summary-row"><span class="sk">Модель</span><span class="sv">${currentModel.icon} ${currentModel.name}</span></div>
-    <div class="summary-row"><span class="sk">Режим</span><span class="sv">${currentModel.modes[0]}</span></div>
-    <div class="summary-row"><span class="sk">Соотношение</span><span class="sv">${currentModel.ratios[0]}</span></div>
+    <div class="summary-row"><span class="sk">Режим</span><span class="sv">${modes[0]}</span></div>
+    <div class="summary-row"><span class="sk">Соотношение</span><span class="sv">${ratios[0]}</span></div>
   `;
   document.getElementById('summaryPrice').textContent = currentModel.price.replace('от ','~');
   document.getElementById('promptInput').value = '';
@@ -1120,7 +1179,7 @@ function switchTab(tab) {
     openChat('ai_chat');
     return;
   }
-  const map = { home:'screen-home', create:'screen-videos', edit:'screen-images', profile:'screen-profile' };
+  const map = { home:'screen-home', create:'screen-videos', edit:'screen-image-edit', profile:'screen-profile' };
   goScreen(map[tab] || 'screen-home');
 }
 
@@ -1147,6 +1206,8 @@ renderTrending();
 renderSoulPreview();
 renderVideoGrid();
 renderImageGrid();
+renderVideoEditGrid();
+renderImageEditGrid();
 renderSoulGrid();
 autoHero();
 </script>
