@@ -614,16 +614,17 @@ body {
       <!-- AI BOTS -->
       <div class="section-title">🤖 AI Bots</div>
       <div class="cat-grid" style="grid-template-columns: 1fr 1fr;">
-        <div class="cat-card"><span class="cat-icon">💬</span><div class="cat-title">AI Chat</div><div class="cat-sub">4 модели</div></div>
-        <div class="cat-card"><span class="cat-icon">👨‍💻</span><div class="cat-title">AI Coder</div><div class="cat-sub">6 моделей</div></div>
+        <div class="cat-card" onclick="openChat('ai_chat')"><span class="cat-icon">💬</span><div class="cat-title">AI Chat</div><div class="cat-sub">4 модели</div></div>
+        <div class="cat-card" onclick="openChat('ai_coder')"><span class="cat-icon">👨‍💻</span><div class="cat-title">AI Coder</div><div class="cat-sub">6 моделей</div></div>
       </div>
 
       <!-- FREE -->
-      <div class="section-title">🆓 Free Bot AI</div>
-      <div class="free-grid">
-        <div class="free-card"><span class="cat-icon">💬</span><div class="cat-title">AI Chat</div><div class="cat-sub">30 ост.</div></div>
-        <div class="free-card"><span class="cat-icon">🖼</span><div class="cat-title">Images</div><div class="cat-sub">5 ост.</div></div>
-        <div class="free-card"><span class="cat-icon">🎬</span><div class="cat-title">Videos</div><div class="cat-sub">2 ост.</div></div>
+      <div class="section-title">🆓 Free (ежедневно)</div>
+      <div class="free-grid" style="grid-template-columns: 1fr 1fr;">
+        <div class="free-card" onclick="openChat('gpt5_free')"><span class="cat-icon">💬</span><div class="cat-title">GPT-5.2 Chat</div><div class="cat-sub" id="freeChatLeft">30 ост.</div></div>
+        <div class="free-card" onclick="openChat('grok4_free')"><span class="cat-icon">🤖</span><div class="cat-title">Grok-4 Chat</div><div class="cat-sub" id="freeChatLeft2">30 ост.</div></div>
+        <div class="free-card" onclick="openModel('free_image','image')"><span class="cat-icon">🖼</span><div class="cat-title">Фото</div><div class="cat-sub" id="freeImageLeft">1 ост.</div></div>
+        <div class="free-card" onclick="openModel('free_video','video')"><span class="cat-icon">🎬</span><div class="cat-title">Видео</div><div class="cat-sub" id="freeVideoLeft">1 ост.</div></div>
       </div>
 
       <!-- TRENDING -->
@@ -717,31 +718,30 @@ body {
       <div style="height:14px"></div>
       <div class="profile-card">
         <div class="profile-avatar" id="profileAvatar">U</div>
-        <div>
+        <div style="min-width:0;flex:1">
           <div class="profile-name" id="profileName">User</div>
+          <div class="profile-id" id="profileUsername" style="color:var(--accent);font-size:12px"></div>
           <div class="profile-id" id="profileId">ID: —</div>
         </div>
       </div>
       <div class="balance-card">
         <div class="balance-row"><span class="balance-label">Баланс</span><span class="balance-value" id="profileBalance">💎 0₽</span></div>
+        <div id="profileBalanceDetail" style="display:none;font-size:12px;color:var(--text-dim);margin-bottom:10px"></div>
+        <div id="profileStats" style="display:none;font-size:12px;color:var(--text-dim);margin-bottom:10px"></div>
         <button class="topup-btn" onclick="openTopup()">💰 Пополнить баланс</button>
       </div>
 
       <!-- Admin panel (hidden by default) -->
       <div class="admin-card" id="adminCard" style="display:none">
-        <div class="ac-title">🔐 Сервис</div>
-        <div class="admin-row"><span class="ak">🔑 WaveSpeed API</span><span class="av" id="adminApiBalance">—</span></div>
-        <div class="admin-row"><span class="ak">👥 Всего юзеров</span><span class="av" id="adminTotalUsers">—</span></div>
-        <div class="admin-row"><span class="ak">💰 Доход</span><span class="av" id="adminRevenue">—</span></div>
-        <div class="admin-row"><span class="ak">🎬 Генераций</span><span class="av" id="adminGens">—</span></div>
+        <div class="ac-title">🔐 Админ-панель</div>
+        <div style="font-size:12px;color:var(--text-dim);padding:4px 0">Используйте /admin в боте для управления</div>
       </div>
 
       <div class="menu-list">
-        <div class="menu-item">📋 История генераций<span class="menu-arrow">›</span></div>
-        <div class="menu-item">💾 Сохранённые<span class="menu-arrow">›</span></div>
-        <div class="menu-item">👥 Реферальная программа<span class="menu-arrow">›</span></div>
-        <div class="menu-item">🎟 Промокод<span class="menu-arrow">›</span></div>
-        <div class="menu-item">❓ Помощь<span class="menu-arrow">›</span></div>
+        <div class="menu-item" onclick="sendAction('history')">📋 История генераций<span class="menu-arrow">›</span></div>
+        <div class="menu-item" onclick="sendAction('referral')">👥 Реферальная программа<span class="menu-arrow">›</span></div>
+        <div class="menu-item" onclick="sendAction('promo')">🎟 Промокод<span class="menu-arrow">›</span></div>
+        <div class="menu-item" onclick="sendAction('help')">❓ Помощь<span class="menu-arrow">›</span></div>
       </div>
       <div style="height:100px"></div>
     </div>
@@ -766,13 +766,32 @@ const ADMIN_IDS = [908628571];
 
 let TG_USER = null;
 let IS_ADMIN = false;
+let USER_BALANCE = 0;
+let USER_BONUS = 0;
+let FREE_CHAT = 0;
+let FREE_IMAGE = 0;
+let FREE_VIDEO = 0;
+let GEN_COUNT = 0;
+
+// Parse URL params (passed from keyboard.py)
+function parseUrlParams() {
+  const params = new URLSearchParams(window.location.search);
+  USER_BALANCE = parseInt(params.get('b')) || 0;
+  USER_BONUS = parseInt(params.get('n')) || 0;
+  FREE_CHAT = parseInt(params.get('fc')) || 0;
+  FREE_IMAGE = parseInt(params.get('fi')) || 0;
+  FREE_VIDEO = parseInt(params.get('fv')) || 0;
+  GEN_COUNT = parseInt(params.get('gc')) || 0;
+}
 
 function initTelegramUser() {
+  parseUrlParams();
+
   if (tg) {
     tg.ready();
     tg.expand();
-    tg.setHeaderColor('#06060a');
-    tg.setBackgroundColor('#06060a');
+    try { tg.setHeaderColor('#06060a'); } catch(e) {}
+    try { tg.setBackgroundColor('#06060a'); } catch(e) {}
 
     const user = tg.initDataUnsafe && tg.initDataUnsafe.user;
     if (user) {
@@ -783,6 +802,9 @@ function initTelegramUser() {
       const name = [user.first_name, user.last_name].filter(Boolean).join(' ') || 'User';
       document.getElementById('profileName').textContent = name;
       document.getElementById('profileId').textContent = 'ID: ' + user.id;
+      if (user.username) {
+        document.getElementById('profileUsername').textContent = '@' + user.username;
+      }
 
       // Avatar
       const avatar = document.getElementById('profileAvatar');
@@ -795,47 +817,51 @@ function initTelegramUser() {
       // Admin panel
       if (IS_ADMIN) {
         document.getElementById('adminCard').style.display = 'block';
-        loadAdminStats();
       }
-
-      console.log('TG User:', user.id, name, IS_ADMIN ? '(ADMIN)' : '');
     } else {
-      console.log('No TG user data');
       document.getElementById('profileName').textContent = 'Guest';
-      document.getElementById('profileId').textContent = 'Откройте через Telegram';
+      document.getElementById('profileId').textContent = 'Откройте через Telegram бот';
     }
   } else {
-    // Browser fallback
     document.getElementById('profileName').textContent = 'Browser Mode';
-    document.getElementById('profileId').textContent = 'Для полной работы откройте через бот';
+    document.getElementById('profileId').textContent = 'Для работы откройте через бот';
   }
+
+  // Update balance display
+  const total = USER_BALANCE + USER_BONUS;
+  document.getElementById('headerBalance').textContent = total.toLocaleString('ru') + '₽';
+  document.getElementById('profileBalance').textContent = '💎 ' + total.toLocaleString('ru') + '₽';
+  if (USER_BONUS > 0) {
+    document.getElementById('profileBalanceDetail').textContent =
+      '💵 ' + USER_BALANCE.toLocaleString('ru') + '₽ + 🎁 ' + USER_BONUS.toLocaleString('ru') + '₽';
+    document.getElementById('profileBalanceDetail').style.display = 'block';
+  }
+
+  // Stats
+  if (GEN_COUNT > 0) {
+    document.getElementById('profileStats').textContent = '🎬 Генераций: ' + GEN_COUNT;
+    document.getElementById('profileStats').style.display = 'block';
+  }
+
+  // Free limits
+  document.getElementById('freeChatLeft').textContent = Math.max(0, 30 - FREE_CHAT) + ' ост.';
+  document.getElementById('freeImageLeft').textContent = Math.max(0, 1 - FREE_IMAGE) + ' ост.';
+  document.getElementById('freeVideoLeft').textContent = Math.max(0, 1 - FREE_VIDEO) + ' ост.';
 }
 
-function loadAdminStats() {
-  // Stats will be loaded via bot sendData / postEvent
-  // For now show that admin detected
-  document.getElementById('adminApiBalance').textContent = 'загрузка...';
-  document.getElementById('adminTotalUsers').textContent = '—';
-  document.getElementById('adminRevenue').textContent = '—';
-  document.getElementById('adminGens').textContent = '—';
-
-  // Try to get stats via Telegram CloudStorage or postEvent
-  if (tg && TG_USER) {
-    // Send request for admin data
-    try {
-      tg.sendData(JSON.stringify({
-        action: 'admin_stats',
-        user_id: TG_USER.id
-      }));
-    } catch(e) {}
-  }
-}
-
-function openTopup() {
+function sendAction(action, data) {
   if (tg) {
-    tg.sendData(JSON.stringify({ action: 'topup' }));
+    try {
+      tg.sendData(JSON.stringify(Object.assign({ action: action }, data || {})));
+    } catch(e) {
+      // WebApp may close after sendData
+    }
   }
 }
+
+function openTopup() { sendAction('topup'); }
+function openChat(model) { sendAction('open_chat', { model: model }); }
+function openModel(modelId, type) { sendAction('open_model', { model: modelId, type: type }); }
 
 // ═══════════════════════════════════════════
 // VIEWPORT SETUP
@@ -966,7 +992,7 @@ function renderVideoGrid() {
 }
 function renderImageGrid() {
   document.getElementById('imageGrid').innerHTML = IMAGE_MODELS.map(m => `
-    <div class="model-card" style="min-width:0">
+    <div class="model-card" onclick="openModel('${m.id}','image')" style="min-width:0">
       <div class="m-icon">${m.icon}</div>
       <div class="m-name">${m.name}</div>
       <div class="m-desc">${m.desc}</div>
@@ -1074,7 +1100,11 @@ function goScreen(id) {
 function switchTab(tab) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
-  const map = { home:'screen-home', create:'screen-videos', edit:'screen-images', chat:'screen-home', profile:'screen-profile' };
+  if (tab === 'chat') {
+    openChat('ai_chat');
+    return;
+  }
+  const map = { home:'screen-home', create:'screen-videos', edit:'screen-images', profile:'screen-profile' };
   goScreen(map[tab] || 'screen-home');
 }
 
