@@ -782,10 +782,16 @@ function parseUrlParams() {
   FREE_IMAGE = parseInt(params.get('fi')) || 0;
   FREE_VIDEO = parseInt(params.get('fv')) || 0;
   GEN_COUNT = parseInt(params.get('gc')) || 0;
+  // User info fallback
+  return {
+    uid: params.get('uid') || '',
+    fn: decodeURIComponent(params.get('fn') || ''),
+    un: params.get('un') || ''
+  };
 }
 
 function initTelegramUser() {
-  parseUrlParams();
+  const urlUser = parseUrlParams();
 
   if (tg) {
     tg.ready();
@@ -794,27 +800,37 @@ function initTelegramUser() {
     try { tg.setBackgroundColor('#06060a'); } catch(e) {}
 
     const user = tg.initDataUnsafe && tg.initDataUnsafe.user;
-    if (user) {
+    if (user && user.id) {
+      // Telegram SDK data available
       TG_USER = user;
       IS_ADMIN = ADMIN_IDS.includes(user.id);
-
-      // Profile
       const name = [user.first_name, user.last_name].filter(Boolean).join(' ') || 'User';
       document.getElementById('profileName').textContent = name;
       document.getElementById('profileId').textContent = 'ID: ' + user.id;
       if (user.username) {
         document.getElementById('profileUsername').textContent = '@' + user.username;
       }
-
-      // Avatar
       const avatar = document.getElementById('profileAvatar');
       if (user.photo_url) {
-        avatar.innerHTML = '<img src="' + user.photo_url + '" alt="">';
+        avatar.innerHTML = '<img src="' + user.photo_url + '" style="width:100%;height:100%;border-radius:50%;object-fit:cover" alt="">';
       } else {
         avatar.textContent = name.charAt(0).toUpperCase();
       }
-
-      // Admin panel
+      if (IS_ADMIN) {
+        document.getElementById('adminCard').style.display = 'block';
+      }
+    } else if (urlUser.uid) {
+      // Fallback: данные из URL-параметров (keyboard.py)
+      TG_USER = { id: parseInt(urlUser.uid), first_name: urlUser.fn || 'User' };
+      IS_ADMIN = ADMIN_IDS.includes(TG_USER.id);
+      const name = urlUser.fn || 'User';
+      document.getElementById('profileName').textContent = name;
+      document.getElementById('profileId').textContent = 'ID: ' + urlUser.uid;
+      if (urlUser.un) {
+        document.getElementById('profileUsername').textContent = '@' + urlUser.un;
+      }
+      const avatar = document.getElementById('profileAvatar');
+      avatar.textContent = name.charAt(0).toUpperCase();
       if (IS_ADMIN) {
         document.getElementById('adminCard').style.display = 'block';
       }
