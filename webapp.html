@@ -572,6 +572,27 @@ body {
   font-size: 13px; font-weight: 500; cursor: pointer; font-family: var(--font);
 }
 
+/* ===== MEDIA VIEWER OVERLAY ===== */
+.mv-overlay{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.97);display:none;flex-direction:column}
+.mv-overlay.show{display:flex;animation:mvIn .25s ease}
+@keyframes mvIn{from{opacity:0}to{opacity:1}}
+.mv-top{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;padding-top:calc(10px + var(--safe-top));flex-shrink:0}
+.mv-top-l{display:flex;align-items:center;gap:8px}
+.mv-badge{font-size:10px;padding:3px 8px;border-radius:6px;font-weight:700;text-transform:uppercase}
+.mv-badge.vid{background:rgba(168,130,255,.2);color:var(--accent)}.mv-badge.img{background:rgba(91,235,160,.2);color:var(--green)}
+.mv-mname{font-size:13px;font-weight:600;color:#fff}
+.mv-x{width:34px;height:34px;border-radius:50%;border:none;background:rgba(255,255,255,.1);color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.mv-body{flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden;min-height:0;padding:8px}
+.mv-body img{max-width:100%;max-height:100%;object-fit:contain;border-radius:8px}
+.mv-body video{max-width:100%;max-height:100%;object-fit:contain;border-radius:8px;background:#000}
+.mv-foot{flex-shrink:0;padding:12px 16px;padding-bottom:calc(12px + var(--safe-bottom));background:rgba(0,0,0,.5);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.mv-info{display:flex;flex-wrap:wrap;gap:4px 14px;margin-bottom:10px}
+.mv-d{font-size:11px;color:rgba(255,255,255,.45)}.mv-d span{color:#fff;font-weight:500}
+.mv-acts{display:flex;gap:8px}
+.mv-btn{flex:1;height:44px;border-radius:12px;border:none;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;font-family:var(--font)}
+.mv-btn.pri{background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff}.mv-btn.pri:active{opacity:.8}
+.mv-btn.sec{background:rgba(255,255,255,.1);color:#fff}.mv-btn.sec:active{background:rgba(255,255,255,.15)}
+
 /* ===== PROFILE ===== */
 .profile-card {
   margin: 0 16px 12px; padding: 18px;
@@ -990,15 +1011,22 @@ body {
     <!-- RESULT -->
     <div class="screen" id="screen-result">
       <div style="height:12px"></div>
-      <div class="result-video"><div class="play-circle">▶</div><div class="vid-dur">0:05</div></div>
-      <div class="result-info">
-        <div class="ri-title">Генерация завершена</div>
-        <div class="result-row"><span class="rk">Модель</span><span class="rv" id="resModel">Kling 2.6</span></div>
-        <div class="result-row"><span class="rk">Режим</span><span class="rv">Image → Video</span></div>
-        <div class="result-row"><span class="rk">Время</span><span class="rv">47 сек</span></div>
-        <div class="result-row"><span class="rk">Стоимость</span><span class="rv" style="color:var(--accent)">-56₽</span></div>
+      <div class="result-video" id="resMediaBox" onclick="openViewer()" style="cursor:pointer">
+        <div class="play-circle" id="resPlayBtn">▶</div>
+        <div class="vid-dur" id="resDur">0:05</div>
       </div>
-      <div class="result-actions"><button class="save-btn">Сохранить</button><button class="share-btn">↗ Поделиться</button></div>
+      <div class="result-info">
+        <div class="ri-title">✅ Генерация завершена</div>
+        <div class="result-row"><span class="rk">Модель</span><span class="rv" id="resModel">Kling 2.6</span></div>
+        <div class="result-row"><span class="rk">Тип</span><span class="rv" id="resType">Video</span></div>
+        <div class="result-row"><span class="rk">Время</span><span class="rv" id="resTime">47 сек</span></div>
+        <div class="result-row"><span class="rk">Стоимость</span><span class="rv" style="color:var(--accent)" id="resCost">-56₽</span></div>
+      </div>
+      <div class="result-actions">
+        <button class="save-btn" onclick="openViewer()">🔍 Открыть</button>
+        <button class="save-btn" onclick="dlResult()">💾 Скачать</button>
+        <button class="share-btn" onclick="shResult()">↗ Поделиться</button>
+      </div>
       <button class="new-gen-btn" onclick="goScreen('screen-home')">← Новая генерация</button>
     </div>
 
@@ -1222,6 +1250,21 @@ body {
     <button class="tab-btn" data-tab="profile" onclick="switchTab('profile')"><div class="tab-icon">●</div><div class="tab-label">Profile</div></button>
   </div>
 
+<!-- MEDIA VIEWER -->
+<div class="mv-overlay" id="mvOv">
+  <div class="mv-top">
+    <div class="mv-top-l"><div class="mv-badge vid" id="mvBadge">VIDEO</div><div class="mv-mname" id="mvName">Model</div></div>
+    <button class="mv-x" onclick="closeViewer()">✕</button>
+  </div>
+  <div class="mv-body" id="mvBody"></div>
+  <div class="mv-foot">
+    <div class="mv-info" id="mvInfo"></div>
+    <div class="mv-acts">
+      <button class="mv-btn pri" onclick="dlResult()">💾 Скачать</button>
+      <button class="mv-btn sec" onclick="shResult()">↗ Поделиться</button>
+    </div>
+  </div>
+</div>
 
 <script>
 // ═══════════════════════════════════════════
@@ -1825,8 +1868,16 @@ function startGeneration() {
     });
     if (pct >= 100) {
       clearInterval(iv);
-      document.getElementById('resModel').textContent = currentModel ? `${currentModel.name}` : '⚡ Kling';
-      setTimeout(() => goScreen('screen-result'), 600);
+      var mn = currentModel ? currentModel.name : 'Kling';
+      var mi = currentModel ? currentModel.icon : '⚡';
+      document.getElementById('resModel').textContent = mn;
+      setTimeout(function(){
+        showResult({url:'',media_type:'video',model_name:mn,model_icon:mi,
+          prompt:(document.getElementById('promptInput').value||''),
+          ratio:(document.querySelector('#ratioChips .chip.active')||{}).textContent||'',
+          duration:(document.querySelector('#durationChips .chip.active')||{}).textContent||'5',
+          cost:'',gen_time:elapsed,thumbnail:''});
+      },600);
     }
   }, 550);
 }
@@ -2100,19 +2151,152 @@ function sendCoderMessage() {
 }
 
 // ═══════════════════════════════════════════
-// HERO CAROUSEL
+// MEDIA VIEWER
 // ═══════════════════════════════════════════
+var _rd = null; // current result data
+
+function showResult(d) {
+  _rd = d;
+  var box = document.getElementById('resMediaBox');
+  var isV = (d.media_type||'').indexOf('video') >= 0;
+  var u = d.url || '';
+  var th = d.thumbnail || u;
+  if (isV && u) {
+    box.style.background = '#000';
+    box.innerHTML = '<video src="'+u+'" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0" muted playsinline preload="auto" poster="'+th+'"></video><div class="play-circle">▶</div><div class="vid-dur">'+(d.duration?d.duration+'s':'')+'</div>';
+  } else if (u) {
+    box.style.background = '#111';
+    box.innerHTML = '<img src="'+u+'" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0"><div class="play-circle">🔍</div>';
+  }
+  document.getElementById('resModel').textContent = (d.model_icon||'⚡')+' '+(d.model_name||'AI');
+  document.getElementById('resType').textContent = isV ? '🎬 Video' : '🖼 Image';
+  document.getElementById('resTime').textContent = d.gen_time ? d.gen_time+' сек' : '—';
+  document.getElementById('resCost').textContent = d.cost ? '-'+d.cost+'₽' : '—';
+  goScreen('screen-result');
+}
+
+function openViewer() {
+  if (!_rd || !_rd.url) return;
+  var d = _rd, isV = (d.media_type||'').indexOf('video') >= 0;
+  var b = document.getElementById('mvBadge');
+  b.textContent = isV ? 'VIDEO' : 'IMAGE';
+  b.className = 'mv-badge '+(isV?'vid':'img');
+  document.getElementById('mvName').textContent = (d.model_icon||'')+' '+(d.model_name||'AI');
+  var mc = document.getElementById('mvBody');
+  if (isV) {
+    mc.innerHTML = '<video src="'+d.url+'" controls autoplay playsinline style="max-width:100%;max-height:100%;border-radius:8px;background:#000" poster="'+(d.thumbnail||'')+'"></video>';
+  } else {
+    mc.innerHTML = '<img src="'+d.url+'" style="max-width:100%;max-height:100%;border-radius:8px">';
+  }
+  var r = [];
+  if (d.model_name) r.push('<div class="mv-d">Модель: <span>'+(d.model_icon||'')+' '+d.model_name+'</span></div>');
+  if (d.prompt) r.push('<div class="mv-d">Промпт: <span>'+d.prompt.substring(0,80)+(d.prompt.length>80?'…':'')+'</span></div>');
+  if (d.ratio) r.push('<div class="mv-d">Размер: <span>'+d.ratio+'</span></div>');
+  if (d.duration) r.push('<div class="mv-d">Длительность: <span>'+d.duration+'s</span></div>');
+  if (d.cost) r.push('<div class="mv-d">Цена: <span style="color:var(--accent)">-'+d.cost+'₽</span></div>');
+  document.getElementById('mvInfo').innerHTML = r.join('');
+  document.getElementById('mvOv').classList.add('show');
+}
+
+function closeViewer() {
+  var o = document.getElementById('mvOv');
+  o.classList.remove('show');
+  var v = o.querySelector('video');
+  if (v) v.pause();
+}
+
+function dlResult() {
+  if (!_rd || !_rd.url) return;
+  var isV = (_rd.media_type||'').indexOf('video') >= 0;
+  var a = document.createElement('a');
+  a.href = _rd.url; a.target = '_blank'; a.rel = 'noopener';
+  a.download = 'ai_studio_'+(_rd.model_name||'r').replace(/\s/g,'_')+'_'+Date.now()+(isV?'.mp4':'.jpg');
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  if (tg) try { tg.openLink(_rd.url, {try_instant_view:false}); } catch(e){}
+}
+
+function shResult() {
+  if (!_rd) return;
+  var t = '🎨 AI Studio — '+(_rd.model_name||'AI')+'\n'+(_rd.prompt||'');
+  if (navigator.share) navigator.share({title:'AI Studio',text:t,url:_rd.url}).catch(function(){});
+  else if (tg) sendAction('share_result',{url:_rd.url,text:t});
+}
+
+function checkUrlResult() {
+  var p = new URLSearchParams(window.location.search);
+  var u = p.get('result_url');
+  if (!u) return;
+  setTimeout(function(){
+    showResult({
+      url:decodeURIComponent(u), media_type:p.get('media_type')||'image',
+      model_name:p.get('model_name')||'AI', model_icon:p.get('model_icon')||'⚡',
+      prompt:decodeURIComponent(p.get('prompt')||''), ratio:p.get('ratio')||'',
+      duration:p.get('duration')||'', cost:p.get('cost')||'',
+      gen_time:p.get('gen_time')||'', thumbnail:decodeURIComponent(p.get('thumbnail')||u)
+    });
+  }, 300);
+}
+
+// ═══════════════════════════════════════════
+// HERO CAROUSEL + SWIPE
+// ═══════════════════════════════════════════
+var heroCount = document.querySelectorAll('.hero-card').length || 6;
+
 function setHero(i) {
-  heroIdx = i;
-  const card = document.querySelector('.hero-card');
+  heroIdx = Math.max(0, Math.min(i, heroCount - 1));
+  var card = document.querySelector('.hero-card');
   if (!card) return;
-  const w = card.offsetWidth + 40;
-  document.getElementById('heroTrack').style.transform = `translateX(-${heroIdx * w}px)`;
-  document.querySelectorAll('.hero-dot').forEach((d,j) => d.classList.toggle('active', j===heroIdx));
+  var w = card.offsetWidth + 40;
+  document.getElementById('heroTrack').style.transform = 'translateX(-' + heroIdx * w + 'px)';
+  document.querySelectorAll('.hero-dot').forEach(function(d,j){ d.classList.toggle('active', j===heroIdx); });
 }
 function autoHero() {
-  heroTimer = setInterval(() => setHero((heroIdx + 1) % 3), 4000);
+  heroTimer = setInterval(function(){ setHero((heroIdx + 1) % heroCount); }, 4000);
 }
+
+// ── Touch swipe ──
+(function(){
+  var wrap = document.querySelector('.hero-wrap');
+  if (!wrap) return;
+  var sx=0, sy=0, dx=0, moving=false;
+
+  wrap.addEventListener('touchstart', function(e){
+    sx = e.touches[0].clientX;
+    sy = e.touches[0].clientY;
+    dx = 0; moving = true;
+    clearInterval(heroTimer);
+    document.getElementById('heroTrack').style.transition = 'none';
+  }, {passive:true});
+
+  wrap.addEventListener('touchmove', function(e){
+    if (!moving) return;
+    dx = e.touches[0].clientX - sx;
+    var dy = Math.abs(e.touches[0].clientY - sy);
+    if (dy > Math.abs(dx) + 10) { moving = false; return; }
+    var card = document.querySelector('.hero-card');
+    if (!card) return;
+    var w = card.offsetWidth + 40;
+    var base = -heroIdx * w;
+    document.getElementById('heroTrack').style.transform = 'translateX(' + (base + dx) + 'px)';
+  }, {passive:true});
+
+  wrap.addEventListener('touchend', function(){
+    if (!moving && dx === 0) { restoreHero(); return; }
+    moving = false;
+    document.getElementById('heroTrack').style.transition = 'transform 0.45s cubic-bezier(0.22,1,0.36,1)';
+    if (dx < -40) setHero(heroIdx + 1);
+    else if (dx > 40) setHero(heroIdx - 1);
+    else setHero(heroIdx);
+    dx = 0;
+    autoHero();
+  }, {passive:true});
+
+  function restoreHero() {
+    document.getElementById('heroTrack').style.transition = 'transform 0.45s cubic-bezier(0.22,1,0.36,1)';
+    setHero(heroIdx);
+    autoHero();
+  }
+})();
 
 // ═══════════════════════════════════════════
 // INIT
@@ -2126,6 +2310,7 @@ renderVideoEditGrid();
 renderImageEditGrid();
 renderSoulGrid();
 autoHero();
+checkUrlResult();
 </script>
 </body>
 </html>
