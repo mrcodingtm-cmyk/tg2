@@ -712,6 +712,27 @@ body {
 .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
 @keyframes dotPulse { 0%,80%,100% { opacity:0.3; transform:scale(0.8); } 40% { opacity:1; transform:scale(1); } }
 
+/* ── Code blocks with Copy ── */
+.cb-wrap { margin:8px -4px; border:1px solid var(--border); border-radius:10px; overflow:hidden; }
+.cb-head { display:flex; justify-content:space-between; align-items:center; padding:4px 10px; background:rgba(255,255,255,0.03); border-bottom:1px solid var(--border); }
+.cb-lang { font-size:10px; color:var(--accent); text-transform:uppercase; font-weight:700; letter-spacing:0.5px; font-family:var(--mono); }
+.cb-copy { background:none; border:1px solid var(--border); color:var(--text-dim); padding:2px 8px; border-radius:4px; font-size:10px; cursor:pointer; font-family:var(--font); }
+.cb-copy:active { background:var(--border); color:#fff; }
+.cb-pre { margin:0; padding:10px; overflow-x:auto; background:rgba(0,0,0,0.3); }
+.cb-pre code { font:12px/1.5 var(--mono); color:var(--text); white-space:pre; display:block; }
+.chat-msg b,.chat-msg strong { color:#fff; font-weight:700; }
+.chat-msg i,.chat-msg em { color:var(--text-dim); }
+.chat-msg s { color:var(--red); }
+.chat-msg blockquote { border-left:3px solid var(--accent); padding:4px 10px; margin:6px 0; background:rgba(88,166,255,0.05); color:var(--text-dim); font-style:italic; border-radius:0 6px 6px 0; }
+.chat-msg h1,.chat-msg h2,.chat-msg h3 { margin:8px 0 4px; font-weight:700; }
+.chat-msg h1 { font-size:16px; color:var(--accent); }
+.chat-msg h2 { font-size:15px; color:var(--green); }
+.chat-msg h3 { font-size:14px; color:var(--pink); }
+.chat-msg ul,.chat-msg ol { padding-left:18px; margin:6px 0; }
+.chat-msg li { margin:2px 0; }
+.chat-msg hr { border:none; border-top:1px solid var(--border); margin:8px 0; }
+.chat-msg .msg-cost { font-size:10px; color:var(--text-muted); margin-top:6px; padding-top:4px; border-top:1px solid rgba(255,255,255,0.04); }
+
 /* ═══ EDIT SELECTION ═══ */
 .edit-choice {
   position: relative; height: 140px; border-radius: 16px; overflow: hidden;
@@ -1843,18 +1864,24 @@ function closePopups() {
 
 
 // ═══════════════════════════════════════════
-// CHAT ENGINE
+// CHAT ENGINE — REAL API
 // ═══════════════════════════════════════════
 let chatHistory = [];
 let coderHistory = [];
 let currentChatModel = {};
 let currentCoderModel = {};
+let chatBusy = false;
+let coderBusy = false;
+
+// ── API URL — ЗАМЕНИТЬ НА ВАШ ──
+const CHAT_API_URL = (window.location.hostname === 'localhost')
+  ? 'http://localhost:5050'
+  : 'https://YOUR_DOMAIN/api';  // ← сюда ваш домен
 
 function startChat(id, name, sub) {
   currentChatModel = {id, name, sub};
   document.getElementById('chatModelName').textContent = name;
   document.getElementById('chatModelSub').textContent = sub;
-  // Clear old messages
   document.getElementById('chatMessages').innerHTML = '<div class="chat-welcome"><div class="cw-icon">◆</div><div class="cw-title">' + name + '</div><div class="cw-sub">Начните диалог с ' + name + '</div></div>';
   chatHistory = [];
   goScreen('screen-chat');
@@ -1871,22 +1898,99 @@ function autoResize(el) {
   el.style.height = 'auto';
   el.style.height = Math.min(el.scrollHeight, 120) + 'px';
 }
-function addMessage(container, role, text, model) {
+
+// ── Markdown → HTML (красивый) ──
+function mdToHtml(text) {
+  // 1. Fenced code blocks → cb-wrap with Copy button
+  let codeN = 0;
+  text = text.replace(/```(\w*)\n([\s\S]*?)```/g, function(_, lang, code) {
+    codeN++;
+    const cid = 'cblk' + codeN + '_' + Date.now();
+    const langLabel = lang || 'code';
+    const escaped = code.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').trim();
+    return '<div class="cb-wrap"><div class="cb-head"><span class="cb-lang">' + langLabel +
+      '</span><button class="cb-copy" onclick="copyCodeBlock(\'' + cid + '\')">📋 Copy</button></div>' +
+      '<div class="cb-pre" id="' + cid + '"><code>' + escaped + '</code></div></div>';
+  });
+  // 2. Inline code
+  text = text.replace(/`([^`\n]+)`/g, function(_, code) {
+    return '<code style="background:rgba(255,255,255,0.06);color:#ff7b72;padding:1px 5px;border-radius:4px;font-family:var(--mono);font-size:12px">' +
+      code.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</code>';
+  });
+  // 3. Bold
+  text = text.replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
+  text = text.replace(/__(.+?)__/g, '<b>$1</b>');
+  // 4. Italic
+  text = text.replace(/(?<!\w)\*([^*\n]+?)\*(?!\w)/g, '<i>$1</i>');
+  text = text.replace(/(?<!\w)_([^_\n]+?)_(?!\w)/g, '<i>$1</i>');
+  // 5. Strikethrough
+  text = text.replace(/~~(.+?)~~/g, '<s>$1</s>');
+  // 6. Headers
+  text = text.replace(/^#{3}\s+(.+)$/gm, '<h3>$1</h3>');
+  text = text.replace(/^#{2}\s+(.+)$/gm, '<h2>$1</h2>');
+  text = text.replace(/^#{1}\s+(.+)$/gm, '<h1>$1</h1>');
+  // 7. HR
+  text = text.replace(/^-{3,}$/gm, '<hr>');
+  // 8. Blockquote
+  text = text.replace(/^>\s?(.+)$/gm, '<blockquote>$1</blockquote>');
+  // 9. Bullet lists
+  text = text.replace(/^[\-\*]\s+(.+)$/gm, '<li>$1</li>');
+  text = text.replace(/(<li>.*<\/li>\n?)+/g, function(m) { return '<ul>' + m + '</ul>'; });
+  // 10. Numbered lists
+  text = text.replace(/^\d+\.\s+(.+)$/gm, '<li>$1</li>');
+  // 11. Line breaks (but not inside <pre> or after block elements)
+  text = text.replace(/\n{2,}/g, '</p><p>');
+  text = text.replace(/\n/g, '<br>');
+  text = '<p>' + text + '</p>';
+  text = text.replace(/<p><\/p>/g, '');
+  // Cleanup: don't wrap block elements in <p>
+  text = text.replace(/<p>(<div|<h[1-6]|<ul|<ol|<hr|<blockquote)/g, '$1');
+  text = text.replace(/(<\/div>|<\/h[1-6]>|<\/ul>|<\/ol>|<hr>|<\/blockquote>)<\/p>/g, '$1');
+  return text;
+}
+
+function copyCodeBlock(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const code = el.querySelector('code') || el;
+  const text = code.innerText || code.textContent;
+  navigator.clipboard.writeText(text).then(function() {
+    const btn = el.parentElement.querySelector('.cb-copy');
+    if (btn) { btn.textContent = '✅ Скопировано'; setTimeout(function() { btn.textContent = '📋 Copy'; }, 2000); }
+  }).catch(function() {
+    // Fallback: select text
+    const range = document.createRange();
+    range.selectNodeContents(code);
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+  });
+}
+
+function addMessage(container, role, text, model, costInfo) {
   const welcome = container.querySelector('.chat-welcome');
   if (welcome) welcome.remove();
   const div = document.createElement('div');
   div.className = 'chat-msg ' + role;
+  let html = '';
   if (role === 'assistant' && model) {
-    div.innerHTML = '<div class="msg-model">' + model + '</div>' + formatMsg(text);
-  } else { div.innerHTML = formatMsg(text); }
+    html += '<div class="msg-model">' + model + '</div>';
+  }
+  if (role === 'assistant') {
+    html += mdToHtml(text);
+  } else {
+    html += text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+  }
+  if (costInfo) {
+    html += '<div class="msg-cost">' + costInfo + '</div>';
+  }
+  div.innerHTML = html;
   container.appendChild(div);
   container.scrollTop = container.scrollHeight;
   return div;
 }
 function formatMsg(text) {
-  return text.replace(/```(\w*)\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>')
-    .replace(/`([^`]+)`/g, '<code style="background:rgba(255,255,255,0.06);padding:1px 5px;border-radius:4px;font-family:var(--mono);font-size:12px">$1</code>')
-    .replace(/\n/g, '<br>');
+  return mdToHtml(text);
 }
 function showTyping(container, model) {
   const div = document.createElement('div');
@@ -1897,7 +2001,38 @@ function showTyping(container, model) {
   container.scrollTop = container.scrollHeight;
   return div;
 }
+
+// ── Отправка в реальный API ──
+async function callChatAPI(message, modelKey) {
+  const userId = TG_USER ? TG_USER.id : 0;
+  try {
+    const res = await fetch(CHAT_API_URL + '/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-User-Id': String(userId) },
+      body: JSON.stringify({ message: message, model: modelKey, user_id: userId })
+    });
+    const data = await res.json();
+    return data;
+  } catch(e) {
+    return { ok: false, error: 'network', message: '⚠️ Нет связи с сервером: ' + e.message };
+  }
+}
+
+function formatCostInfo(cost) {
+  if (!cost) return '';
+  if (cost.type === 'free') {
+    return '🆓 бесплатно ' + (cost.used || '?') + '/' + (cost.limit || '30');
+  }
+  if (cost.type === 'paid') {
+    let s = '💰 -' + (cost.cost || 0) + '₽';
+    if (cost.balance !== undefined) s += ' • бал: ' + cost.balance + '₽';
+    return s;
+  }
+  return '';
+}
+
 function sendChatMessage() {
+  if (chatBusy) return;
   const input = document.getElementById('chatInput');
   const text = input.value.trim();
   if (!text) return;
@@ -1905,20 +2040,34 @@ function sendChatMessage() {
   const container = document.getElementById('chatMessages');
   addMessage(container, 'user', text);
   chatHistory.push({role:'user', content:text});
-  const typing = showTyping(container, currentChatModel.name);
-  setTimeout(() => {
+  const typing = showTyping(container, currentChatModel.name || 'AI');
+  chatBusy = true;
+
+  callChatAPI(text, currentChatModel.id).then(function(data) {
     typing.remove();
-    const responses = [
-      'Отличный вопрос! Давайте разберём это подробнее.\n\nЕсть несколько ключевых аспектов, которые стоит рассмотреть в контексте вашего запроса.',
-      'Конечно, помогу. Вот основные шаги:\n\n1. Определяем задачу\n2. Разрабатываем план\n3. Реализуем решение\n\nДавайте начнём с первого пункта.',
-      'Интересная тема! Я подготовил развёрнутый ответ.\n\nОсновной подход заключается в разделении проблемы на управляемые части и последовательной работе с каждой из них.',
-    ];
-    const resp = responses[chatHistory.length % responses.length];
-    addMessage(container, 'assistant', resp, currentChatModel.name);
-    chatHistory.push({role:'assistant', content:resp});
-  }, 1200 + Math.random() * 800);
+    chatBusy = false;
+    if (data.ok) {
+      const costStr = formatCostInfo(data.cost);
+      const modelLabel = (data.model_icon || '') + ' ' + (data.model || currentChatModel.name);
+      addMessage(container, 'assistant', data.response, modelLabel, costStr);
+      chatHistory.push({role:'assistant', content:data.response});
+    } else {
+      // Error
+      let errMsg = '❌ ' + (data.message || 'Ошибка');
+      if (data.error === 'free_limit') errMsg = '⚠️ Лимит исчерпан: ' + (data.used||'') + '/' + (data.limit||'') + ' на сегодня.\nПополните баланс или смените модель.';
+      if (data.error === 'no_balance') errMsg = '💳 Недостаточно средств.\nБаланс: ' + (data.balance||0) + '₽, нужно: ' + (data.price||0) + '₽';
+      if (data.refunded) errMsg += '\n💰 Возвращено: ' + data.refunded + '₽';
+      addMessage(container, 'assistant', errMsg, '⚠️ Система');
+    }
+  }).catch(function(e) {
+    typing.remove();
+    chatBusy = false;
+    addMessage(container, 'assistant', '⚠️ Ошибка сети: ' + e.message, '⚠️ Система');
+  });
 }
+
 function sendCoderMessage() {
+  if (coderBusy) return;
   const input = document.getElementById('coderInput');
   const text = input.value.trim();
   if (!text) return;
@@ -1926,18 +2075,28 @@ function sendCoderMessage() {
   const container = document.getElementById('coderMessages');
   addMessage(container, 'user', text);
   coderHistory.push({role:'user', content:text});
-  const typing = showTyping(container, currentCoderModel.name);
-  setTimeout(() => {
+  const typing = showTyping(container, currentCoderModel.name || 'Coder');
+  coderBusy = true;
+
+  callChatAPI(text, currentCoderModel.id).then(function(data) {
     typing.remove();
-    const responses = [
-      'Вот решение:\n\n```python\ndef solve(data):\n    result = []\n    for item in data:\n        if item.is_valid():\n            result.append(item.process())\n    return result\n```\n\nКод обрабатывает данные с валидацией.',
-      'Проанализировал — вот оптимизация:\n\n```javascript\nconst process = async (items) => {\n  return Promise.all(\n    items.filter(Boolean).map(transform)\n  );\n};\n```\n\nПараллельная обработка вместо последовательной.',
-      'Рекомендую паттерн Repository:\n\n```typescript\ninterface IRepo<T> {\n  findById(id: string): Promise<T>;\n  save(entity: T): Promise<void>;\n  delete(id: string): Promise<void>;\n}\n```\n\nЧистое разделение слоёв данных.',
-    ];
-    const resp = responses[coderHistory.length % responses.length];
-    addMessage(container, 'assistant', resp, currentCoderModel.name);
-    coderHistory.push({role:'assistant', content:resp});
-  }, 1500 + Math.random() * 1000);
+    coderBusy = false;
+    if (data.ok) {
+      const costStr = formatCostInfo(data.cost);
+      const modelLabel = (data.model_icon || '') + ' ' + (data.model || currentCoderModel.name);
+      addMessage(container, 'assistant', data.response, modelLabel, costStr);
+      coderHistory.push({role:'assistant', content:data.response});
+    } else {
+      let errMsg = '❌ ' + (data.message || 'Ошибка');
+      if (data.error === 'free_limit') errMsg = '⚠️ Лимит: ' + (data.used||'') + '/' + (data.limit||'');
+      if (data.error === 'no_balance') errMsg = '💳 Баланс: ' + (data.balance||0) + '₽, нужно: ' + (data.price||0) + '₽';
+      addMessage(container, 'assistant', errMsg, '⚠️ Система');
+    }
+  }).catch(function(e) {
+    typing.remove();
+    coderBusy = false;
+    addMessage(container, 'assistant', '⚠️ Ошибка: ' + e.message, '⚠️ Система');
+  });
 }
 
 // ═══════════════════════════════════════════
