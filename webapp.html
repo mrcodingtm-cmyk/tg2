@@ -179,28 +179,33 @@ body {
 /* ===== SECTION TITLES ===== */
 .section-title {
   display: flex; align-items: center; gap: 8px;
-  padding: 8px 12px 4px; font-size: 10px; font-weight: 600;
+  padding: 14px 16px 8px; font-size: 12px; font-weight: 600;
   color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.8px;
 }
 
 /* ===== CATEGORY GRID ===== */
 .cat-grid {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 5px;
-  padding: 0 10px; margin-bottom: 2px;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+  padding: 0 14px; margin-bottom: 4px;
 }
 .cat-card {
-  border-radius: 12px; overflow: hidden; position: relative;
+  border-radius: 14px; overflow: hidden; position: relative;
+  cursor: pointer; transition: all 0.25s; text-align: center;
   display: flex; flex-direction: column; align-items: center;
-  justify-content: flex-end; cursor: pointer; transition: all 0.2s;
-  text-align: center; height: 110px;
+  justify-content: flex-end; height: 100px;
 }
-.cat-card:active { transform: scale(0.96); }
-.cat-card .cat-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; }
-.cat-card video.cat-vid { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; }
-.cat-card .cat-ov { position: absolute; inset: 0; z-index: 1; background: linear-gradient(0deg, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.08) 50%, rgba(0,0,0,0.28) 100%); }
-.cat-icon { font-size: 20px; display: block; position: relative; z-index: 2; line-height: 1; }
-.cat-title { font-size: 12px; font-weight: 700; line-height: 1.2; position: relative; z-index: 2; text-shadow: 0 1px 3px rgba(0,0,0,0.6); }
-.cat-sub { font-size: 9px; color: rgba(255,255,255,0.5); position: relative; z-index: 2; margin-bottom: 8px; }
+.cat-card:active { transform: scale(0.97); filter: brightness(1.1); }
+.cat-card .cat-bg {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; z-index: 0; filter: brightness(0.45) saturate(0.85); pointer-events: none;
+}
+.cat-card .cat-ov {
+  position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background: linear-gradient(0deg, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.35) 100%);
+}
+.cat-icon { display: none; }
+.cat-title { font-size: 14px; font-weight: 800; position: relative; z-index: 2; text-shadow: 0 2px 8px rgba(0,0,0,0.7); letter-spacing: -0.2px; }
+.cat-sub { font-size: 10px; color: rgba(255,255,255,0.5); position: relative; z-index: 2; margin-bottom: 10px; letter-spacing: 0.2px; }
 
 /* ===== SECTION HEAD ===== */
 .section-head {
@@ -215,19 +220,26 @@ body {
 
 /* ===== FREE BOT SECTION ===== */
 .free-grid {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 5px;
-  padding: 0 10px; margin-bottom: 2px;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+  padding: 0 14px; margin-bottom: 4px;
 }
 .free-card {
-  border-radius: 12px; overflow: hidden; position: relative;
+  border-radius: 14px; overflow: hidden; position: relative;
   cursor: pointer; text-align: center;
   display: flex; flex-direction: column; align-items: center;
-  justify-content: flex-end; height: 110px;
+  justify-content: flex-end; height: 100px;
 }
-.free-card .cat-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; }
-.free-card .cat-ov { position: absolute; inset: 0; z-index: 1; background: linear-gradient(0deg, rgba(0,20,10,0.88) 0%, rgba(0,40,20,0.15) 50%, rgba(0,0,0,0.35) 100%); border: 1px solid rgba(91,235,160,0.12); border-radius: 12px; }
-.free-card .cat-icon { font-size: 20px; position: relative; z-index: 2; }
-.free-card .cat-title { font-size: 12px; font-weight: 700; line-height: 1.2; position: relative; z-index: 2; text-shadow: 0 1px 3px rgba(0,0,0,0.5); }
+.free-card .cat-bg {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; z-index: 0; filter: brightness(0.4) saturate(0.85); pointer-events: none;
+}
+.free-card .cat-ov {
+  position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background: linear-gradient(0deg, rgba(0,20,10,0.75) 0%, rgba(0,30,15,0.15) 50%, rgba(0,0,0,0.35) 100%);
+  border: 1px solid rgba(91,235,160,0.1); border-radius: 14px;
+}
+.free-card .cat-icon { display: none; }
+.free-card .cat-title { font-size: 14px; font-weight: 800; position: relative; z-index: 2; text-shadow: 0 2px 8px rgba(0,0,0,0.7); letter-spacing: -0.2px; }
 .free-card .cat-sub { font-size: 9px; color: #6ee7b7; position: relative; z-index: 2; margin-bottom: 8px; }
 
 /* ===== MODEL CARDS (horizontal) ===== */
@@ -254,35 +266,35 @@ body {
 
 /* ===== VCARD (Higgsfield media cards) ===== */
 .vcard {
-  min-width: 95px; flex-shrink: 0; border-radius: 8px; overflow: hidden;
+  min-width: 130px; flex-shrink: 0; border-radius: 14px; overflow: hidden;
   cursor: pointer; transition: transform 0.2s; position: relative;
-  scroll-snap-align: start; aspect-ratio: 3/4; background: #111;
+  scroll-snap-align: start; aspect-ratio: 4/5; background: #111;
 }
 .vcard:active { transform: scale(0.97); }
 .vcard .vc-poster {
-  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; pointer-events: none;
 }
 .vcard video.vc-vid {
-  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; pointer-events: none;
 }
 .vcard .vc-grad {
-  position: absolute; inset: 0; z-index: 1;
-  background: linear-gradient(0deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.05) 45%, rgba(0,0,0,0.3) 100%);
+  position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background: linear-gradient(0deg, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.2) 100%);
 }
 .vcard .vc-play {
-  position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); z-index: 2;
-  width: 28px; height: 28px; border-radius: 50%;
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); z-index: 2; pointer-events: none;
+  width: 44px; height: 44px; border-radius: 50%;
   background: rgba(255,255,255,0.1); backdrop-filter: blur(10px);
   border: 1.5px solid rgba(255,255,255,0.12);
   display: flex; align-items: center; justify-content: center;
-  font-size: 11px; transition: background 0.2s;
+  font-size: 16px; transition: background 0.2s;
 }
 .vcard:hover .vc-play { background: rgba(255,255,255,0.2); }
 .vcard .vc-badges {
-  position: absolute; top: 6px; left: 6px; z-index: 3; display: flex; gap: 3px;
+  position: absolute; top: 10px; left: 10px; z-index: 3; display: flex; gap: 4px; pointer-events: none;
 }
 .vcard .vc-tag {
-  font-size: 7px; font-weight: 700; padding: 2px 5px; border-radius: 4px;
+  font-size: 9px; font-weight: 700; padding: 3px 7px; border-radius: 6px;
   text-transform: uppercase; letter-spacing: 0.6px; backdrop-filter: blur(6px);
 }
 .vcard .vc-tag.vid { background: rgba(139,92,246,0.4); color: #ddd6fe; border: 1px solid rgba(139,92,246,0.2); }
@@ -290,19 +302,20 @@ body {
 .vcard .vc-tag.edt { background: rgba(251,191,36,0.35); color: #fef3c7; border: 1px solid rgba(251,191,36,0.2); }
 .vcard .vc-tag.aud { background: rgba(16,185,129,0.35); color: #a7f3d0; border: 1px solid rgba(16,185,129,0.15); }
 .vcard .vc-hot {
-  position: absolute; top: 6px; right: 6px; z-index: 3;
-  font-size: 7px; font-weight: 700; padding: 2px 8px; border-radius: 5px;
+  position: absolute; top: 10px; right: 10px; z-index: 3; pointer-events: none;
+  font-size: 9px; font-weight: 700; padding: 3px 9px; border-radius: 6px;
   text-transform: uppercase; letter-spacing: 0.7px; backdrop-filter: blur(6px);
 }
 .vcard .vc-info {
-  position: absolute; bottom: 0; left: 0; right: 0; z-index: 3; padding: 8px 10px 10px;
+  position: absolute; bottom: 0; left: 0; right: 0; z-index: 3; padding: 12px 14px 14px; pointer-events: none;
 }
-.vcard .vc-name { font-size: 13px; font-weight: 700; letter-spacing: -0.3px; text-shadow: 0 1px 3px rgba(0,0,0,0.5); }
-.vcard .vc-subs { font-size: 9px; color: rgba(255,255,255,0.5); margin-top: 2px; }
+.vcard .vc-name { font-size: 16px; font-weight: 800; letter-spacing: -0.3px; text-shadow: 0 2px 6px rgba(0,0,0,0.7); line-height: 1.2; }
+.vcard .vc-subs { font-size: 11px; color: rgba(255,255,255,0.55); margin-top: 3px; line-height: 1.3; }
 .vcard .vc-meta {
-  display: flex; gap: 6px; align-items: center; margin-top: 3px; font-size: 9px; color: rgba(255,255,255,0.35);
+  display: flex; gap: 8px; align-items: center; margin-top: 5px; font-size: 11px; color: rgba(255,255,255,0.4);
 }
 .vcard .vc-price { color: var(--accent); font-weight: 700; }
+.grid-list .vcard { min-width: 0; aspect-ratio: 3/4; border-radius: 16px; }
 
 .m-badge {
   position: absolute; top: 10px; right: 10px;
@@ -331,15 +344,15 @@ body {
 
 /* ===== GRID MODEL LIST ===== */
 .grid-list {
-  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px;
-  padding: 0 10px 120px;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+  padding: 0 16px 120px;
 }
 .back-btn {
   background: none; border: none; color: var(--text-dim);
   font-size: 14px; cursor: pointer; padding: 8px 16px 8px;
   font-family: var(--font); display: flex; align-items: center; gap: 6px;
 }
-.page-title { font-size: 24px; font-weight: 800; padding: 0 20px 2px; letter-spacing: -0.5px; }
+.page-title { font-size: 22px; font-weight: 800; padding: 0 20px 2px; letter-spacing: -0.5px; }
 .page-sub { font-size: 12px; color: var(--text-dim); padding: 0 20px 16px; }
 
 /* ===== SOUL GALLERY ===== */
@@ -618,6 +631,163 @@ body {
 .menu-item:not(:last-child) { border-bottom: 1px solid var(--border); }
 .menu-item:active { background: var(--surface-hover); }
 .menu-arrow { color: var(--text-muted); }
+
+/* ═══ CHAT SCREEN ═══ */
+.chat-header {
+  display: flex; align-items: center; gap: 10px; padding: 12px 16px;
+  border-bottom: 1px solid var(--border); background: rgba(6,6,10,0.95);
+  backdrop-filter: blur(20px); position: sticky; top: 0; z-index: 10;
+}
+.chat-model-info { flex: 1; min-width: 0; }
+.chat-model-name { font-size: 16px; font-weight: 700; }
+.chat-model-sub { font-size: 11px; color: var(--text-dim); margin-top: 1px; }
+.chat-model-select {
+  width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center;
+  justify-content: center; background: var(--surface); cursor: pointer; font-size: 14px; color: var(--text-dim);
+}
+.chat-model-picker {
+  padding: 6px 16px; display: flex; gap: 6px; flex-wrap: wrap;
+  border-bottom: 1px solid var(--border); background: rgba(6,6,10,0.9);
+}
+.chat-model-opt {
+  padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 500;
+  background: var(--surface); color: var(--text-dim); cursor: pointer; transition: all 0.2s;
+  border: 1px solid transparent;
+}
+.chat-model-opt.active { background: var(--accent-soft); color: var(--accent); border-color: var(--border-active); }
+.chat-messages {
+  flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px;
+  min-height: calc(100dvh - 200px);
+}
+.chat-welcome {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; padding: 60px 20px; gap: 10px; opacity: 0.6;
+}
+.cw-icon { font-size: 32px; color: var(--accent); }
+.cw-title { font-size: 18px; font-weight: 700; }
+.cw-sub { font-size: 13px; color: var(--text-dim); max-width: 280px; line-height: 1.5; }
+.chat-msg {
+  max-width: 85%; padding: 10px 14px; border-radius: 16px; font-size: 14px; line-height: 1.5;
+  word-wrap: break-word; animation: msgIn 0.3s ease;
+}
+@keyframes msgIn { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform: translateY(0); } }
+.chat-msg.user {
+  align-self: flex-end; background: var(--accent-soft); color: var(--text);
+  border-bottom-right-radius: 4px;
+}
+.chat-msg.assistant {
+  align-self: flex-start; background: var(--surface-hover); color: var(--text);
+  border-bottom-left-radius: 4px;
+}
+.chat-msg.assistant .msg-model {
+  font-size: 10px; color: var(--accent); font-weight: 600; margin-bottom: 4px; letter-spacing: 0.3px;
+}
+.chat-msg pre {
+  background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; overflow-x: auto;
+  font-family: var(--mono); font-size: 12px; margin: 6px 0; white-space: pre-wrap;
+}
+.chat-input-wrap {
+  display: flex; align-items: flex-end; gap: 8px; padding: 10px 16px 14px;
+  border-top: 1px solid var(--border); background: rgba(6,6,10,0.95);
+  backdrop-filter: blur(20px); position: sticky; bottom: 0;
+}
+.chat-input {
+  flex: 1; background: var(--surface); border: 1px solid var(--border); border-radius: 20px;
+  padding: 10px 16px; color: var(--text); font-size: 14px; font-family: var(--font);
+  resize: none; max-height: 120px; outline: none; transition: border 0.2s;
+}
+.chat-input:focus { border-color: var(--border-active); }
+.chat-send {
+  width: 38px; height: 38px; border-radius: 50%; border: none; cursor: pointer;
+  background: var(--accent-soft); color: var(--accent); font-size: 18px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s;
+}
+.chat-send:active { transform: scale(0.92); background: var(--accent); color: #fff; }
+.typing-dots { display: inline-flex; gap: 4px; padding: 4px 0; }
+.typing-dots span {
+  width: 6px; height: 6px; border-radius: 50%; background: var(--text-dim);
+  animation: dotPulse 1.4s infinite ease-in-out;
+}
+.typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+.typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes dotPulse { 0%,80%,100% { opacity:0.3; transform:scale(0.8); } 40% { opacity:1; transform:scale(1); } }
+
+/* ═══ EDIT SELECTION ═══ */
+.edit-choice {
+  position: relative; height: 140px; border-radius: 16px; overflow: hidden;
+  cursor: pointer; transition: all 0.25s;
+}
+.edit-choice:active { transform: scale(0.97); }
+.edit-choice-bg {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; z-index: 0; filter: brightness(0.5) saturate(0.8); pointer-events: none;
+}
+.edit-choice-ov {
+  position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background: linear-gradient(0deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.3) 100%);
+}
+.edit-choice-content {
+  position: absolute; bottom: 0; left: 0; right: 0; z-index: 2; padding: 16px 20px; pointer-events: none;
+}
+.edit-choice-title { font-size: 20px; font-weight: 800; letter-spacing: -0.3px; text-shadow: 0 2px 8px rgba(0,0,0,0.7); }
+.edit-choice-sub { font-size: 12px; color: rgba(255,255,255,0.6); margin-top: 4px; }
+
+
+/* ═══ TAB POPUP MENUS ═══ */
+.tab-popup {
+  position: fixed; bottom: 72px; left: 50%; transform: translateX(-50%);
+  background: rgba(18,18,26,0.97); backdrop-filter: blur(24px);
+  border: 1px solid var(--border); border-radius: 16px;
+  padding: 6px; min-width: 220px; z-index: 100;
+  box-shadow: 0 -8px 32px rgba(0,0,0,0.5);
+  animation: popupIn 0.2s ease; display: none;
+}
+@keyframes popupIn { from { opacity:0; transform: translateX(-50%) translateY(10px); } to { opacity:1; transform: translateX(-50%) translateY(0); } }
+.tab-popup.show { display: block; }
+.tab-popup-item {
+  display: flex; align-items: center; gap: 12px; padding: 12px 16px;
+  border-radius: 12px; cursor: pointer; transition: background 0.15s;
+}
+.tab-popup-item:active { background: rgba(255,255,255,0.06); }
+.tab-popup-icon {
+  width: 40px; height: 40px; border-radius: 10px; overflow: hidden; flex-shrink: 0;
+}
+.tab-popup-icon img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+.tab-popup-title { font-size: 14px; font-weight: 700; }
+.tab-popup-sub { font-size: 11px; color: var(--text-dim); margin-top: 1px; }
+.tab-popup-arrow { color: var(--text-muted); font-size: 16px; }
+.tab-overlay { position: fixed; inset: 0; z-index: 99; display: none; }
+.tab-overlay.show { display: block; }
+
+/* ═══ MODEL SELECT GRID (chat/coder) ═══ */
+.model-select-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+  padding: 16px;
+}
+.model-select-card {
+  position: relative; border-radius: 16px; overflow: hidden;
+  cursor: pointer; transition: all 0.2s; aspect-ratio: 4/3;
+  border: 2px solid transparent; background: #111;
+}
+.model-select-card:active { transform: scale(0.96); }
+.model-select-card img {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; filter: brightness(0.4) saturate(0.8); pointer-events: none;
+}
+.model-select-card .ms-ov {
+  position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(0deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.3) 100%);
+}
+.model-select-card .ms-info {
+  position: absolute; bottom: 0; left: 0; right: 0; padding: 12px; pointer-events: none;
+}
+.model-select-card .ms-name { font-size: 15px; font-weight: 800; text-shadow: 0 2px 6px rgba(0,0,0,0.7); }
+.model-select-card .ms-sub { font-size: 10px; color: rgba(255,255,255,0.5); margin-top: 3px; }
+.model-select-card .ms-badge {
+  position: absolute; top: 8px; right: 8px; padding: 3px 8px; border-radius: 6px;
+  font-size: 9px; font-weight: 700; pointer-events: none;
+}
+
 </style>
 </head>
 <body>
@@ -633,29 +803,29 @@ body {
           <h1>AI Chat & Coder</h1>
           <div class="header-sub">Claude Opus 4.6 • GPT-5.2 • Gemini 3.1</div>
         </div>
-        <div class="credit-badge" onclick="switchTab('profile')">💎 <span id="headerBalance">0</span></div>
+        <div class="credit-badge" onclick="switchTab('profile')"><span style="font-size:11px;opacity:0.5;font-weight:600;letter-spacing:0.5px">CR</span> <span id="headerBalance">0</span></div>
       </div>
 
       <div class="hero-wrap">
         <div class="hero-track" id="heroTrack">
-          <div class="hero-card" style="background:linear-gradient(135deg,#0c0320,#211555,#0a0a18)" onclick="openConfig('kling')">
-            <video class="hero-video" autoplay muted loop playsinline poster="https://cdn.higgsfield.ai/card/831011af-a320-40a8-bf95-ebc55ff59900.webp"><source src="https://cdn.higgsfield.ai/card/05d430f6-0d7d-4ded-834a-5d38c9a1e2bd.mp4" type="video/mp4"></video>
-            <div class="hero-overlay"></div><div class="badge">HOT</div><h2>⚡ Kling 3.0 Pro</h2><p>5 моделей • Audio • до 10 секунд</p></div>
-          <div class="hero-card" style="background:linear-gradient(135deg,#061222,#152d52,#070c16)" onclick="openConfig('veo')">
-            <video class="hero-video" autoplay muted loop playsinline poster="https://static.higgsfield.ai/ai-video/veo-3.1.webp"><source src="https://static.higgsfield.ai/ai-video/4.mp4" type="video/mp4"></video>
-            <div class="hero-overlay"></div><div class="badge">NEW</div><h2>🌟 Veo 3.1 + Audio</h2><p>Google AI • Синхронный звук</p></div>
-          <div class="hero-card" style="background:linear-gradient(135deg,#150505,#3d1010,#0a0404)" onclick="openConfig('sora')">
-            <video class="hero-video" autoplay muted loop playsinline poster="https://static.higgsfield.ai/ai-video/sora-2.webp"><source src="https://static.higgsfield.ai/ai-video/1.mp4" type="video/mp4"></video>
-            <div class="hero-overlay"></div><div class="badge">PRO</div><h2>🎬 Sora 2</h2><p>OpenAI • 4-12s • 1080p</p></div>
-          <div class="hero-card" style="background:linear-gradient(135deg,#0a1810,#103828,#060e08)" onclick="openConfig('seedance')">
-            <video class="hero-video" autoplay muted loop playsinline poster="https://static.higgsfield.ai/ai-video/seedance-1.5-pro.webp"><source src="https://static.higgsfield.ai/ai-video/5.mp4" type="video/mp4"></video>
-            <div class="hero-overlay"></div><div class="badge">NEW</div><h2>📽 Seedance Pro</h2><p>ByteDance • Audio-Visual Sync</p></div>
-          <div class="hero-card" style="background:linear-gradient(135deg,#181008,#382810,#0e0a06)" onclick="openConfig('wan')">
-            <video class="hero-video" autoplay muted loop playsinline poster="https://static.higgsfield.ai/ai-video/wan-2.5.webp"><source src="https://static.higgsfield.ai/ai-video/3.mp4" type="video/mp4"></video>
-            <div class="hero-overlay"></div><div class="badge">TOP</div><h2>💎 Wan 2.6</h2><p>Alibaba • Multi-shot • Audio</p></div>
-          <div class="hero-card" style="background:linear-gradient(135deg,#10081c,#281038,#08060e)" onclick="openConfig('minimax')">
+          <div class="hero-card" style="background:linear-gradient(135deg,#0c0320,#1a0e40,#0a0a18)" onclick="openConfig('kling')">
+            <video class="hero-video" autoplay muted loop playsinline poster="https://static.higgsfield.ai/ai-video/kling-mini-thumbnail.webp"><source src="https://static.higgsfield.ai/ai-video/kling-mini.mp4" type="video/mp4"></video>
+            <div class="hero-overlay"></div><div class="badge">HOT</div><h2>Kling 3.0 Pro</h2><p>5 моделей · Audio · до 15 секунд</p></div>
+          <div class="hero-card" style="background:linear-gradient(135deg,#061222,#122845,#070c16)" onclick="openConfig('veo')">
+            <video class="hero-video" autoplay muted loop playsinline poster="https://static.higgsfield.ai/ai-video/4-thumbnail.webp"><source src="https://static.higgsfield.ai/ai-video/4.mp4" type="video/mp4"></video>
+            <div class="hero-overlay"></div><div class="badge">NEW</div><h2>Google Veo 3.1</h2><p>4K · Native Audio · Cinematic</p></div>
+          <div class="hero-card" style="background:linear-gradient(135deg,#150505,#351212,#0a0404)" onclick="openConfig('sora')">
+            <video class="hero-video" autoplay muted loop playsinline poster="https://static.higgsfield.ai/ai-video/1-thumbnail.webp"><source src="https://static.higgsfield.ai/ai-video/1.mp4" type="video/mp4"></video>
+            <div class="hero-overlay"></div><div class="badge">PRO</div><h2>Sora 2</h2><p>OpenAI · 4-12s · Physics Sim</p></div>
+          <div class="hero-card" style="background:linear-gradient(135deg,#0a1810,#0e3020,#060e08)" onclick="openConfig('seedance')">
+            <video class="hero-video" autoplay muted loop playsinline poster="https://static.higgsfield.ai/ai-video/5-thumbnail.webp"><source src="https://static.higgsfield.ai/ai-video/5.mp4" type="video/mp4"></video>
+            <div class="hero-overlay"></div><div class="badge">NEW</div><h2>Seedance 1.5 Pro</h2><p>ByteDance · Audio-Visual Sync</p></div>
+          <div class="hero-card" style="background:linear-gradient(135deg,#181008,#302010,#0e0a06)" onclick="openConfig('wan')">
+            <video class="hero-video" autoplay muted loop playsinline poster="https://static.higgsfield.ai/ai-video/3-thumbnail.webp"><source src="https://static.higgsfield.ai/ai-video/3.mp4" type="video/mp4"></video>
+            <div class="hero-overlay"></div><div class="badge">TOP</div><h2>Wan 2.6</h2><p>Alibaba · Multi-shot · Audio</p></div>
+          <div class="hero-card" style="background:linear-gradient(135deg,#10081c,#201030,#08060e)" onclick="openConfig('minimax')">
             <video class="hero-video" autoplay muted loop playsinline poster="https://static.higgsfield.ai/ai-video/2-thumbnail.webp"><source src="https://static.higgsfield.ai/ai-video/2.mp4" type="video/mp4"></video>
-            <div class="hero-overlay"></div><div class="badge">PRO</div><h2>🎥 MiniMax Hailuo</h2><p>Video-02 • 1080p • до 10с</p></div></div>
+            <div class="hero-overlay"></div><div class="badge">PRO</div><h2>MiniMax Hailuo</h2><p>Video-02 · 1080p · до 10с</p></div></div>
         <div class="hero-dots" id="heroDots">
           <div class="hero-dot active" onclick="setHero(0)"></div>
           <div class="hero-dot" onclick="setHero(1)"></div>
@@ -666,53 +836,53 @@ body {
       </div>
 
       <!-- MEDIA -->
-      <div class="section-title">🎬 Media</div>
-      <div class="cat-grid">
+      <div class="section-title">Media</div>
+      <div class="cat-grid" style="grid-template-columns: 1fr 1fr;">
         <div class="cat-card" onclick="goScreen('screen-videos')">
-          <video class="cat-vid" autoplay muted loop playsinline poster="https://static.higgsfield.ai/ai-video/kling-mini-thumbnail.webp"><source src="https://static.higgsfield.ai/ai-video/kling-mini.mp4" type="video/mp4"></video>
-          <div class="cat-ov"></div><span class="cat-icon">🎬</span><div class="cat-title">Create Video</div><div class="cat-sub">12 моделей</div></div>
+          <img class="cat-bg" src="https://static.higgsfield.ai/ai-video/main-cinema-thumbnail.webp" loading="lazy">
+          <div class="cat-ov"></div><div class="cat-title">Create Video</div><div class="cat-sub">12 моделей · AI генерация</div></div>
         <div class="cat-card" onclick="goScreen('screen-images')">
-          <img class="cat-bg" src="https://cdn.higgsfield.ai/card/02a55528-f1b7-4cf7-a176-4e1ea9171eee.webp" loading="lazy">
-          <div class="cat-ov"></div><span class="cat-icon">🖼</span><div class="cat-title">Create Image</div><div class="cat-sub">14 моделей</div></div>
+          <img class="cat-bg" src="https://static.higgsfield.ai/seedream-5/hero/hf_20260223_225531_d2d5ac50-8480-4b8c-992e-689e37ff1dd9.webp" loading="lazy">
+          <div class="cat-ov"></div><div class="cat-title">Create Image</div><div class="cat-sub">14 моделей · 4K</div></div>
         <div class="cat-card" onclick="goScreen('screen-image-edit')">
-          <img class="cat-bg" src="https://static.higgsfield.ai/ai-video/grid-2.webp" loading="lazy">
-          <div class="cat-ov"></div><span class="cat-icon">✏️</span><div class="cat-title">Edit Image</div><div class="cat-sub">8 моделей</div></div>
+          <img class="cat-bg" src="https://static.higgsfield.ai/nano-banana-2/step-2.webp" loading="lazy">
+          <div class="cat-ov"></div><div class="cat-title">Edit Image</div><div class="cat-sub">8 моделей · Ретушь</div></div>
         <div class="cat-card" onclick="goScreen('screen-video-edit')">
-          <video class="cat-vid" autoplay muted loop playsinline poster="https://cdn.higgsfield.ai/card/424836bc-64a8-4b6e-b52c-384673212340.webp"><source src="https://cdn.higgsfield.ai/card/a2271541-664e-4c1e-97a3-cf14309c1786.mp4" type="video/mp4"></video>
-          <div class="cat-ov"></div><span class="cat-icon">🎞</span><div class="cat-title">Edit Video</div><div class="cat-sub">3 модели</div></div>
+          <img class="cat-bg" src="https://static.higgsfield.ai/ai-video/director-2-mini-thumbnail.webp" loading="lazy">
+          <div class="cat-ov"></div><div class="cat-title">Edit Video</div><div class="cat-sub">3 модели · VFX</div></div>
       </div>
 
       <!-- AI BOTS -->
-      <div class="section-title">🤖 AI Bots</div>
-      <div class="cat-grid">
+      <div class="section-title">AI Assistants</div>
+      <div class="cat-grid" style="grid-template-columns: 1fr 1fr;">
         <div class="cat-card" onclick="openChat('ai_chat')">
-          <img class="cat-bg" src="https://images.unsplash.com/photo-1677442136019-21780ecad995?w=400&h=200&fit=crop&q=80" loading="lazy">
-          <div class="cat-ov"></div><span class="cat-icon">💬</span><div class="cat-title">AI Chat • GPT-5</div><div class="cat-sub">ChatGPT, Gemini, Grok, DeepSeek</div></div>
+          <img class="cat-bg" src="https://static.higgsfield.ai/nano-banana-2/slide-6.webp" loading="lazy">
+          <div class="cat-ov"></div><div class="cat-title">AI Chat</div><div class="cat-sub">GPT-5 · Gemini · Grok · DeepSeek</div></div>
         <div class="cat-card" onclick="openChat('ai_coder')">
-          <img class="cat-bg" src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=400&h=160&fit=crop" loading="lazy">
-          <div class="cat-ov"></div><span class="cat-icon">👨‍💻</span><div class="cat-title">AI Coder • Opus 4</div><div class="cat-sub">Claude, GPT, Gemini, Codex, DeepSeek</div></div>
+          <img class="cat-bg" src="https://static.higgsfield.ai/nano-banana-2/slide-7.webp" loading="lazy">
+          <div class="cat-ov"></div><div class="cat-title">AI Coder</div><div class="cat-sub">Opus 4 · GPT · Codex · DeepSeek</div></div>
       </div>
 
       <!-- FREE -->
-      <div class="section-title">🆓 Free (ежедневно)</div>
-      <div class="free-grid">
-        <div class="free-card" onclick="openChat('gpt5_free')">
-          <img class="cat-bg" src="https://images.unsplash.com/photo-1677442136019-21780ecad995?w=300&h=120&fit=crop&q=70" loading="lazy">
-          <div class="cat-ov"></div><span class="cat-icon">💬</span><div class="cat-title">GPT-5.2 Chat</div><div class="cat-sub" id="freeChatLeft">30 ост.</div></div>
-        <div class="free-card" onclick="openChat('grok4_free')">
-          <img class="cat-bg" src="https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=300&h=120&fit=crop&q=70" loading="lazy">
-          <div class="cat-ov"></div><span class="cat-icon">🤖</span><div class="cat-title">Grok-4 Chat</div><div class="cat-sub" id="freeChatLeft2">30 ост.</div></div>
+      <div class="section-title">Free · ежедневно</div>
+      <div class="free-grid" style="grid-template-columns: 1fr 1fr;">
+        <div class="free-card" onclick="goScreen('screen-chat-select')">
+          <img class="cat-bg" src="https://static.higgsfield.ai/nano-banana-2/slide-8.webp" loading="lazy">
+          <div class="cat-ov"></div><div class="cat-title">GPT-5.2 Chat</div><div class="cat-sub" id="freeChatLeft">30 сообщений</div></div>
+        <div class="free-card" onclick="goScreen('screen-chat-select')">
+          <img class="cat-bg" src="https://static.higgsfield.ai/seedream-5/bento/bento-7-v2.jpg" loading="lazy">
+          <div class="cat-ov"></div><div class="cat-title">Grok-4 Chat</div><div class="cat-sub" id="freeChatLeft2">30 сообщений</div></div>
         <div class="free-card" onclick="openModel('free_image','image')">
-          <img class="cat-bg" src="https://images.unsplash.com/photo-1547891654-e66ed7ebb968?w=300&h=120&fit=crop&q=70" loading="lazy">
-          <div class="cat-ov"></div><span class="cat-icon">🖼</span><div class="cat-title">Фото</div><div class="cat-sub" id="freeImageLeft">1 ост.</div></div>
+          <img class="cat-bg" src="https://static.higgsfield.ai/seedream-5/hero/hf_20260223_231055_42e83a7c-3b88-43a1-b829-04f673559270.webp" loading="lazy">
+          <div class="cat-ov"></div><div class="cat-title">Image Gen</div><div class="cat-sub" id="freeImageLeft">1 изображение</div></div>
         <div class="free-card" onclick="openModel('free_video','video')">
-          <img class="cat-bg" src="https://images.unsplash.com/photo-1536240478700-b869070f9279?w=300&h=120&fit=crop&q=70" loading="lazy">
-          <div class="cat-ov"></div><span class="cat-icon">🎬</span><div class="cat-title">Видео</div><div class="cat-sub" id="freeVideoLeft">1 ост.</div></div>
+          <img class="cat-bg" src="https://static.higgsfield.ai/ai-video/content-thumbnail.webp" loading="lazy">
+          <div class="cat-ov"></div><div class="cat-title">Video Gen</div><div class="cat-sub" id="freeVideoLeft">1 видео</div></div>
       </div>
 
       <!-- TRENDING -->
       <div style="height:4px"></div>
-      <div class="section-head"><h3>🔥 Trending</h3><a onclick="goScreen('screen-videos')">See all →</a></div>
+      <div class="section-head"><h3>Trending</h3><a onclick="goScreen('screen-videos')">See all</a></div>
       <div class="model-scroll" id="trendingScroll"></div>
 
       <div style="height:16px"></div>
@@ -725,7 +895,7 @@ body {
     <div class="screen" id="screen-videos">
       <button class="back-btn" onclick="goScreen('screen-home')">← Назад</button>
       <div class="page-title">Create Videos</div>
-      <div class="page-sub">12 AI моделей для генерации видео</div>
+      <div class="page-sub">12 AI-моделей для генерации видео</div>
       <div class="grid-list" id="videoGrid"></div>
     </div>
 
@@ -733,7 +903,7 @@ body {
     <div class="screen" id="screen-images">
       <button class="back-btn" onclick="goScreen('screen-home')">← Назад</button>
       <div class="page-title">Create Images</div>
-      <div class="page-sub">13 AI моделей для генерации изображений</div>
+      <div class="page-sub">14 AI-моделей для генерации изображений</div>
       <div class="grid-list" id="imageGrid"></div>
     </div>
 
@@ -741,7 +911,7 @@ body {
     <div class="screen" id="screen-video-edit">
       <button class="back-btn" onclick="goScreen('screen-home')">← Назад</button>
       <div class="page-title">Edit Video</div>
-      <div class="page-sub">3 AI модели для редактирования видео</div>
+      <div class="page-sub">3 AI-модели для редактирования видео</div>
       <div class="grid-list" id="videoEditGrid"></div>
     </div>
 
@@ -749,7 +919,7 @@ body {
     <div class="screen" id="screen-image-edit">
       <button class="back-btn" onclick="goScreen('screen-home')">← Назад</button>
       <div class="page-title">Edit Image</div>
-      <div class="page-sub">8 AI моделей для редактирования изображений</div>
+      <div class="page-sub">8 AI-моделей для редактирования изображений</div>
       <div class="grid-list" id="imageEditGrid"></div>
     </div>
 
@@ -758,7 +928,7 @@ body {
       <button class="back-btn" onclick="goScreen('screen-home')">← Назад</button>
       <div class="page-title">Soul Styles</div>
       <div class="page-sub">100+ стилей для создания персонажей</div>
-      <div class="search-bar"><span>🔍</span><input type="text" placeholder="Search styles..." oninput="filterSoul(this.value)"></div>
+      <div class="search-bar"><span style="opacity:0.4">⌕</span><input type="text" placeholder="Search styles..." oninput="filterSoul(this.value)"></div>
       <div class="soul-grid" id="soulGrid"></div>
     </div>
 
@@ -768,14 +938,14 @@ body {
       <div id="configHeader" style="padding: 0 16px 16px; display: flex; align-items: center; gap: 12px;"></div>
       <div class="config-section"><div class="config-label">Версия модели</div><div class="chip-row" id="subModelChips"></div></div>
       <div class="config-section"><div class="config-label">Режим</div><div class="mode-row" id="modeRow"></div></div>
-      <div class="config-section" id="uploadSection" style="display:none"><div class="config-label">Изображение</div><div class="upload-area"><span class="u-icon" style="font-size:28px">📷</span><span style="font-size:13px;color:var(--text-dim)">Нажмите для загрузки</span><span style="font-size:11px;color:var(--text-muted)">JPG, PNG • до 10MB</span></div></div>
+      <div class="config-section" id="uploadSection" style="display:none"><div class="config-label">Изображение</div><div class="upload-area"><span class="u-icon" style="font-size:18px;color:var(--text-dim)">↑</span><span style="font-size:13px;color:var(--text-dim)">Нажмите для загрузки</span><span style="font-size:11px;color:var(--text-muted)">JPG, PNG • до 10MB</span></div></div>
       <div class="config-section"><div class="config-label">Соотношение сторон</div><div class="chip-row" id="ratioChips"></div></div>
       <div class="config-section" id="durationSection"><div class="config-label">Длительность</div><div class="chip-row" id="durationChips"></div></div>
       <div class="config-section"><div class="config-label">Качество</div><div class="chip-row" id="qualityChips"></div></div>
-      <div class="config-section" id="audioSection" style="display:none"><div class="config-label">Audio генерация</div><div class="toggle-row"><span id="audioLabel" style="font-size:14px;color:var(--text-dim)">🔇 Выключено</span><div class="toggle-track off" id="audioToggle" onclick="toggleAudio()"><div class="toggle-thumb"></div></div></div></div>
+      <div class="config-section" id="audioSection" style="display:none"><div class="config-label">Audio генерация</div><div class="toggle-row"><span id="audioLabel" style="font-size:14px;color:var(--text-dim)">Выключено</span><div class="toggle-track off" id="audioToggle" onclick="toggleAudio()"><div class="toggle-thumb"></div></div></div></div>
       <div class="config-section"><div class="config-label">Промт</div><textarea class="prompt-area" id="promptInput" placeholder="Камера медленно движется, мягкие переходы, частицы света..." oninput="updatePromptCount()"></textarea><div class="prompt-count" id="promptCount">0 символов</div></div>
-      <div class="summary-card"><div class="s-title">📋 Сводка</div><div id="summaryRows"></div><div class="summary-price"><span class="sp-label">💰 Стоимость</span><span class="sp-value" id="summaryPrice">~56₽</span></div></div>
-      <button class="gen-btn" id="genBtn" onclick="startGeneration()">🚀 Начать генерацию</button>
+      <div class="summary-card"><div class="s-title">Сводка</div><div id="summaryRows"></div><div class="summary-price"><span class="sp-label">Стоимость</span><span class="sp-value" id="summaryPrice">~56₽</span></div></div>
+      <button class="gen-btn" id="genBtn" onclick="startGeneration()">Начать генерацию</button>
     </div>
 
     <!-- PROGRESS -->
@@ -789,7 +959,7 @@ body {
           </svg>
           <div class="progress-pct"><span class="num" id="pctNum">0</span><span class="pct">%</span></div>
         </div>
-        <div class="progress-stage" id="stageLabel">🎬 Анализ</div>
+        <div class="progress-stage" id="stageLabel">Анализ...</div>
         <div class="progress-time" id="timeLabel">⏱ 0:00</div>
         <div class="stage-list" id="stageList"></div>
         <button class="cancel-btn" onclick="goScreen('screen-home')">Отменить</button>
@@ -801,17 +971,162 @@ body {
       <div style="height:12px"></div>
       <div class="result-video"><div class="play-circle">▶</div><div class="vid-dur">0:05</div></div>
       <div class="result-info">
-        <div class="ri-title">✅ Генерация завершена</div>
-        <div class="result-row"><span class="rk">Модель</span><span class="rv" id="resModel">⚡ Kling 2.6</span></div>
+        <div class="ri-title">Генерация завершена</div>
+        <div class="result-row"><span class="rk">Модель</span><span class="rv" id="resModel">Kling 2.6</span></div>
         <div class="result-row"><span class="rk">Режим</span><span class="rv">Image → Video</span></div>
         <div class="result-row"><span class="rk">Время</span><span class="rv">47 сек</span></div>
         <div class="result-row"><span class="rk">Стоимость</span><span class="rv" style="color:var(--accent)">-56₽</span></div>
       </div>
-      <div class="result-actions"><button class="save-btn">💾 Сохранить</button><button class="share-btn">↗ Поделиться</button></div>
+      <div class="result-actions"><button class="save-btn">Сохранить</button><button class="share-btn">↗ Поделиться</button></div>
       <button class="new-gen-btn" onclick="goScreen('screen-home')">← Новая генерация</button>
     </div>
 
-    <!-- PROFILE -->
+    <!-- CHAT MODEL SELECT -->
+    <div class="screen" id="screen-chat-select">
+      <div style="display:flex;align-items:center;gap:10px;padding:12px 16px">
+        <button class="back-btn" onclick="goScreen('screen-home')" style="position:static;padding:0;margin:0">←</button>
+        <div class="page-title" style="padding:0;margin:0">AI Chat</div>
+      </div>
+      <div class="page-sub" style="padding:0 16px">Выберите модель для диалога</div>
+      <div class="model-select-grid">
+        <div class="model-select-card" onclick="startChat('claude_opus46','Claude Opus 4.6','Anthropic · 1M context')">
+          <img src="https://static.higgsfield.ai/nano-banana-2/slide-6.webp" loading="lazy">
+          <div class="ms-ov"></div>
+          <div class="ms-badge" style="background:rgba(168,130,255,0.2);color:#a882ff">TOP</div>
+          <div class="ms-info"><div class="ms-name">Claude Opus 4.6</div><div class="ms-sub">Anthropic · 1M · Reasoning · Writing</div></div>
+        </div>
+        <div class="model-select-card" onclick="startChat('claude_opus45','Claude Opus 4.5','Anthropic · 256K context')">
+          <img src="https://static.higgsfield.ai/nano-banana-2/slide-2.webp" loading="lazy">
+          <div class="ms-ov"></div>
+          <div class="ms-info"><div class="ms-name">Claude Opus 4.5</div><div class="ms-sub">Anthropic · 256K · Creative</div></div>
+        </div>
+        <div class="model-select-card" onclick="startChat('gpt52_pro','GPT-5.2 Pro','OpenAI · Deep reasoning')">
+          <img src="https://static.higgsfield.ai/seedream-5/bento/bento-4.webp" loading="lazy">
+          <div class="ms-ov"></div>
+          <div class="ms-badge" style="background:rgba(168,130,255,0.2);color:#a882ff">PRO</div>
+          <div class="ms-info"><div class="ms-name">GPT-5.2 Pro</div><div class="ms-sub">OpenAI · Deep reasoning · Analysis</div></div>
+        </div>
+        <div class="model-select-card" onclick="startChat('gpt52_chat','GPT-5.2 Chat','OpenAI · Conversational')">
+          <img src="https://static.higgsfield.ai/seedream-5/bento/bento-1.webp" loading="lazy">
+          <div class="ms-ov"></div>
+          <div class="ms-info"><div class="ms-name">GPT-5.2 Chat</div><div class="ms-sub">OpenAI · ChatGPT · Everyday</div></div>
+        </div>
+        <div class="model-select-card" onclick="startChat('gemini31','Gemini 3.1 Pro','Google · 1M · Multimodal')">
+          <img src="https://static.higgsfield.ai/nano-banana-2/slide-8.webp" loading="lazy">
+          <div class="ms-ov"></div>
+          <div class="ms-badge" style="background:rgba(91,235,160,0.2);color:#5beba0">NEW</div>
+          <div class="ms-info"><div class="ms-name">Gemini 3.1 Pro</div><div class="ms-sub">Google · 1M · Multimodal · Agentic</div></div>
+        </div>
+        <div class="model-select-card" onclick="startChat('grok4','Grok-4','xAI · 256K · Reasoning')">
+          <img src="https://static.higgsfield.ai/seedream-5/bento/bento-7-v2.jpg" loading="lazy">
+          <div class="ms-ov"></div>
+          <div class="ms-info"><div class="ms-name">Grok-4</div><div class="ms-sub">xAI · 256K · Deep reasoning</div></div>
+        </div>
+        <div class="model-select-card" onclick="startChat('grok41_fast','Grok-4.1 Fast','xAI · 2M · Agentic')">
+          <img src="https://static.higgsfield.ai/seedream-5/bento/bento-3.webp" loading="lazy">
+          <div class="ms-ov"></div>
+          <div class="ms-badge" style="background:rgba(59,130,246,0.2);color:#93c5fd">FAST</div>
+          <div class="ms-info"><div class="ms-name">Grok-4.1 Fast</div><div class="ms-sub">xAI · 2M · Fast · Creative</div></div>
+        </div>
+        <div class="model-select-card" onclick="startChat('deepseek32','DeepSeek V3.2','Open Source · Reasoning')">
+          <img src="https://static.higgsfield.ai/seedream-5/bento/bento-5.webp" loading="lazy">
+          <div class="ms-ov"></div>
+          <div class="ms-badge" style="background:rgba(91,235,160,0.2);color:#5beba0">FREE</div>
+          <div class="ms-info"><div class="ms-name">DeepSeek V3.2</div><div class="ms-sub">Open Source · GPT-5 level · Chat</div></div>
+        </div>
+      </div>
+    </div>
+
+        <!-- CODER MODEL SELECT -->
+    <div class="screen" id="screen-coder-select">
+      <div style="display:flex;align-items:center;gap:10px;padding:12px 16px">
+        <button class="back-btn" onclick="goScreen('screen-home')" style="position:static;padding:0;margin:0">←</button>
+        <div class="page-title" style="padding:0;margin:0">AI Coder</div>
+      </div>
+      <div class="page-sub" style="padding:0 16px">Выберите модель для разработки</div>
+      <div class="model-select-grid">
+        <div class="model-select-card" onclick="startCoder('claude_opus46','Claude Opus 4.6','#1 Terminal-Bench · Agentic')">
+          <img src="https://static.higgsfield.ai/nano-banana-2/slide-7.webp" loading="lazy">
+          <div class="ms-ov"></div>
+          <div class="ms-badge" style="background:rgba(168,130,255,0.2);color:#a882ff">#1</div>
+          <div class="ms-info"><div class="ms-name">Claude Opus 4.6</div><div class="ms-sub">#1 Terminal-Bench · Code review</div></div>
+        </div>
+        <div class="model-select-card" onclick="startCoder('claude_sonnet45','Claude Sonnet 4.5','Anthropic · Fast coding')">
+          <img src="https://static.higgsfield.ai/nano-banana-2/case-2.webp" loading="lazy">
+          <div class="ms-ov"></div>
+          <div class="ms-badge" style="background:rgba(59,130,246,0.2);color:#93c5fd">FAST</div>
+          <div class="ms-info"><div class="ms-name">Claude Sonnet 4.5</div><div class="ms-sub">Anthropic · Fast · Computer use</div></div>
+        </div>
+        <div class="model-select-card" onclick="startCoder('gpt52_codex','GPT-5.2 Codex','OpenAI · SWE-Bench #1')">
+          <img src="https://static.higgsfield.ai/nano-banana-2/case-3.webp" loading="lazy">
+          <div class="ms-ov"></div>
+          <div class="ms-badge" style="background:rgba(168,130,255,0.2);color:#a882ff">TOP</div>
+          <div class="ms-info"><div class="ms-name">GPT-5.2 Codex</div><div class="ms-sub">OpenAI · Agentic coding agent</div></div>
+        </div>
+        <div class="model-select-card" onclick="startCoder('deepseek32','DeepSeek V3.2','IOI/IMO Gold · Reasoning')">
+          <img src="https://static.higgsfield.ai/seedream-5/bento/bento-5.webp" loading="lazy">
+          <div class="ms-ov"></div>
+          <div class="ms-badge" style="background:rgba(91,235,160,0.2);color:#5beba0">FREE</div>
+          <div class="ms-info"><div class="ms-name">DeepSeek V3.2</div><div class="ms-sub">Open Source · IOI/IMO Gold</div></div>
+        </div>
+        <div class="model-select-card" onclick="startCoder('gemini31','Gemini 3.1 Pro','Google · SWE-bench · Multi-file')">
+          <img src="https://static.higgsfield.ai/nano-banana-2/feature-2.webp" loading="lazy">
+          <div class="ms-ov"></div>
+          <div class="ms-info"><div class="ms-name">Gemini 3.1 Pro</div><div class="ms-sub">Google · SWE-bench · Multi-file</div></div>
+        </div>
+        <div class="model-select-card" onclick="startCoder('grok4','Grok-4','xAI · Code review · Debug')">
+          <img src="https://static.higgsfield.ai/seedream-5/bento/bento-7-v2.jpg" loading="lazy">
+          <div class="ms-ov"></div>
+          <div class="ms-info"><div class="ms-name">Grok-4</div><div class="ms-sub">xAI · 256K · Code review</div></div>
+        </div>
+      </div>
+    </div>
+
+        <!-- ACTIVE CHAT -->
+    <div class="screen" id="screen-chat">
+      <div class="chat-header">
+        <button class="back-btn" onclick="goScreen('screen-chat-select')" style="position:static;padding:0;margin:0">←</button>
+        <div class="chat-model-info">
+          <div class="chat-model-name" id="chatModelName">AI Chat</div>
+          <div class="chat-model-sub" id="chatModelSub">Выберите модель</div>
+        </div>
+      </div>
+      <div class="chat-messages" id="chatMessages">
+        <div class="chat-welcome">
+          <div class="cw-icon">◆</div>
+          <div class="cw-title">AI Assistant</div>
+          <div class="cw-sub">Задайте вопрос, попросите написать текст, проанализировать данные или помочь с идеями</div>
+        </div>
+      </div>
+      <div class="chat-input-wrap">
+        <textarea class="chat-input" id="chatInput" placeholder="Напишите сообщение..." rows="1" oninput="autoResize(this)" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChatMessage()}"></textarea>
+        <button class="chat-send" onclick="sendChatMessage()">↑</button>
+      </div>
+    </div>
+
+    <!-- ACTIVE CODER -->
+    <div class="screen" id="screen-coder">
+      <div class="chat-header">
+        <button class="back-btn" onclick="goScreen('screen-coder-select')" style="position:static;padding:0;margin:0">←</button>
+        <div class="chat-model-info">
+          <div class="chat-model-name" id="coderModelName">AI Coder</div>
+          <div class="chat-model-sub" id="coderModelSub">Выберите модель</div>
+        </div>
+      </div>
+      <div class="chat-messages" id="coderMessages">
+        <div class="chat-welcome">
+          <div class="cw-icon" style="color:#5beba0">◆</div>
+          <div class="cw-title">AI Coder</div>
+          <div class="cw-sub">Пишите код, отлаживайте, рефакторите. Python, JS, Swift, Kotlin, SQL и 50+ языков</div>
+        </div>
+      </div>
+      <div class="chat-input-wrap">
+        <textarea class="chat-input" id="coderInput" placeholder="Опишите задачу или вставьте код..." rows="1" oninput="autoResize(this)" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendCoderMessage()}"></textarea>
+        <button class="chat-send" onclick="sendCoderMessage()" style="background:rgba(91,235,160,0.2);color:#5beba0">↑</button>
+      </div>
+    </div>
+
+        <!-- PROFILE -->
     <div class="screen" id="screen-profile">
       <div class="page-title" style="padding-top:8px">Профиль</div>
       <div style="height:14px"></div>
@@ -824,35 +1139,65 @@ body {
         </div>
       </div>
       <div class="balance-card">
-        <div class="balance-row"><span class="balance-label">Баланс</span><span class="balance-value" id="profileBalance">💎 0₽</span></div>
+        <div class="balance-row"><span class="balance-label">Баланс</span><span class="balance-value" id="profileBalance">0₽</span></div>
         <div id="profileBalanceDetail" style="display:none;font-size:12px;color:var(--text-dim);margin-bottom:10px"></div>
         <div id="profileStats" style="display:none;font-size:12px;color:var(--text-dim);margin-bottom:10px"></div>
-        <button class="topup-btn" onclick="openTopup()">💰 Пополнить баланс</button>
+        <button class="topup-btn" onclick="openTopup()">Пополнить баланс</button>
       </div>
 
       <!-- Admin panel (hidden by default) -->
       <div class="admin-card" id="adminCard" style="display:none">
-        <div class="ac-title">🔐 Админ-панель</div>
+        <div class="ac-title">Админ-панель</div>
         <div style="font-size:12px;color:var(--text-dim);padding:4px 0">Используйте /admin в боте для управления</div>
       </div>
 
       <div class="menu-list">
-        <div class="menu-item" onclick="sendAction('history')">📋 История генераций<span class="menu-arrow">›</span></div>
-        <div class="menu-item" onclick="sendAction('referral')">👥 Реферальная программа<span class="menu-arrow">›</span></div>
-        <div class="menu-item" onclick="sendAction('promo')">🎟 Промокод<span class="menu-arrow">›</span></div>
-        <div class="menu-item" onclick="sendAction('help')">❓ Помощь<span class="menu-arrow">›</span></div>
+        <div class="menu-item" onclick="sendAction('history')">История генераций<span class="menu-arrow">›</span></div>
+        <div class="menu-item" onclick="sendAction('referral')">Реферальная программа<span class="menu-arrow">›</span></div>
+        <div class="menu-item" onclick="sendAction('promo')">Промокод<span class="menu-arrow">›</span></div>
+        <div class="menu-item" onclick="sendAction('help')">Помощь<span class="menu-arrow">›</span></div>
         <div style="text-align:center;padding:8px;font-size:10px;color:var(--text-muted)">v2.7 build 270226</div>
       </div>
       <div style="height:100px"></div>
     </div>
   </div>
 
+
+  <!-- POPUP OVERLAY -->
+  <div class="tab-overlay" id="tabOverlay" onclick="closePopups()"></div>
+  <!-- CREATE POPUP -->
+  <div class="tab-popup" id="createPopup">
+    <div class="tab-popup-item" onclick="closePopups();goScreen('screen-videos')">
+      <div class="tab-popup-icon"><img src="https://static.higgsfield.ai/ai-video/main-cinema-thumbnail.webp"></div>
+      <div class="tab-popup-text"><div class="tab-popup-title">Create Video</div><div class="tab-popup-sub">12 AI-моделей · Kling · Sora · Veo</div></div>
+      <div class="tab-popup-arrow">›</div>
+    </div>
+    <div class="tab-popup-item" onclick="closePopups();goScreen('screen-images')">
+      <div class="tab-popup-icon"><img src="https://static.higgsfield.ai/seedream-5/hero/hf_20260223_225531_d2d5ac50-8480-4b8c-992e-689e37ff1dd9.webp"></div>
+      <div class="tab-popup-text"><div class="tab-popup-title">Create Image</div><div class="tab-popup-sub">14 AI-моделей · Seedream · GPT · DALL-E</div></div>
+      <div class="tab-popup-arrow">›</div>
+    </div>
+  </div>
+  <!-- EDIT POPUP -->
+  <div class="tab-popup" id="editPopup">
+    <div class="tab-popup-item" onclick="closePopups();goScreen('screen-image-edit')">
+      <div class="tab-popup-icon"><img src="https://static.higgsfield.ai/nano-banana-2/step-2.webp"></div>
+      <div class="tab-popup-text"><div class="tab-popup-title">Edit Image</div><div class="tab-popup-sub">8 моделей · Ретушь · Стили · Фон</div></div>
+      <div class="tab-popup-arrow">›</div>
+    </div>
+    <div class="tab-popup-item" onclick="closePopups();goScreen('screen-video-edit')">
+      <div class="tab-popup-icon"><img src="https://static.higgsfield.ai/ai-video/director-2-mini-thumbnail.webp"></div>
+      <div class="tab-popup-text"><div class="tab-popup-title">Edit Video</div><div class="tab-popup-sub">3 модели · VFX · Motion · Рестайлинг</div></div>
+      <div class="tab-popup-arrow">›</div>
+    </div>
+  </div>
+
   <!-- Tab Bar -->
   <div class="tab-bar">
-    <button class="tab-btn active" data-tab="home" onclick="switchTab('home')"><div class="tab-icon">✦</div><div class="tab-label">Explore</div></button>
+    <button class="tab-btn active" data-tab="home" onclick="switchTab('home')"><div class="tab-icon" style="font-size:16px;opacity:0.7">✦</div><div class="tab-label">Explore</div></button>
     <button class="tab-btn create-tab" data-tab="create" onclick="switchTab('create')"><div class="tab-icon">+</div><div class="tab-label">Create</div></button>
-    <button class="tab-btn" data-tab="edit" onclick="switchTab('edit')"><div class="tab-icon">✏️</div><div class="tab-label">Edit</div></button>
-    <button class="tab-btn" data-tab="chat" onclick="switchTab('chat')"><div class="tab-icon">💬</div><div class="tab-label">Chat</div></button>
+    <button class="tab-btn" data-tab="edit" onclick="switchTab('edit')"><div class="tab-icon" style="font-size:14px;opacity:0.6">✎</div><div class="tab-label">Edit</div></button>
+    <button class="tab-btn" data-tab="chat" onclick="switchTab('chat')"><div class="tab-icon" style="font-size:14px;opacity:0.6">◎</div><div class="tab-label">Chat</div></button>
     <button class="tab-btn" data-tab="profile" onclick="switchTab('profile')"><div class="tab-icon">●</div><div class="tab-label">Profile</div></button>
   </div>
 
@@ -946,16 +1291,16 @@ function initTelegramUser() {
   // Update balance display
   const total = USER_BALANCE + USER_BONUS;
   document.getElementById('headerBalance').textContent = total.toLocaleString('ru') + '₽';
-  document.getElementById('profileBalance').textContent = '💎 ' + total.toLocaleString('ru') + '₽';
+  document.getElementById('profileBalance').textContent = total.toLocaleString('ru') + '₽';
   if (USER_BONUS > 0) {
     document.getElementById('profileBalanceDetail').textContent =
-      '💵 ' + USER_BALANCE.toLocaleString('ru') + '₽ + 🎁 ' + USER_BONUS.toLocaleString('ru') + '₽';
+      USER_BALANCE.toLocaleString('ru') + '₽ + ' + USER_BONUS.toLocaleString('ru') + '₽ бонус';
     document.getElementById('profileBalanceDetail').style.display = 'block';
   }
 
   // Stats
   if (GEN_COUNT > 0) {
-    document.getElementById('profileStats').textContent = '🎬 Генераций: ' + GEN_COUNT;
+    document.getElementById('profileStats').textContent = 'Генераций: ' + GEN_COUNT;
     document.getElementById('profileStats').style.display = 'block';
   }
 
@@ -976,7 +1321,13 @@ function sendAction(action, data) {
 }
 
 function openTopup() { sendAction('topup'); }
-function openChat(model) { sendAction('open_chat', { model: model }); }
+function openChat(type) {
+  if (type === 'ai_coder') {
+    goScreen('screen-coder-select');
+  } else {
+    goScreen('screen-chat-select');
+  }
+}
 function openModel(modelId, type) {
   // Try opening config wizard first (for image/edit models)
   const ALL = [...VIDEO_MODELS, ...(typeof IMAGE_MODELS!=='undefined'?IMAGE_MODELS:[]), ...(typeof VIDEO_EDIT_MODELS!=='undefined'?VIDEO_EDIT_MODELS:[]), ...(typeof IMAGE_EDIT_MODELS!=='undefined'?IMAGE_EDIT_MODELS:[])];
@@ -1019,173 +1370,173 @@ if (tg) {
 // DATA
 // ═══════════════════════════════════════════
 const VIDEO_MODELS = [
-  {id:"sora",icon:"🎬",name:"Sora 2",badge:"PRO",badgeColor:"var(--accent)",badgeBg:"var(--accent-soft)",desc:"OpenAI • 4-12s • 1080p",price:"от 80₽",
-   subs:["Sora 2 Pro","Sora 2 Basic"],modes:["📝 Text→Video","🖼 Image→Video"],
+  {id:"sora",icon:"◆",name:"Sora 2",badge:"PRO",badgeColor:"var(--accent)",badgeBg:"var(--accent-soft)",desc:"OpenAI • 4-12s • 1080p",price:"от 80₽",
+   subs:["Sora 2 Pro","Sora 2 Basic"],modes:["Text → Video","Image → Video"],
    ratios:["720×1280","1280×720","1024×1792","1792×1024"],durs:[4,8,12],quals:["720p","1080p"],audio:false,
    features:["Image→Video: 1 фото"]},
 
-  {id:"kling",icon:"⚡",name:"Kling",badge:"HOT",badgeColor:"var(--red)",badgeBg:"rgba(248,113,113,0.15)",desc:"Kuaishou • 5-10s • Audio",price:"от 56₽",
-   subs:["2.5 Turbo","2.6 Pro","3.0 Pro","O1 Video","O3 Video"],modes:["📝 Text→Video","🖼 Image→Video"],
+  {id:"kling",icon:"◆",name:"Kling",badge:"HOT",badgeColor:"var(--red)",badgeBg:"rgba(248,113,113,0.15)",desc:"Kuaishou • 5-10s • Audio",price:"от 56₽",
+   subs:["2.5 Turbo","2.6 Pro","3.0 Pro","O1 Video","O3 Video"],modes:["Text → Video","Image → Video"],
    ratios:["16:9","9:16","1:1"],durs:[5,10],quals:["720p","1080p"],audio:true,
-   features:["🔊 Audio: 2.6/3.0/O3","Image→Video: 1-2 фото"]},
+   features:["Audio: 2.6/3.0/O3","Image→Video: 1-2 фото"]},
 
-  {id:"minimax",icon:"🔥",name:"MiniMax",badge:null,desc:"Hailuo 2.3 • 6-10s",price:"от 48₽",
-   subs:["Video-02","Hailuo 2.3"],modes:["📝 Text→Video","🖼 Image→Video"],
+  {id:"minimax",icon:"◆",name:"MiniMax",badge:null,desc:"Hailuo 2.3 • 6-10s",price:"от 48₽",
+   subs:["Video-02","Hailuo 2.3"],modes:["Text → Video","Image → Video"],
    ratios:["16:9","9:16","1:1"],durs:[5,10],quals:["720p","1080p"],audio:false,
    features:["Prompt Expansion: On/Off"]},
 
-  {id:"wan",icon:"💎",name:"Wan",badge:"NEW",badgeColor:"var(--green)",badgeBg:"rgba(91,235,160,0.15)",desc:"Alibaba • Audio sync",price:"от 40₽",
-   subs:["Wan 2.5","Wan 2.6"],modes:["📝 Text→Video","🖼 Image→Video"],
+  {id:"wan",icon:"◆",name:"Wan",badge:"NEW",badgeColor:"var(--green)",badgeBg:"rgba(91,235,160,0.15)",desc:"Alibaba • Audio sync",price:"от 40₽",
+   subs:["Wan 2.5","Wan 2.6"],modes:["Text → Video","Image → Video"],
    ratios:["16:9","9:16","1:1"],durs:[5,10],quals:["720p","1080p"],audio:true,
-   features:["🔊 Audio: Wan 2.6"]},
+   features:["Audio: Wan 2.6"]},
 
-  {id:"veo",icon:"🌟",name:"Veo 3.1",badge:null,desc:"Google • Audio",price:"от 56₽",
-   subs:["3.1 Base","3.1 Fast"],modes:["📝 Text→Video","🖼 Image→Video"],
+  {id:"veo",icon:"◆",name:"Veo 3.1",badge:null,desc:"Google • Audio",price:"от 56₽",
+   subs:["3.1 Base","3.1 Fast"],modes:["Text → Video","Image → Video"],
    ratios:["16:9","9:16","1:1"],durs:[4,5,8],quals:["720p","1080p"],audio:true,
-   features:["🔊 Audio Generation"]},
+   features:["Audio Generation"]},
 
-  {id:"seedance",icon:"📽",name:"Seedance",badge:null,desc:"ByteDance • 4-12s",price:"от 32₽",
-   subs:["Seedance Pro","Seedance Fast","Vidu Premium"],modes:["📝 Text→Video","🖼 Image→Video"],
+  {id:"seedance",icon:"◆",name:"Seedance",badge:null,desc:"ByteDance • 4-12s",price:"от 32₽",
+   subs:["Seedance Pro","Seedance Fast","Vidu Premium"],modes:["Text → Video","Image → Video"],
    ratios:["16:9","9:16","1:1","4:3","3:4"],durs:[4,8,12],quals:["720p","1080p"],audio:true,
-   features:["🔊 Audio: Vidu Premium"]},
+   features:["Audio: Vidu Premium"]},
 
-  {id:"pixverse",icon:"✨",name:"Pixverse",badge:null,desc:"V5.5 • Creative",price:"от 24₽",
-   subs:["V5.5"],modes:["📝 Text→Video","🖼 Image→Video"],
+  {id:"pixverse",icon:"◆",name:"Pixverse",badge:null,desc:"V5.5 • Creative",price:"от 24₽",
+   subs:["V5.5"],modes:["Text → Video","Image → Video"],
    ratios:["16:9","9:16","1:1","4:3","3:4"],durs:[5,8,10],quals:["720p","1080p"],audio:true,
-   features:["🔊 Audio: On/Off","Prompt Enhance: Auto/Yes/No"]},
+   features:["Audio: On/Off","Prompt Enhance: Auto/Yes/No"]},
 
-  {id:"dreamina",icon:"🎭",name:"Dreamina",badge:null,desc:"ByteDance V3",price:"от 32₽",
-   subs:["Dreamina Pro","Dreamina Fast"],modes:["📝 Text→Video","🖼 Image→Video"],
+  {id:"dreamina",icon:"◆",name:"Dreamina",badge:null,desc:"ByteDance V3",price:"от 32₽",
+   subs:["Dreamina Pro","Dreamina Fast"],modes:["Text → Video","Image → Video"],
    ratios:["16:9","9:16","1:1","4:3","3:4"],durs:[4,8,12],quals:["720p","1080p"],audio:false,
    features:[]},
 
-  {id:"pika",icon:"🎞",name:"Pika",badge:null,desc:"V2.2 • Stable",price:"от 32₽",
-   subs:["V2.2"],modes:["📝 Text→Video","🖼 Image→Video"],
+  {id:"pika",icon:"◆",name:"Pika",badge:null,desc:"V2.2 • Stable",price:"от 32₽",
+   subs:["V2.2"],modes:["Text → Video","Image → Video"],
    ratios:["1280×720","720×1280"],durs:[5,10],quals:["720p"],audio:false,
    features:[]},
 
-  {id:"runway",icon:"🚀",name:"Runway",badge:"TOP",badgeColor:"var(--yellow)",badgeBg:"rgba(251,191,36,0.15)",desc:"Gen-4 Turbo",price:"от 64₽",
-   subs:["Gen-4 Turbo"],modes:["🖼 Image→Video"],
+  {id:"runway",icon:"◆",name:"Runway",badge:"TOP",badgeColor:"var(--yellow)",badgeBg:"rgba(251,191,36,0.15)",desc:"Gen-4 Turbo",price:"от 64₽",
+   subs:["Gen-4 Turbo"],modes:["Image → Video"],
    ratios:["16:9","9:16","1:1","4:3","3:4"],durs:[5,10],quals:["720p","1080p"],audio:false,
    features:["⚠️ Только Image→Video"]},
 
-  {id:"kandinsky",icon:"🌊",name:"Kandinsky",badge:"RU",badgeColor:"var(--blue)",badgeBg:"rgba(96,165,250,0.15)",desc:"Sber • Русский",price:"от 32₽",
-   subs:["5 Pro"],modes:["📝 Text→Video","🖼 Image→Video"],
+  {id:"kandinsky",icon:"◆",name:"Kandinsky",badge:"RU",badgeColor:"var(--blue)",badgeBg:"rgba(96,165,250,0.15)",desc:"Sber • Русский",price:"от 32₽",
+   subs:["5 Pro"],modes:["Text → Video","Image → Video"],
    ratios:["1:1"],durs:[5],quals:["512p","1024p"],audio:false,
    features:[]},
 
-  {id:"grok",icon:"🤖",name:"Grok 2",badge:null,desc:"X AI • 6-10s",price:"от 80₽",
-   subs:["Grok 2"],modes:["📝 Text→Video","🖼 Image→Video"],
+  {id:"grok",icon:"◆",name:"Grok 2",badge:null,desc:"X AI • 6-10s",price:"от 80₽",
+   subs:["Grok 2"],modes:["Text → Video","Image → Video"],
    ratios:["1:1","16:9","9:16"],durs:[6,10],quals:["480p","720p"],audio:false,
    features:[]},
 ];
 const IMAGE_MODELS = [
-  {id:"seedream",icon:"🌱",name:"Seedream",desc:"4K • ByteDance",price:"от 16₽",
-   subs:["Seedream 4.0","Seedream 4.5"],modes:["📝 Text→Image"],
+  {id:"seedream",icon:"◆",name:"Seedream",desc:"4K • ByteDance",price:"от 16₽",
+   subs:["Seedream 4.0","Seedream 4.5"],modes:["Text → Image"],
    ratios:["1:1","16:9","9:16","4:3","3:4"],quals:["2048×2048","2560×1440","1440×2560"],
    features:["Seedream 4.5: до 14 картинок"]},
 
-  {id:"dreamina_img",icon:"🎭",name:"Dreamina",desc:"Реализм",price:"от 16₽",
-   subs:["Dreamina 3.0","Dreamina 3.1"],modes:["📝 Text→Image"],
+  {id:"dreamina_img",icon:"◆",name:"Dreamina",desc:"Реализм",price:"от 16₽",
+   subs:["Dreamina 3.0","Dreamina 3.1"],modes:["Text → Image"],
    ratios:["1:1","16:9","9:16"],quals:["1024px","2048px"],
    features:[]},
 
-  {id:"banana",icon:"🍌",name:"Nano Banana",desc:"Fast • Ultra",price:"от 8₽",
-   subs:["Nano Banana","Nano Banana Ultra"],modes:["📝 Text→Image"],
+  {id:"banana",icon:"◆",name:"Nano Banana",desc:"Fast • Ultra",price:"от 8₽",
+   subs:["Nano Banana","Nano Banana Ultra"],modes:["Text → Image"],
    ratios:["1:1","3:2","2:3","3:4","4:3","4:5","5:4","9:16","16:9","21:9"],quals:["1024px"],
    features:[]},
 
-  {id:"imagen4",icon:"🔥",name:"Imagen4",desc:"Google",price:"от 16₽",
-   subs:["Imagen4 Fast","Imagen4 Ultra"],modes:["📝 Text→Image"],
+  {id:"imagen4",icon:"◆",name:"Imagen4",desc:"Google",price:"от 16₽",
+   subs:["Imagen4 Fast","Imagen4 Ultra"],modes:["Text → Image"],
    ratios:["1:1","3:4","4:3","9:16","16:9"],quals:["1024px"],
    features:["Ultra: количество 1-4 шт"]},
 
-  {id:"gemini",icon:"💎",name:"Gemini",desc:"Google AI",price:"от 24₽",
-   subs:["Gemini 2.5 Flash","Gemini 3 Pro"],modes:["📝 Text→Image"],
+  {id:"gemini",icon:"◆",name:"Gemini",desc:"Google AI",price:"от 24₽",
+   subs:["Gemini 2.5 Flash","Gemini 3 Pro"],modes:["Text → Image"],
    ratios:["1:1","16:9","9:16"],quals:["1024px"],
    features:[]},
 
-  {id:"dalle",icon:"🎨",name:"DALL-E 3",desc:"OpenAI",price:"от 24₽",
-   subs:["DALL-E 3"],modes:["📝 Text→Image"],
+  {id:"dalle",icon:"◆",name:"DALL-E 3",desc:"OpenAI",price:"от 24₽",
+   subs:["DALL-E 3"],modes:["Text → Image"],
    ratios:["1024×1024","1024×1792","1792×1024"],quals:["Standard","HD"],
-   features:["🎨 Стиль: Vivid / Natural","Качество: Standard / HD"]},
+   features:["Стиль: Vivid / Natural","Качество: Standard / HD"]},
 
-  {id:"gpt_img",icon:"💡",name:"GPT Image 1.5",desc:"OpenAI",price:"от 32₽",
-   subs:["GPT Image 1.5"],modes:["🖼 Image→Image"],
+  {id:"gpt_img",icon:"◆",name:"GPT Image 1.5",desc:"OpenAI",price:"от 32₽",
+   subs:["GPT Image 1.5"],modes:["Image → Image"],
    ratios:["1024×1024","1024×1536","1536×1024"],quals:["Low","Medium","High"],
-   features:["📷 Требуются фото","Качество: Low/Medium/High"]},
+   features:["Требуются фото","Качество: Low/Medium/High"]},
 
-  {id:"ideogram",icon:"🔤",name:"Ideogram 3",desc:"Text+Image",price:"от 16₽",
-   subs:["V3 Turbo","V3 Quality"],modes:["📝 Text→Image","🖼 Image→Image"],
+  {id:"ideogram",icon:"◆",name:"Ideogram 3",desc:"Text+Image",price:"от 16₽",
+   subs:["V3 Turbo","V3 Quality"],modes:["Text → Image","Image → Image"],
    ratios:["1:1","3:4","4:3","16:9","9:16","10:16","16:10"],quals:["1024px"],
-   features:["🎨 Стили: Auto/General/Realistic/Design","📎 Референсные фото: опционально"]},
+   features:["Стили: Auto/General/Realistic/Design","Референсные фото: опционально"]},
 
-  {id:"runway_img",icon:"🚀",name:"Runway Gen4",desc:"Img Gen",price:"от 24₽",
-   subs:["Gen4 Turbo","Gen4 Base"],modes:["📝 Text→Image","🖼 Image→Image"],
+  {id:"runway_img",icon:"◆",name:"Runway Gen4",desc:"Img Gen",price:"от 24₽",
+   subs:["Gen4 Turbo","Gen4 Base"],modes:["Text → Image","Image → Image"],
    ratios:["1:1","16:9","9:16"],quals:["1024px"],
    features:[]},
 
-  {id:"stable",icon:"🖼",name:"Stable Diff 3.5",desc:"Stability AI",price:"от 16₽",
-   subs:["SD Large","SD Large Turbo","SD Medium"],modes:["📝 Text→Image"],
+  {id:"stable",icon:"◆",name:"Stable Diff 3.5",desc:"Stability AI",price:"от 16₽",
+   subs:["SD Large","SD Large Turbo","SD Medium"],modes:["Text → Image"],
    ratios:["1:1","16:9","9:16","4:3","3:4"],quals:["1024px"],
    features:[]},
 
-  {id:"wan_img",icon:"💎",name:"Wan AI Image",desc:"Alibaba",price:"от 16₽",
-   subs:["Wan 2.5","Wan 2.6"],modes:["📝 Text→Image"],
+  {id:"wan_img",icon:"◆",name:"Wan AI Image",desc:"Alibaba",price:"от 16₽",
+   subs:["Wan 2.5","Wan 2.6"],modes:["Text → Image"],
    ratios:["1:1","16:9","9:16"],quals:["1024px"],
    features:[]},
 
-  {id:"grok_img",icon:"🤖",name:"Grok 2 Image",desc:"X AI",price:"от 24₽",
-   subs:["Grok 2"],modes:["📝 Text→Image"],
+  {id:"grok_img",icon:"◆",name:"Grok 2 Image",desc:"X AI",price:"от 24₽",
+   subs:["Grok 2"],modes:["Text → Image"],
    ratios:["1:1"],quals:["1024px"],
    features:[]},
 
-  {id:"reve",icon:"✏️",name:"Reve Image",desc:"Design",price:"от 12₽",
-   subs:["Reve Image"],modes:["📝 Text→Image"],
+  {id:"reve",icon:"◆",name:"Reve Image",desc:"Design",price:"от 12₽",
+   subs:["Reve Image"],modes:["Text → Image"],
    ratios:["1:1","16:9"],quals:["1024px"],
    features:[]},
 
-  {id:"soul_img",icon:"👤",name:"Soul 2.0",desc:"Character AI",price:"от 24₽",
-   subs:["Soul 2.0"],modes:["🖼 Image→Image"],
+  {id:"soul_img",icon:"◆",name:"Soul 2.0",desc:"Character AI",price:"от 24₽",
+   subs:["Soul 2.0"],modes:["Image → Image"],
    ratios:["960×1696","1088×1632","1152×1536","1536×1536","1536×2048","2048×1152","2048×1536"],quals:["HD"],
-   features:["📷 Требуется фото","18 стилей Soul Styles"]},
+   features:["Требуется фото","18 стилей Soul Styles"]},
 ];
 const VIDEO_EDIT_MODELS = [
-  {id:"kling_o1_edit",icon:"⚡",name:"Kling O1 Editor",desc:"Video Edit",price:"от 80₽",
-   subs:["O1 Editor"],modes:["🎬 Video→Video"],ratios:["16:9","9:16","1:1"],quals:["720p","1080p"],
-   features:["📹 Требуется видео файл"]},
-  {id:"kling_o3_edit",icon:"⚡",name:"Kling O3 Editor",desc:"Video Edit",price:"от 120₽",
-   subs:["O3 Editor"],modes:["🎬 Video→Video"],ratios:["16:9","9:16","1:1"],quals:["720p","1080p"],
-   features:["📹 Требуется видео файл"]},
-  {id:"gen4_aleph",icon:"🚀",name:"Runway Gen4 Aleph",desc:"Video Edit",price:"от 96₽",
-   subs:["Gen4 Aleph"],modes:["🎬 Video→Video"],ratios:["16:9","9:16","1:1","4:3","3:4"],quals:["720p","1080p"],
-   features:["📹 Требуется видео файл"]},
+  {id:"kling_o1_edit",icon:"◆",name:"Kling O1 Editor",desc:"Video Edit",price:"от 80₽",
+   subs:["O1 Editor"],modes:["Video → Video"],ratios:["16:9","9:16","1:1"],quals:["720p","1080p"],
+   features:["Требуется видео файл"]},
+  {id:"kling_o3_edit",icon:"◆",name:"Kling O3 Editor",desc:"Video Edit",price:"от 120₽",
+   subs:["O3 Editor"],modes:["Video → Video"],ratios:["16:9","9:16","1:1"],quals:["720p","1080p"],
+   features:["Требуется видео файл"]},
+  {id:"gen4_aleph",icon:"◆",name:"Runway Gen4 Aleph",desc:"Video Edit",price:"от 96₽",
+   subs:["Gen4 Aleph"],modes:["Video → Video"],ratios:["16:9","9:16","1:1","4:3","3:4"],quals:["720p","1080p"],
+   features:["Требуется видео файл"]},
 ];
 const IMAGE_EDIT_MODELS = [
-  {id:"seedream_edit",icon:"🌱",name:"Seedream 4.5 Edit",desc:"Image Edit",price:"от 16₽",
-   subs:["Seedream 4.5"],modes:["🖼 Image→Image"],ratios:["1024×1024","2048×2048","4096×4096"],quals:["4K"],
-   features:["📷 Требуется фото","Размер: до 4096px"]},
-  {id:"dreamina_edit",icon:"🎭",name:"Dreamina Edit",desc:"Image Edit",price:"от 16₽",
-   subs:["Dreamina V3"],modes:["🖼 Image→Image"],ratios:["1:1","16:9","9:16"],quals:["1024px"],
-   features:["📷 Требуется фото"]},
-  {id:"banana_edit",icon:"🍌",name:"Banana Pro Edit",desc:"Image Edit",price:"от 16₽",
-   subs:["Banana Pro"],modes:["🖼 Image→Image"],ratios:["1:1","3:2","2:3","16:9","9:16"],quals:["1024px"],
-   features:["📷 Требуется фото"]},
-  {id:"banana_ultra_edit",icon:"🍌",name:"Banana Ultra Edit",desc:"Image Edit",price:"от 24₽",
-   subs:["Banana Ultra"],modes:["🖼 Image→Image"],ratios:["1:1","3:2","2:3","16:9","9:16"],quals:["1024px"],
-   features:["📷 Требуется фото"]},
-  {id:"wan_edit",icon:"💎",name:"Wan 2.6 Edit",desc:"Image Edit",price:"от 16₽",
-   subs:["Wan 2.6"],modes:["🖼 Image→Image"],ratios:["1:1","16:9","9:16"],quals:["1024px"],
-   features:["📷 Требуется фото"]},
-  {id:"gpt_edit",icon:"💡",name:"GPT Image 1.5 Edit",desc:"Image Edit",price:"от 32₽",
-   subs:["GPT Image 1.5"],modes:["🖼 Image→Image"],ratios:["1024×1024","1024×1536","1536×1024"],quals:["Low","Medium","High"],
-   features:["📷 Требуется фото","Качество: Low/Medium/High"]},
-  {id:"gemini_edit",icon:"💎",name:"Gemini 3 Pro Edit",desc:"Image Edit",price:"от 24₽",
-   subs:["Gemini 3 Pro"],modes:["🖼 Image→Image"],ratios:["1:1","16:9","9:16"],quals:["1024px"],
-   features:["📷 Требуется фото"]},
-  {id:"reve_edit",icon:"✏️",name:"Reve Edit",desc:"Image Edit",price:"от 16₽",
-   subs:["Reve Edit"],modes:["🖼 Image→Image"],ratios:["1:1","16:9"],quals:["1024px"],
-   features:["📷 Требуется фото"]},
+  {id:"seedream_edit",icon:"◆",name:"Seedream 4.5 Edit",desc:"Image Edit",price:"от 16₽",
+   subs:["Seedream 4.5"],modes:["Image → Image"],ratios:["1024×1024","2048×2048","4096×4096"],quals:["4K"],
+   features:["Требуется фото","Размер: до 4096px"]},
+  {id:"dreamina_edit",icon:"◆",name:"Dreamina Edit",desc:"Image Edit",price:"от 16₽",
+   subs:["Dreamina V3"],modes:["Image → Image"],ratios:["1:1","16:9","9:16"],quals:["1024px"],
+   features:["Требуется фото"]},
+  {id:"banana_edit",icon:"◆",name:"Banana Pro Edit",desc:"Image Edit",price:"от 16₽",
+   subs:["Banana Pro"],modes:["Image → Image"],ratios:["1:1","3:2","2:3","16:9","9:16"],quals:["1024px"],
+   features:["Требуется фото"]},
+  {id:"banana_ultra_edit",icon:"◆",name:"Banana Ultra Edit",desc:"Image Edit",price:"от 24₽",
+   subs:["Banana Ultra"],modes:["Image → Image"],ratios:["1:1","3:2","2:3","16:9","9:16"],quals:["1024px"],
+   features:["Требуется фото"]},
+  {id:"wan_edit",icon:"◆",name:"Wan 2.6 Edit",desc:"Image Edit",price:"от 16₽",
+   subs:["Wan 2.6"],modes:["Image → Image"],ratios:["1:1","16:9","9:16"],quals:["1024px"],
+   features:["Требуется фото"]},
+  {id:"gpt_edit",icon:"◆",name:"GPT Image 1.5 Edit",desc:"Image Edit",price:"от 32₽",
+   subs:["GPT Image 1.5"],modes:["Image → Image"],ratios:["1024×1024","1024×1536","1536×1024"],quals:["Low","Medium","High"],
+   features:["Требуется фото","Качество: Low/Medium/High"]},
+  {id:"gemini_edit",icon:"◆",name:"Gemini 3 Pro Edit",desc:"Image Edit",price:"от 24₽",
+   subs:["Gemini 3 Pro"],modes:["Image → Image"],ratios:["1:1","16:9","9:16"],quals:["1024px"],
+   features:["Требуется фото"]},
+  {id:"reve_edit",icon:"◆",name:"Reve Edit",desc:"Image Edit",price:"от 16₽",
+   subs:["Reve Edit"],modes:["Image → Image"],ratios:["1:1","16:9"],quals:["1024px"],
+   features:["Требуется фото"]},
 ];
 const SOUL_STYLES = [
   {id:"b3c8075a",name:"Creatures",img:"https://cdn.higgsfield.ai/soul-style/ce4416fd-37a7-42fe-af0d-10167d2cfa0a.webp"},
@@ -1208,12 +1559,12 @@ const SOUL_STYLES = [
   {id:"dab472a6",name:"Amalfi",img:"https://cdn.higgsfield.ai/soul-style/61d13bb8-fbe2-4816-8d2b-231e5ef68930.webp"},
 ];
 const STAGES = [
-  {pct:15,label:"🎬 Анализ",icon:"🎬"},
-  {pct:30,label:"🎨 Генерация кадров",icon:"🎨"},
-  {pct:50,label:"✨ Стили",icon:"✨"},
-  {pct:70,label:"🎞 Анимация",icon:"🎞"},
-  {pct:85,label:"🎬 Рендеринг",icon:"🎬"},
-  {pct:95,label:"🎯 Финал",icon:"🎯"},
+  {pct:15,label:"Анализ",icon:"◆"},
+  {pct:30,label:"Генерация кадров",icon:"◆"},
+  {pct:50,label:"Стили",icon:"◆"},
+  {pct:70,label:"Анимация",icon:"◆"},
+  {pct:85,label:"Рендеринг",icon:"◆"},
+  {pct:95,label:"Финализация",icon:"◆"},
 ];
 
 let currentModel = null;
@@ -1227,64 +1578,64 @@ let selectedSoul = null;
 // ═══════════════════════════════════════════
 // ═══ MEDIA MAP & CARD BUILDER ═══
 const M = {
-  // VIDEO (unique poster + video per model)
-  sora:{p:'https://static.higgsfield.ai/ai-video/sora-2.webp',v:'https://static.higgsfield.ai/ai-video/1.mp4'},
-  kling:{p:'https://static.higgsfield.ai/ai-video/kling-3.webp',v:'https://static.higgsfield.ai/ai-video/kling-mini.mp4'},
+  // ═══ VIDEO MODELS — real Higgsfield CDN demo videos ═══
+  kling:{p:'https://static.higgsfield.ai/ai-video/kling-mini-thumbnail.webp',v:'https://static.higgsfield.ai/ai-video/kling-mini.mp4'},
+  sora:{p:'https://static.higgsfield.ai/ai-video/1-thumbnail.webp',v:'https://static.higgsfield.ai/ai-video/1.mp4'},
   minimax:{p:'https://static.higgsfield.ai/ai-video/2-thumbnail.webp',v:'https://static.higgsfield.ai/ai-video/2.mp4'},
-  wan:{p:'https://static.higgsfield.ai/ai-video/wan-2.5.webp',v:'https://static.higgsfield.ai/ai-video/3.mp4'},
-  veo:{p:'https://static.higgsfield.ai/ai-video/veo-3.1.webp',v:'https://static.higgsfield.ai/ai-video/4.mp4'},
-  seedance:{p:'https://static.higgsfield.ai/ai-video/seedance-1.5-pro.webp',v:'https://static.higgsfield.ai/ai-video/5.mp4'},
-  pixverse:{p:'https://static.higgsfield.ai/ai-video/mixed-media-mini-thumbnail.webp',v:'https://static.higgsfield.ai/ai-video/mixed-media-mini.mp4'},
-  dreamina:{p:'https://static.higgsfield.ai/ai-video/4-thumbnail.webp'},
-  pika:{p:'https://static.higgsfield.ai/ai-video/5-thumbnail.webp'},
-  runway:{p:'https://static.higgsfield.ai/ai-video/3-thumbnail.webp'},
-  kandinsky:{p:'https://cdn.higgsfield.ai/card/424836bc-64a8-4b6e-b52c-384673212340.webp'},
+  wan:{p:'https://static.higgsfield.ai/ai-video/3-thumbnail.webp',v:'https://static.higgsfield.ai/ai-video/3.mp4'},
+  veo:{p:'https://static.higgsfield.ai/ai-video/4-thumbnail.webp',v:'https://static.higgsfield.ai/ai-video/4.mp4'},
+  seedance:{p:'https://static.higgsfield.ai/ai-video/5-thumbnail.webp',v:'https://static.higgsfield.ai/ai-video/5.mp4'},
   grok:{p:'https://static.higgsfield.ai/ai-video/grok-mini-thumbnail.webp',v:'https://static.higgsfield.ai/ai-video/grok-mini.mp4'},
-  // IMAGE — model-specific from higgsfield pages
-  seedream:{p:'https://cdn.higgsfield.ai/card/02a55528-f1b7-4cf7-a176-4e1ea9171eee.webp'},
-  dreamina_img:{p:'https://static.higgsfield.ai/ai-video/cinema-feature-1.webp'},
-  banana:{p:'https://static.higgsfield.ai/ai-video/cinema-feature-2.webp'},
-  imagen4:{p:'https://static.higgsfield.ai/ai-video/cinema-feature-3.webp'},
-  gemini:{p:'https://static.higgsfield.ai/ai-video/grid-4.webp'},
-  dalle:{p:'https://static.higgsfield.ai/ai-video/cinema-feature-5.webp'},
-  gpt_img:{p:'https://static.higgsfield.ai/ai-video/grid-1.webp'},
-  ideogram:{p:'https://static.higgsfield.ai/ai-video/grid-2.webp'},
-  runway_img:{p:'https://static.higgsfield.ai/ai-video/grid-3.webp'},
-  stable:{p:'https://static.higgsfield.ai/ai-video/showcase-3-v3-thumbnail.webp'},
-  wan_img:{p:'https://static.higgsfield.ai/ai-video/showcase-5-v3-thumbnail.webp'},
-  grok_img:{p:'https://static.higgsfield.ai/ai-video/cinema-feature-4.webp'},
-  reve:{p:'https://static.higgsfield.ai/ai-video/showcase-1-v3-thumbnail.webp'},
-  soul_img:{p:'https://cdn.higgsfield.ai/card/c2124f76-f96f-4df1-870c-03e5ad15fae4.webp'},
-  // VIDEO EDIT
-  kling_o1_edit:{p:'https://static.higgsfield.ai/ai-video/kling-o1.webp'},
-  kling_o3_edit:{p:'https://static.higgsfield.ai/ai-video/kling-2.6.webp'},
-  gen4_aleph:{p:'https://static.higgsfield.ai/ai-video/showcase-2-v3-thumbnail.webp'},
-  // IMAGE EDIT
-  seedream_edit:{p:'https://static.higgsfield.ai/ai-video/showcase-4-v3-thumbnail.webp'},
-  dreamina_edit:{p:'https://static.higgsfield.ai/ai-video/main-cinema-thumbnail.webp'},
-  banana_edit:{p:'https://static.higgsfield.ai/ai-video/director-2-mini-thumbnail.webp'},
-  banana_ultra_edit:{p:'https://static.higgsfield.ai/ai-video/marketing-mini-thumbnail.webp'},
-  wan_edit:{p:'https://static.higgsfield.ai/ai-video/content-thumbnail.webp'},
-  gpt_edit:{p:'https://static.higgsfield.ai/ai-video/ecommerce-1-mini-thumbnail.webp'},
-  gemini_edit:{p:'https://cdn.higgsfield.ai/card/1c566079-eba7-446e-9af1-0da50d31227c.webp'},
-  reve_edit:{p:'https://cdn.higgsfield.ai/card/831011af-a320-40a8-bf95-ebc55ff59900.webp'},
+  pixverse:{p:'https://static.higgsfield.ai/ai-video/mixed-media-mini-thumbnail.webp',v:'https://static.higgsfield.ai/ai-video/mixed-media-mini.mp4'},
+  dreamina:{p:'https://static.higgsfield.ai/ai-video/cinema-studio-mini-thumbnail.webp',v:'https://static.higgsfield.ai/ai-video/cinema-studio-mini.mp4'},
+  pika:{p:'https://static.higgsfield.ai/ai-video/ai-influencer-mini-thumbnail.webp',v:'https://static.higgsfield.ai/ai-video/ai-influencer-mini.mp4'},
+  runway:{p:'https://static.higgsfield.ai/ai-video/showcase-1-v3-thumbnail.webp',v:'https://static.higgsfield.ai/ai-video/showcase-1-v3.mp4'},
+  kandinsky:{p:'https://static.higgsfield.ai/ai-video/showcase-2-v3-thumbnail.webp',v:'https://static.higgsfield.ai/ai-video/showcase-2-v3.mp4'},
+  // ═══ IMAGE MODELS — real showcase art per model from official pages ═══
+  seedream:{p:'https://static.higgsfield.ai/seedream-5/hero/hf_20260223_222144_f597f388-46fb-4bef-b949-112920cd5889.webp'},
+  dreamina_img:{p:'https://static.higgsfield.ai/seedream-5/bento/bento-1.webp'},
+  banana:{p:'https://static.higgsfield.ai/nano-banana-2/slide-1.webp'},
+  imagen4:{p:'https://static.higgsfield.ai/nano-banana-2/case-1.webp'},
+  gemini:{p:'https://static.higgsfield.ai/nano-banana-2/slide-2.webp'},
+  dalle:{p:'https://static.higgsfield.ai/seedream-5/bento/bento-2.webp'},
+  gpt_img:{p:'https://static.higgsfield.ai/nano-banana-2/case-2.webp'},
+  ideogram:{p:'https://static.higgsfield.ai/nano-banana-2/feature-2.webp'},
+  runway_img:{p:'https://static.higgsfield.ai/seedream-5/bento/bento-3.webp'},
+  stable:{p:'https://static.higgsfield.ai/seedream-5/hero/hf_20260223_225848_4525bcb3-a2dc-45e7-9d3a-b4514ebfe432.webp'},
+  wan_img:{p:'https://static.higgsfield.ai/seedream-5/hero/hf_20260223_222447_ca01cab5-0d1e-4a42-8e14-cb96ebb195a9.webp'},
+  grok_img:{p:'https://static.higgsfield.ai/seedream-5/bento/bento-4.webp'},
+  reve:{p:'https://static.higgsfield.ai/nano-banana-2/slide-3.webp'},
+  soul_img:{p:'https://static.higgsfield.ai/seedream-5/hero/hf_20260223_223310_55ff4301-75e5-48d6-b2a2-e85d1c41a8ac.webp'},
+  // ═══ IMAGE EDIT — edit workflow showcase images ═══
+  seedream_edit:{p:'https://static.higgsfield.ai/seedream-5/bento/bento-5.webp'},
+  dreamina_edit:{p:'https://static.higgsfield.ai/seedream-5/bento/bento-6.webp'},
+  banana_edit:{p:'https://static.higgsfield.ai/nano-banana-2/step-1.webp'},
+  banana_ultra_edit:{p:'https://static.higgsfield.ai/nano-banana-2/feature-1.webp'},
+  wan_edit:{p:'https://static.higgsfield.ai/seedream-5/features/REAL-TIME%20WEB%20RETRIEVAL.webp'},
+  gpt_edit:{p:'https://static.higgsfield.ai/nano-banana-2/case-3.webp'},
+  gemini_edit:{p:'https://static.higgsfield.ai/nano-banana-2/slide-4.webp'},
+  reve_edit:{p:'https://static.higgsfield.ai/nano-banana-2/slide-5.webp'},
+  // ═══ VIDEO EDIT ═══
+  kling_o1_edit:{p:'https://static.higgsfield.ai/ai-video/showcase-3-v3-thumbnail.webp',v:'https://static.higgsfield.ai/ai-video/showcase-3-v3.mp4'},
+  kling_o3_edit:{p:'https://static.higgsfield.ai/ai-video/showcase-4-v3-thumbnail.webp',v:'https://static.higgsfield.ai/ai-video/showcase-4-v3.mp4'},
+  gen4_aleph:{p:'https://static.higgsfield.ai/ai-video/showcase-5-v3-thumbnail.webp',v:'https://static.higgsfield.ai/ai-video/showcase-5-v3.mp4'},
 };
 function vcard(m, type) {
   const d = M[m.id] || {};
   const p = d.p || ''; const v = d.v || '';
-  const audioB = m.audio ? '<div class="vc-tag aud">🔊</div>' : '';
-  const durT = (m.durs||[]).length ? '⏱'+(m.durs||[]).join('/')+'s' : '';
+  const audioB = m.audio ? '<div class="vc-tag aud">♫</div>' : '';
+  const durT = (m.durs||[]).length ? (m.durs||[]).join('/')+'s' : '';
   const qualsT = (m.quals||[]).slice(0,2).join('/');
   const badge = m.badge ? '<div class="vc-hot" style="background:'+(m.badgeBg||'var(--accent-soft)')+';color:'+(m.badgeColor||'var(--accent)')+'">'+m.badge+'</div>' : '';
   const tc = type==='video'?'vid':type==='image'?'img':'edt';
-  const pi = type==='video'?'▶':type==='image'?(((m.modes||[]).some(x=>x.includes('Image→')))?'🖼':'📝'):'✂️';
+  const pi = type==='video'?'▶':type==='image'?'◎':'✎';
   const media = v ?
     '<video class="vc-vid" autoplay muted loop playsinline poster="'+p+'"><source src="'+v+'" type="video/mp4"></video>' :
     (p ? '<img class="vc-poster" src="'+p+'" loading="lazy">' : '');
   return '<div class="vcard" onclick="openConfig(\''+m.id+'\')">'+media+
     '<div class="vc-grad"></div><div class="vc-play">'+pi+'</div>'+
     '<div class="vc-badges"><div class="vc-tag '+tc+'">'+type+'</div>'+audioB+'</div>'+badge+
-    '<div class="vc-info"><div class="vc-name">'+m.icon+' '+m.name+'</div>'+
+    '<div class="vc-info"><div class="vc-name">'+m.name+'</div>'+
     '<div class="vc-subs">'+(m.subs||[]).join(' · ')+'</div>'+
     '<div class="vc-meta"><span>'+durT+'</span><span>'+qualsT+'</span><span class="vc-price">'+m.price+'</span></div></div></div>';
 }
@@ -1345,9 +1696,9 @@ function openConfig(modelId) {
   const ALL = [...VIDEO_MODELS, ...IMAGE_MODELS, ...VIDEO_EDIT_MODELS, ...IMAGE_EDIT_MODELS];
   currentModel = ALL.find(m => m.id === modelId);
   if (!currentModel) { console.error('Model not found:', modelId); return; }
-  document.getElementById('configHeader').innerHTML = `<span style="font-size:34px">${currentModel.icon}</span><div><div style="font-size:20px;font-weight:800">${currentModel.name}</div><div style="font-size:12px;color:var(--text-dim)">${currentModel.desc}</div></div>`;
+  document.getElementById('configHeader').innerHTML = `<span style="font-size:20px;color:var(--accent);font-weight:900">◆</span><div><div style="font-size:20px;font-weight:800">${currentModel.name}</div><div style="font-size:12px;color:var(--text-dim)">${currentModel.desc}</div></div>`;
   document.getElementById('subModelChips').innerHTML = (currentModel.subs||[currentModel.name]).map((s,i) => `<div class="chip ${i===0?'active':''}" onclick="activateChip(this)">${s}</div>`).join('');
-  const modes = currentModel.modes || ['📝 Text→Image'];
+  const modes = currentModel.modes || ['Text → Image'];
   document.getElementById('modeRow').innerHTML = modes.map((m,i) => `<div class="mode-btn ${i===0?'active':''}" onclick="activateMode(this);toggleUpload(this.textContent)">${m}</div>`).join('');
   const ratios = currentModel.ratios || ['1:1','16:9','9:16'];
   const ratioSec = document.getElementById('ratioChips').parentElement;
@@ -1365,11 +1716,11 @@ function openConfig(modelId) {
   } else { qualSec.style.display = 'none'; }
   document.getElementById('audioSection').style.display = currentModel.audio ? 'block' : 'none';
   const hasImageMode = modes.some(m => m.includes('Image→'));
-  const isImageOnly = modes.length === 1 && modes[0].includes('🖼');
+  const isImageOnly = modes.length === 1 && modes[0].includes('Image →');
   document.getElementById('uploadSection').style.display = isImageOnly ? 'block' : 'none';
   document.getElementById('durationSection').style.display = durs.length ? 'block' : 'none';
   document.getElementById('summaryRows').innerHTML = `
-    <div class="summary-row"><span class="sk">Модель</span><span class="sv">${currentModel.icon} ${currentModel.name}</span></div>
+    <div class="summary-row"><span class="sk">Модель</span><span class="sv">${currentModel.name}</span></div>
     <div class="summary-row"><span class="sk">Режим</span><span class="sv">${modes[0]}</span></div>
     ${ratios.length ? '<div class="summary-row"><span class="sk">Соотношение</span><span class="sv">'+ratios[0]+'</span></div>' : ''}
   `;
@@ -1381,11 +1732,11 @@ function openConfig(modelId) {
 }
 function activateChip(el) { el.parentElement.querySelectorAll('.chip').forEach(c => c.classList.remove('active')); el.classList.add('active'); }
 function activateMode(el) { el.parentElement.querySelectorAll('.mode-btn').forEach(c => c.classList.remove('active')); el.classList.add('active'); }
-function toggleUpload(text) { document.getElementById('uploadSection').style.display = (text.includes('🖼') || text.includes('Image→')) ? 'block' : 'none'; }
+function toggleUpload(text) { document.getElementById('uploadSection').style.display = text.includes('Image →') ? 'block' : 'none'; }
 function toggleAudio() {
   audioOn = !audioOn;
   document.getElementById('audioToggle').className = 'toggle-track ' + (audioOn ? 'on' : 'off');
-  document.getElementById('audioLabel').textContent = audioOn ? '🔉 Включено' : '🔇 Выключено';
+  document.getElementById('audioLabel').textContent = audioOn ? 'Включено' : 'Выключено';
 }
 function updatePromptCount() {
   document.getElementById('promptCount').textContent = document.getElementById('promptInput').value.length + ' символов';
@@ -1453,7 +1804,7 @@ function startGeneration() {
     });
     if (pct >= 100) {
       clearInterval(iv);
-      document.getElementById('resModel').textContent = currentModel ? `${currentModel.icon} ${currentModel.name}` : '⚡ Kling';
+      document.getElementById('resModel').textContent = currentModel ? `${currentModel.name}` : '⚡ Kling';
       setTimeout(() => goScreen('screen-result'), 600);
     }
   }, 550);
@@ -1468,14 +1819,125 @@ function goScreen(id) {
   document.getElementById('scrollContainer').scrollTop = 0;
 }
 function switchTab(tab) {
+  closePopups();
+  if (tab === 'create') { togglePopup('createPopup'); return; }
+  if (tab === 'edit') { togglePopup('editPopup'); return; }
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
-  if (tab === 'chat') {
-    openChat('ai_chat');
-    return;
-  }
-  const map = { home:'screen-home', create:'screen-videos', edit:'screen-image-edit', profile:'screen-profile' };
+  const map = { home:'screen-home', chat:'screen-chat-select', profile:'screen-profile' };
   goScreen(map[tab] || 'screen-home');
+}
+function togglePopup(id) {
+  const popup = document.getElementById(id);
+  const overlay = document.getElementById('tabOverlay');
+  const isOpen = popup.classList.contains('show');
+  document.querySelectorAll('.tab-popup').forEach(p => p.classList.remove('show'));
+  overlay.classList.remove('show');
+  if (!isOpen) { popup.classList.add('show'); overlay.classList.add('show'); }
+}
+function closePopups() {
+  document.querySelectorAll('.tab-popup').forEach(p => p.classList.remove('show'));
+  const ov = document.getElementById('tabOverlay');
+  if (ov) ov.classList.remove('show');
+}
+
+
+// ═══════════════════════════════════════════
+// CHAT ENGINE
+// ═══════════════════════════════════════════
+let chatHistory = [];
+let coderHistory = [];
+let currentChatModel = {};
+let currentCoderModel = {};
+
+function startChat(id, name, sub) {
+  currentChatModel = {id, name, sub};
+  document.getElementById('chatModelName').textContent = name;
+  document.getElementById('chatModelSub').textContent = sub;
+  // Clear old messages
+  document.getElementById('chatMessages').innerHTML = '<div class="chat-welcome"><div class="cw-icon">◆</div><div class="cw-title">' + name + '</div><div class="cw-sub">Начните диалог с ' + name + '</div></div>';
+  chatHistory = [];
+  goScreen('screen-chat');
+}
+function startCoder(id, name, sub) {
+  currentCoderModel = {id, name, sub};
+  document.getElementById('coderModelName').textContent = name;
+  document.getElementById('coderModelSub').textContent = sub;
+  document.getElementById('coderMessages').innerHTML = '<div class="chat-welcome"><div class="cw-icon" style="color:#5beba0">◆</div><div class="cw-title">' + name + '</div><div class="cw-sub">Начните работу с ' + name + '</div></div>';
+  coderHistory = [];
+  goScreen('screen-coder');
+}
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+}
+function addMessage(container, role, text, model) {
+  const welcome = container.querySelector('.chat-welcome');
+  if (welcome) welcome.remove();
+  const div = document.createElement('div');
+  div.className = 'chat-msg ' + role;
+  if (role === 'assistant' && model) {
+    div.innerHTML = '<div class="msg-model">' + model + '</div>' + formatMsg(text);
+  } else { div.innerHTML = formatMsg(text); }
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+  return div;
+}
+function formatMsg(text) {
+  return text.replace(/```(\w*)\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>')
+    .replace(/`([^`]+)`/g, '<code style="background:rgba(255,255,255,0.06);padding:1px 5px;border-radius:4px;font-family:var(--mono);font-size:12px">$1</code>')
+    .replace(/\n/g, '<br>');
+}
+function showTyping(container, model) {
+  const div = document.createElement('div');
+  div.className = 'chat-msg assistant';
+  div.id = 'typing-indicator';
+  div.innerHTML = '<div class="msg-model">' + model + '</div><div class="typing-dots"><span></span><span></span><span></span></div>';
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+  return div;
+}
+function sendChatMessage() {
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = ''; input.style.height = 'auto';
+  const container = document.getElementById('chatMessages');
+  addMessage(container, 'user', text);
+  chatHistory.push({role:'user', content:text});
+  const typing = showTyping(container, currentChatModel.name);
+  setTimeout(() => {
+    typing.remove();
+    const responses = [
+      'Отличный вопрос! Давайте разберём это подробнее.\n\nЕсть несколько ключевых аспектов, которые стоит рассмотреть в контексте вашего запроса.',
+      'Конечно, помогу. Вот основные шаги:\n\n1. Определяем задачу\n2. Разрабатываем план\n3. Реализуем решение\n\nДавайте начнём с первого пункта.',
+      'Интересная тема! Я подготовил развёрнутый ответ.\n\nОсновной подход заключается в разделении проблемы на управляемые части и последовательной работе с каждой из них.',
+    ];
+    const resp = responses[chatHistory.length % responses.length];
+    addMessage(container, 'assistant', resp, currentChatModel.name);
+    chatHistory.push({role:'assistant', content:resp});
+  }, 1200 + Math.random() * 800);
+}
+function sendCoderMessage() {
+  const input = document.getElementById('coderInput');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = ''; input.style.height = 'auto';
+  const container = document.getElementById('coderMessages');
+  addMessage(container, 'user', text);
+  coderHistory.push({role:'user', content:text});
+  const typing = showTyping(container, currentCoderModel.name);
+  setTimeout(() => {
+    typing.remove();
+    const responses = [
+      'Вот решение:\n\n```python\ndef solve(data):\n    result = []\n    for item in data:\n        if item.is_valid():\n            result.append(item.process())\n    return result\n```\n\nКод обрабатывает данные с валидацией.',
+      'Проанализировал — вот оптимизация:\n\n```javascript\nconst process = async (items) => {\n  return Promise.all(\n    items.filter(Boolean).map(transform)\n  );\n};\n```\n\nПараллельная обработка вместо последовательной.',
+      'Рекомендую паттерн Repository:\n\n```typescript\ninterface IRepo<T> {\n  findById(id: string): Promise<T>;\n  save(entity: T): Promise<void>;\n  delete(id: string): Promise<void>;\n}\n```\n\nЧистое разделение слоёв данных.',
+    ];
+    const resp = responses[coderHistory.length % responses.length];
+    addMessage(container, 'assistant', resp, currentCoderModel.name);
+    coderHistory.push({role:'assistant', content:resp});
+  }, 1500 + Math.random() * 1000);
 }
 
 // ═══════════════════════════════════════════
