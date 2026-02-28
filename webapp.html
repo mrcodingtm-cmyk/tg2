@@ -595,7 +595,8 @@ body {
 
 /* ===== NO BALANCE POPUP ===== */
 .nb-overlay{position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;padding:24px;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
-.nb-overlay.show{display:flex;animation:mvIn .2s ease}
+.nb-overlay.show{display:flex;animation:fadeNb .2s ease}
+@keyframes fadeNb{from{opacity:0}to{opacity:1}}
 .nb-box{background:var(--bg);border:1px solid var(--border);border-radius:20px;padding:28px 24px;max-width:340px;width:100%;text-align:center}
 .nb-icon{font-size:48px;margin-bottom:12px}
 .nb-title{font-size:18px;font-weight:800;margin-bottom:6px}
@@ -921,12 +922,12 @@ body {
       <!-- FREE -->
       <div class="section-title">Free · ежедневно</div>
       <div class="free-grid" style="grid-template-columns: 1fr 1fr;">
-        <div class="free-card" onclick="goScreen('screen-chat-select')">
+        <div class="free-card" onclick="startChat('gpt52_chat','GPT-5.2 Chat','OpenAI · Conversational')">
           <img class="cat-bg" src="https://static.higgsfield.ai/nano-banana-2/slide-8.webp" loading="lazy">
           <div class="cat-ov"></div><div class="cat-title">GPT-5.2 Chat</div><div class="cat-sub" id="freeChatLeft">3 сообщения</div></div>
-        <div class="free-card" onclick="goScreen('screen-chat-select')">
+        <div class="free-card" onclick="startChat('grok41_fast','Grok-4.1 Fast','xAI · 2M · Agentic')">
           <img class="cat-bg" src="https://static.higgsfield.ai/seedream-5/bento/bento-7-v2.jpg" loading="lazy">
-          <div class="cat-ov"></div><div class="cat-title">Grok-4 Chat</div><div class="cat-sub" id="freeChatLeft2">3 сообщения</div></div>
+          <div class="cat-ov"></div><div class="cat-title">Grok-4.1 Fast</div><div class="cat-sub" id="freeChatLeft2">3 сообщения</div></div>
       </div>
 
       <!-- TRENDING -->
@@ -1087,7 +1088,6 @@ body {
         <div class="model-select-card" onclick="startChat('deepseek32','DeepSeek V3.2','Open Source · Reasoning')">
           <img src="https://static.higgsfield.ai/seedream-5/bento/bento-5.webp" loading="lazy">
           <div class="ms-ov"></div>
-          <div class="ms-badge" style="background:rgba(91,235,160,0.2);color:#5beba0">FREE</div>
           <div class="ms-info"><div class="ms-name">DeepSeek V3.2</div><div class="ms-sub">Open Source · GPT-5 level · Chat</div></div>
         </div>
       </div>
@@ -1122,7 +1122,6 @@ body {
         <div class="model-select-card" onclick="startCoder('deepseek32','DeepSeek V3.2','IOI/IMO Gold · Reasoning')">
           <img src="https://static.higgsfield.ai/seedream-5/bento/bento-5.webp" loading="lazy">
           <div class="ms-ov"></div>
-          <div class="ms-badge" style="background:rgba(91,235,160,0.2);color:#5beba0">FREE</div>
           <div class="ms-info"><div class="ms-name">DeepSeek V3.2</div><div class="ms-sub">Open Source · IOI/IMO Gold</div></div>
         </div>
         <div class="model-select-card" onclick="startCoder('gemini31','Gemini 3.1 Pro','Google · SWE-bench · Multi-file')">
@@ -1968,7 +1967,7 @@ function startChat(id, name, sub) {
   goScreen('screen-chat');
 }
 function startCoder(id, name, sub) {
-  // ── Balance guard for paid LLM ──
+  // ── Balance guard ──
   var need = LLM_PRICES[id] || 2;
   if (need > 0 && !checkBalanceFor(need, name)) return;
   currentCoderModel = {id, name, sub};
@@ -2271,43 +2270,27 @@ function checkUrlResult() {
 }
 
 // ═══════════════════════════════════════════
-// BALANCE CHECK (early guard)
+// BALANCE CHECK (early guard in webapp)
 // ═══════════════════════════════════════════
 var FREE_CHAT_IDS = {'gpt52_chat':1, 'grok41_fast':1};
-
-// LLM model prices in RUB (matches balance_guard.py)
 var LLM_PRICES = {
-  'claude_opus46':8, 'claude_opus45':6, 'gpt52_pro':5, 'grok4':5,
-  'gpt52_codex':5, 'claude_sonnet45':3, 'gemini31':2, 'gemini31_pro':2,
-  'deepseek32':2, 'deepseek_v32':2,
-  'gpt52_chat':0, 'grok41_fast':0
+  'claude_opus46':8,'claude_opus45':6,'gpt52_pro':5,'grok4':5,
+  'gpt52_codex':5,'claude_sonnet45':3,'gemini31':2,'deepseek32':2,
+  'gpt52_chat':0,'grok41_fast':0
 };
-
-function parsePrice(priceStr) {
-  if (!priceStr) return 0;
-  var m = priceStr.match(/(\d+)/);
-  return m ? parseInt(m[1]) : 0;
-}
-
-function getUserBalance() {
-  return (USER_BALANCE || 0) + (USER_BONUS || 0);
-}
-
-function showNoBalance(need, modelName) {
-  document.getElementById('nbNeed').textContent = '~' + need + '₽';
-  document.getElementById('nbHave').textContent = getUserBalance() + '₽';
-  document.getElementById('nbText').textContent = 'Для «' + modelName + '» нужно минимум ' + need + '₽';
+function parsePrice(s){var m=(s||'').match(/(\d+)/);return m?parseInt(m[1]):0}
+function getUserBalance(){return (USER_BALANCE||0)+(USER_BONUS||0)}
+function showNoBalance(need,name){
+  document.getElementById('nbNeed').textContent='~'+need+'₽';
+  document.getElementById('nbHave').textContent=getUserBalance()+'₽';
+  document.getElementById('nbText').textContent='Для «'+name+'» нужно минимум '+need+'₽';
   document.getElementById('nbOverlay').classList.add('show');
 }
-
-function closeNoBalance() {
-  document.getElementById('nbOverlay').classList.remove('show');
-}
-
-function checkBalanceFor(minPrice, modelName) {
-  if (minPrice <= 0) return true;
-  if (getUserBalance() >= minPrice) return true;
-  showNoBalance(minPrice, modelName);
+function closeNoBalance(){document.getElementById('nbOverlay').classList.remove('show')}
+function checkBalanceFor(minPrice,name){
+  if(minPrice<=0)return true;
+  if(getUserBalance()>=minPrice)return true;
+  showNoBalance(minPrice,name);
   return false;
 }
 
