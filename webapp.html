@@ -1389,6 +1389,10 @@ function initTelegramUser() {
     document.getElementById('profileStats').style.display = 'block';
   }
 
+  // 🔄 Auto-refresh balance from API (if available)
+  refreshBalanceFromAPI();
+  setInterval(refreshBalanceFromAPI, 60000); // каждые 60 сек
+
   // Free limits
   document.getElementById('freeChatLeft').textContent = Math.max(0, 3 - FREE_CHAT) + ' ост.';
   var cl2 = document.getElementById('freeChatLeft2');
@@ -1952,6 +1956,30 @@ let coderBusy = false;
 const CHAT_API_URL = (window.location.hostname === 'localhost')
   ? 'http://localhost:5050'
   : 'https://127.0.0.1/api';  // ← сюда ваш домен
+
+// 🔄 Обновление баланса из API
+async function refreshBalanceFromAPI() {
+  if (!TG_USER || !TG_USER.id) return;
+  try {
+    const res = await fetch(CHAT_API_URL + '/api/balance', {
+      headers: { 'X-User-Id': String(TG_USER.id) }
+    });
+    if (!res.ok) return;
+    const data = await res.json();
+    if (data.ok) {
+      USER_BALANCE = data.balance || 0;
+      USER_BONUS = data.bonus || 0;
+      const total = USER_BALANCE + USER_BONUS;
+      document.getElementById('headerBalance').textContent = total.toLocaleString('ru') + '₽';
+      document.getElementById('profileBalance').textContent = total.toLocaleString('ru') + '₽';
+      if (USER_BONUS > 0) {
+        document.getElementById('profileBalanceDetail').textContent =
+          USER_BALANCE.toLocaleString('ru') + '₽ + ' + USER_BONUS.toLocaleString('ru') + '₽ бонус';
+        document.getElementById('profileBalanceDetail').style.display = 'block';
+      }
+    }
+  } catch(e) { /* API недоступен — используем данные из URL */ }
+}
 
 function startChat(id, name, sub) {
   // ── Balance guard for paid LLM ──
