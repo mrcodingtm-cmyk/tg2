@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="format-detection" content="telephone=no">
+<meta name="theme-color" content="#0f1a0d">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Вид каталога — GrowMarket</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+  :root{
+    --bg:#0f1a0d; --panel:#16240f; --ink:#eaf3e4; --muted:#9bb592;
+    --accent:#7ec85a; --accent2:#4f9e34; --line:#27401c;
+    --phone:#0b140a; --bubble:#cfe8c9; --bubbletx:#1f3d1a;
+    --safe-t:env(safe-area-inset-top,0px);
+    --safe-b:env(safe-area-inset-bottom,0px);
+    --safe-l:env(safe-area-inset-left,0px);
+    --safe-r:env(safe-area-inset-right,0px);
+    --cta-h:84px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;}
+  html,body{height:100%;}
+  html{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",sans-serif;
+    background:radial-gradient(130% 80% at 50% 0%, #1a2c12 0%, var(--bg) 58%) fixed;
+    color:var(--ink);
+    min-height:100vh; min-height:100dvh;
+    overflow-x:hidden; overflow-y:auto;
+    -webkit-overflow-scrolling:touch; overscroll-behavior-y:contain;
+    user-select:none; -webkit-user-select:none;
+    /* отступы с учётом «островов»/вырезов + место под нижнюю кнопку */
+    padding:
+      calc(16px + var(--safe-t))
+      calc(14px + var(--safe-r))
+      calc(var(--cta-h) + var(--safe-b))
+      calc(14px + var(--safe-l));
+  }
+  .wrap{max-width:760px;margin:0 auto;}
+  .brand{display:flex;align-items:center;gap:11px;justify-content:center;margin-bottom:14px;}
+  .brand .logo{width:42px;height:42px;border-radius:13px;background:linear-gradient(180deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:23px;box-shadow:0 6px 18px rgba(79,158,52,.35);}
+  .brand-name{font-size:19px;font-weight:800;letter-spacing:.2px;line-height:1.05;}
+  .brand-slogan{font-size:11px;color:var(--muted);margin-top:2px;}
+  .head{text-align:center;margin-bottom:4px;}
+  .head h1{font-size:clamp(18px,5.2vw,22px);font-weight:800;letter-spacing:.3px;}
+  .head h1 .leaf{color:var(--accent);}
+  .head p{color:var(--muted);font-size:clamp(12px,3.4vw,13.5px);margin-top:5px;line-height:1.45;}
+  .grid{display:flex;flex-direction:column;gap:13px;margin-top:18px;}
+  /* широкий экран / альбомная — в ряд */
+  @media (min-width:620px){ .grid{flex-direction:row;align-items:stretch;} }
+  @media (orientation:landscape) and (min-width:560px){ .grid{flex-direction:row;align-items:stretch;} }
+  .opt{
+    flex:1;background:linear-gradient(180deg,var(--panel),#101c0a);
+    border:1.5px solid var(--line);border-radius:18px;
+    padding:16px 13px 15px;position:relative;
+    transition:transform .15s ease,border-color .15s ease,box-shadow .15s ease;
+    cursor:pointer;display:flex;flex-direction:column;
+    -webkit-user-select:none;
+  }
+  .opt:active{transform:scale(.985);}
+  .opt.sel{border-color:var(--accent);box-shadow:0 0 0 3px rgba(126,200,90,.22),0 12px 32px rgba(0,0,0,.4);}
+  .opt .num{position:absolute;top:-10px;left:14px;background:var(--accent);color:#0c1708;font-weight:800;font-size:11.5px;border-radius:999px;padding:3px 11px;letter-spacing:.6px;}
+  .opt .badge{position:absolute;top:-10px;right:12px;background:var(--accent2);color:#eafce0;font-size:10px;font-weight:700;border-radius:999px;padding:3px 10px;}
+  .opt h3{font-size:14.5px;margin:7px 2px 3px;font-weight:700;}
+  .opt .desc{color:var(--muted);font-size:12px;line-height:1.4;margin:0 2px 11px;min-height:32px;}
+  .phone{background:var(--phone);border:1px solid #21351a;border-radius:14px;padding:9px 8px;flex:1;display:flex;flex-direction:column;gap:5px;}
+  .b{background:var(--bubble);color:var(--bubbletx);border-radius:8px;font-size:11px;padding:7px 8px;text-align:center;font-weight:600;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .b.sm{font-size:10px;padding:5px 6px;}
+  .b.sep{background:#a9cf9f;color:#1c3416;font-size:9.5px;letter-spacing:.3px;}
+  .b.hdr{background:transparent;color:var(--muted);font-size:9.5px;text-transform:uppercase;letter-spacing:.6px;padding:3px;}
+  .row{display:flex;gap:4px;}
+  .row .b{flex:1;}
+  .check{margin-top:12px;align-self:center;width:24px;height:24px;border-radius:50%;border:2px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:14px;color:transparent;transition:.15s;}
+  .opt.sel .check{background:var(--accent);border-color:var(--accent);color:#0c1708;}
+  .cta{
+    position:fixed;left:0;right:0;bottom:0;z-index:10;
+    padding:12px calc(16px + var(--safe-r)) calc(12px + var(--safe-b)) calc(16px + var(--safe-l));
+    background:linear-gradient(180deg,transparent,rgba(8,14,6,.97) 30%);
+  }
+  .cta-inner{max-width:760px;margin:0 auto;}
+  .cta button{
+    width:100%;border:none;border-radius:14px;padding:16px;font-size:16px;font-weight:800;
+    background:linear-gradient(180deg,var(--accent),var(--accent2));color:#0c1708;
+    transition:transform .12s,opacity .15s;letter-spacing:.3px;touch-action:manipulation;
+  }
+  .cta button:disabled{opacity:.45;}
+  .cta button:active{transform:scale(.98);}
+  /* короткие экраны — ужимаем */
+  @media (max-height:680px){
+    .phone .b{font-size:10px;padding:5px 7px;}
+    .opt .desc{min-height:0;}
+    .grid{margin-top:14px;gap:11px;}
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="brand">
+      <div class="logo">🌿</div>
+      <div class="brand-tx">
+        <div class="brand-name">GrowMarket</div>
+        <div class="brand-slogan">барахолка для гроверов и садоводов</div>
+      </div>
+    </div>
+    <div class="head">
+      <h1><span class="leaf">🗂</span> Вид каталога</h1>
+      <p>Выберите, как удобнее просматривать объявления.<br>Поменять можно в любой момент в профиле.</p>
+    </div>
+
+    <div class="grid" id="grid">
+      <div class="opt" data-view="1">
+        <span class="num">ВИД 1</span>
+        <h3>Список + разделитель</h3>
+        <div class="desc">Товары, затем строка-разделитель и фильтры.</div>
+        <div class="phone">
+          <div class="b">ДНАТ Protube 125S — 2000₽</div>
+          <div class="b">Канальник silent td 350</div>
+          <div class="b sep">━━ 🗂 Фильтры ━━</div>
+          <div class="b sm">✅ Все категории</div>
+          <div class="row"><div class="b sm">🆕 Новое</div><div class="b sm">♻️ Б/у</div></div>
+        </div>
+        <div class="check">✓</div>
+      </div>
+      <div class="opt" data-view="2">
+        <span class="num">ВИД 2</span>
+        <span class="badge">рекомендуем</span>
+        <h3>Компактный</h3>
+        <div class="desc">Только товары, фильтры свёрнуты в одну кнопку.</div>
+        <div class="phone">
+          <div class="b">ДНАТ Protube 125S — 2000₽</div>
+          <div class="b">ДНаТ 250 ЭПРА ETI</div>
+          <div class="b">Канальник silent td 350</div>
+          <div class="b sep">🗂 Фильтры ▾</div>
+          <div class="row"><div class="b sm">◀</div><div class="b sm">1/1</div><div class="b sm">▶</div></div>
+        </div>
+        <div class="check">✓</div>
+      </div>
+      <div class="opt" data-view="5">
+        <span class="num">ВИД 5</span>
+        <h3>Секции с заголовками</h3>
+        <div class="desc">Группы подписаны: товары, категория, состояние.</div>
+        <div class="phone">
+          <div class="b hdr">📦 Объявления (5)</div>
+          <div class="b">ДНАТ Protube 125S</div>
+          <div class="b hdr">🗂 Категория</div>
+          <div class="row"><div class="b sm">✅ Все</div><div class="b sm">🌱 Семена</div></div>
+          <div class="b hdr">🆕 Состояние</div>
+          <div class="row"><div class="b sm">Любое</div><div class="b sm">🆕</div><div class="b sm">♻️</div></div>
+        </div>
+        <div class="check">✓</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cta">
+    <div class="cta-inner"><button id="apply" disabled>Выберите вид</button></div>
+  </div>
+
+<script>
+  var tg = window.Telegram ? window.Telegram.WebApp : null;
+  if(tg){
+    try{
+      tg.ready(); tg.expand();
+      if(tg.enableClosingConfirmation) {} // не мешаем закрытию
+      // подхватываем тему Telegram (светлая/тёмная)
+      applyTheme();
+      tg.onEvent && tg.onEvent('themeChanged', applyTheme);
+      tg.onEvent && tg.onEvent('viewportChanged', fixHeights);
+    }catch(e){}
+  }
+  function applyTheme(){
+    try{
+      var p = tg && tg.themeParams ? tg.themeParams : null;
+      if(p && p.bg_color){
+        // если Telegram в светлой теме — слегка адаптируем фон, но сохраняем зелёный бренд
+        var dark = (tg.colorScheme||'dark') === 'dark';
+        document.documentElement.style.setProperty('--ink', dark ? '#eaf3e4' : '#16240f');
+      }
+    }catch(e){}
+  }
+  // фикс динамической высоты (адресная строка/клавиатура на мобильных)
+  function fixHeights(){
+    var h = (tg && tg.viewportStableHeight) ? tg.viewportStableHeight : window.innerHeight;
+    document.body.style.minHeight = h + 'px';
+  }
+  window.addEventListener('resize', fixHeights);
+  window.addEventListener('orientationchange', function(){ setTimeout(fixHeights,250); });
+  fixHeights();
+
+  var selected = null;
+  var grid = document.getElementById('grid');
+  var applyBtn = document.getElementById('apply');
+  var VIEW_NAMES = {'1':'Список + разделитель','2':'Компактный','5':'Секции'};
+
+  grid.querySelectorAll('.opt').forEach(function(opt){
+    opt.addEventListener('click', function(){
+      grid.querySelectorAll('.opt').forEach(function(o){o.classList.remove('sel');});
+      opt.classList.add('sel');
+      selected = opt.getAttribute('data-view');
+      applyBtn.disabled = false;
+      applyBtn.textContent = 'Применить: ' + VIEW_NAMES[selected];
+      if(tg){ try{ tg.HapticFeedback.selectionChanged(); }catch(e){} }
+    });
+  });
+
+  applyBtn.addEventListener('click', function(){
+    if(!selected) return;
+    var payload = JSON.stringify({catalog_view: selected});
+    if(tg && tg.sendData){
+      if(tg.HapticFeedback){ try{ tg.HapticFeedback.notificationOccurred('success'); }catch(e){} }
+      tg.sendData(payload);
+      try{ tg.close(); }catch(e){}
+    } else {
+      alert('Выбран вид: ' + VIEW_NAMES[selected]);
+    }
+  });
+
+  // запрет двойного тапа на зум (iOS)
+  var lastTouch = 0;
+  document.addEventListener('touchend', function(e){
+    var now = Date.now();
+    if(now - lastTouch <= 300){ e.preventDefault(); }
+    lastTouch = now;
+  }, {passive:false});
+</script>
+</body>
+</html>

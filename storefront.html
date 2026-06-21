@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="format-detection" content="telephone=no">
+<meta name="theme-color" content="#0f1a0d">
+<title>GrowMarket — витрина</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+  :root{
+    --bg:#0f1a0d;--panel:#16240f;--ink:#eaf3e4;--muted:#9bb592;
+    --accent:#7ec85a;--accent2:#4f9e34;--line:#27401c;--chip:#1e3315;
+    --safe-t:env(safe-area-inset-top,0px);--safe-b:env(safe-area-inset-bottom,0px);
+    --safe-l:env(safe-area-inset-left,0px);--safe-r:env(safe-area-inset-right,0px);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+  html,body{height:100%;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    background:radial-gradient(130% 60% at 50% 0%,#1a2c12 0%,var(--bg) 55%) fixed;
+    color:var(--ink);min-height:100vh;min-height:100dvh;
+    -webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;
+    padding:calc(10px + var(--safe-t)) calc(10px + var(--safe-r)) calc(16px + var(--safe-b)) calc(10px + var(--safe-l));
+  }
+  .top{position:sticky;top:calc(var(--safe-t));z-index:5;background:linear-gradient(180deg,var(--bg) 70%,transparent);padding-bottom:8px;}
+  .brand{display:flex;align-items:center;gap:8px;margin:2px 2px 8px;}
+  .brand .logo{width:30px;height:30px;border-radius:9px;background:linear-gradient(180deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:17px;}
+  .brand b{font-size:16px;font-weight:800;}
+  .brand span{font-size:11px;color:var(--muted);margin-left:auto;}
+  .search{display:flex;gap:7px;margin-bottom:7px;}
+  .search input{flex:1;background:var(--panel);border:1px solid var(--line);border-radius:11px;color:var(--ink);padding:11px 13px;font-size:14px;outline:none;}
+  .search input::placeholder{color:var(--muted);}
+  .chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;}
+  .chips::-webkit-scrollbar{display:none;}
+  .chip{flex:0 0 auto;background:var(--chip);color:var(--ink);border:1px solid var(--line);border-radius:999px;padding:7px 13px;font-size:12.5px;white-space:nowrap;transition:.15s;}
+  .chip.on{background:var(--accent);color:#0c1708;border-color:var(--accent);font-weight:700;}
+  .sortrow{display:flex;gap:6px;margin-top:6px;}
+  .sortrow .chip{font-size:12px;padding:6px 11px;}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-top:10px;}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column;transition:transform .12s;}
+  .card:active{transform:scale(.98);}
+  .ph{width:100%;aspect-ratio:1/1;background:#0c1409 center/cover no-repeat;position:relative;display:flex;align-items:center;justify-content:center;color:#2c4022;font-size:30px;}
+  .badge{position:absolute;top:7px;left:7px;background:rgba(12,23,8,.82);color:#cfe8c9;font-size:10px;padding:3px 7px;border-radius:999px;backdrop-filter:blur(4px);}
+  .badge.top{background:rgba(126,200,90,.92);color:#0c1708;font-weight:700;}
+  .info{padding:9px 10px 11px;display:flex;flex-direction:column;gap:3px;flex:1;}
+  .nm{font-size:13px;font-weight:600;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:32px;}
+  .pr{font-size:15px;font-weight:800;color:var(--accent);}
+  .meta{font-size:10.5px;color:var(--muted);display:flex;flex-wrap:wrap;gap:5px;}
+  .empty{text-align:center;color:var(--muted);padding:50px 20px;font-size:14px;}
+  .more{width:100%;margin:14px 0;padding:13px;background:var(--panel);border:1px solid var(--line);border-radius:12px;color:var(--ink);font-size:14px;font-weight:600;}
+  .count{font-size:11px;color:var(--muted);margin:2px 2px 0;}
+  .spin{text-align:center;color:var(--muted);padding:40px;font-size:14px;}
+</style>
+</head>
+<body>
+  <div class="top">
+    <div class="brand"><div class="logo">🌿</div><b>GrowMarket</b><span id="count"></span></div>
+    <div class="search"><input id="q" type="search" placeholder="Поиск: гроутент, семена, лампа…" enterkeyhint="search"></div>
+    <div class="chips" id="cats"></div>
+    <div class="sortrow">
+      <button class="chip" data-cond="all">Любое</button>
+      <button class="chip" data-cond="new">🆕 Новое</button>
+      <button class="chip" data-cond="used">♻️ Б/у</button>
+      <button class="chip" data-sort="new">Новизна</button>
+      <button class="chip" data-sort="cheap">Дешевле</button>
+      <button class="chip" data-sort="expensive">Дороже</button>
+    </div>
+  </div>
+  <div id="count2" class="count"></div>
+  <div class="grid" id="grid"></div>
+  <div id="status"></div>
+
+<script>
+  var tg = window.Telegram ? window.Telegram.WebApp : null;
+  if(tg){ try{ tg.ready(); tg.expand(); }catch(e){} }
+
+  // База API: ?api=https://host:port  (задаётся в URL кнопки), иначе пробуем тот же origin
+  function apiBase(){
+    var p = new URLSearchParams(location.search);
+    return (p.get('api') || '').replace(/\/+$/,'') ;
+  }
+  var API = apiBase();
+  var CATS = [{code:'all',name:'Все'}];
+  var state = {kind:'sell', cat:'all', cond:'all', q:'', sort:'new', page:0, items:[], total:0};
+  var grid = document.getElementById('grid');
+  var statusEl = document.getElementById('status');
+
+  function esc(s){ return (s||'').replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+
+  function renderCats(){
+    var box = document.getElementById('cats');
+    box.innerHTML = '';
+    CATS.forEach(function(c){
+      var b = document.createElement('button');
+      b.className = 'chip' + (state.cat===c.code?' on':'');
+      b.textContent = c.name;
+      b.onclick = function(){ state.cat=c.code; state.page=0; renderCats(); load(true); if(tg){try{tg.HapticFeedback.selectionChanged();}catch(e){}} };
+      box.appendChild(b);
+    });
+  }
+
+  function cardHTML(it){
+    var img = API ? (API + '/api/photo/' + encodeURIComponent(it.uid)) : '';
+    var badges = '';
+    if(it.is_top) badges += '<div class="badge top">🔥 ТОП</div>';
+    else if(it.condition_name) badges += '<div class="badge">'+esc(it.condition_name)+'</div>';
+    var meta = [];
+    if(it.category_name) meta.push(esc(it.category_name));
+    if(it.city) meta.push('📍 '+esc(it.city));
+    var phStyle = img ? ('style="background-image:url(\''+img+'\')"') : '';
+    var phInner = img ? '' : '🪴';
+    return '<div class="card" data-uid="'+esc(it.uid)+'">'
+      + '<div class="ph" '+phStyle+'>'+badges+phInner+'</div>'
+      + '<div class="info"><div class="nm">'+esc(it.name||'Без названия')+'</div>'
+      + '<div class="pr">'+esc(it.price||'')+(/\d$/.test(it.price||'')?' ₽':'')+'</div>'
+      + '<div class="meta">'+meta.join(' · ')+'</div></div></div>';
+  }
+
+  function bindCards(){
+    grid.querySelectorAll('.card').forEach(function(el){
+      el.onclick = function(){
+        var uid = el.getAttribute('data-uid');
+        if(tg && tg.sendData){
+          if(tg.HapticFeedback){try{tg.HapticFeedback.impactOccurred('light');}catch(e){}}
+          tg.sendData(JSON.stringify({action:'open_listing', uid:uid}));
+          try{ tg.close(); }catch(e){}
+        }
+      };
+    });
+  }
+
+  function load(reset){
+    if(reset){ state.page=0; state.items=[]; grid.innerHTML=''; }
+    statusEl.innerHTML = '<div class="spin">Загружаем…</div>';
+    if(!API){
+      statusEl.innerHTML = '<div class="empty">Витрина не настроена: не задан адрес API.<br>Админу: укажите ?api=… в URL кнопки.</div>';
+      return;
+    }
+    var url = API + '/api/catalog?kind='+state.kind+'&cat='+state.cat+'&cond='+state.cond
+      + '&sort='+state.sort+'&page='+state.page+'&q='+encodeURIComponent(state.q);
+    fetch(url).then(function(r){return r.json();}).then(function(d){
+      statusEl.innerHTML='';
+      state.total = d.total||0;
+      document.getElementById('count').textContent = state.total ? (state.total+' объявл.') : '';
+      document.getElementById('count2').textContent = state.total ? ('Найдено: '+state.total) : '';
+      var items = d.items||[];
+      if(reset && items.length===0){
+        grid.innerHTML = '<div class="empty" style="grid-column:1/-1">Ничего не найдено.<br>Измените фильтры или поиск.</div>';
+        return;
+      }
+      grid.insertAdjacentHTML('beforeend', items.map(cardHTML).join(''));
+      bindCards();
+      var shown = (state.page+1)*d.per;
+      if(shown < state.total){
+        if(!document.getElementById('moreBtn')){
+          var b=document.createElement('button'); b.className='more'; b.id='moreBtn'; b.textContent='Показать ещё';
+          b.onclick=function(){ state.page++; b.remove(); load(false); };
+          statusEl.appendChild(b);
+        }
+      }
+    }).catch(function(e){
+      statusEl.innerHTML = '<div class="empty">Не удалось загрузить каталог.<br>Проверьте, что API включён и доступен.</div>';
+    });
+  }
+
+  function loadCats(){
+    if(!API){ renderCats(); load(true); return; }
+    fetch(API+'/api/categories').then(function(r){return r.json();}).then(function(d){
+      CATS = [{code:'all',name:'Все'}].concat(d.categories||[]);
+      renderCats(); load(true);
+    }).catch(function(){ renderCats(); load(true); });
+  }
+
+  // фильтры состояния/сортировки
+  document.querySelectorAll('[data-cond]').forEach(function(b){
+    b.onclick=function(){
+      document.querySelectorAll('[data-cond]').forEach(function(x){x.classList.remove('on');});
+      b.classList.add('on'); state.cond=b.getAttribute('data-cond'); load(true);
+    };
+  });
+  document.querySelectorAll('[data-sort]').forEach(function(b){
+    b.onclick=function(){
+      document.querySelectorAll('[data-sort]').forEach(function(x){x.classList.remove('on');});
+      b.classList.add('on'); state.sort=b.getAttribute('data-sort'); load(true);
+    };
+  });
+  document.querySelector('[data-cond="all"]').classList.add('on');
+  document.querySelector('[data-sort="new"]').classList.add('on');
+
+  // поиск с задержкой
+  var qt=null;
+  document.getElementById('q').addEventListener('input', function(e){
+    clearTimeout(qt);
+    qt=setTimeout(function(){ state.q=e.target.value.trim(); load(true); }, 350);
+  });
+
+  loadCats();
+</script>
+</body>
+</html>
