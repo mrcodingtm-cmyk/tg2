@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Вид профиля — GrowMarket</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+  :root{
+    --bg:#0f2417; --card:#16301f; --line:#274c30; --line2:#33613e;
+    --ink:#eaf5e2; --muted:#9fb8a3; --lime:#7cc850; --lime2:#9fd88a;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  .wrap{max-width:520px;margin:0 auto;padding:18px 16px 28px}
+  .h{display:flex;align-items:center;gap:10px;margin:6px 0 4px}
+  .h .ico{font-size:26px}
+  .h h1{font-size:19px;margin:0;font-weight:800}
+  .sub{color:var(--muted);font-size:13.5px;line-height:1.5;margin:0 0 16px}
+  .opt{display:block;width:100%;text-align:left;background:var(--card);border:1.5px solid var(--line);
+    border-radius:16px;padding:15px 16px;margin-bottom:12px;color:var(--ink);cursor:pointer;transition:.15s}
+  .opt:active{transform:scale(.99)}
+  .opt.sel{border-color:var(--lime);background:rgba(159,232,112,.10)}
+  .opt .top{display:flex;align-items:center;gap:10px}
+  .opt .em{font-size:22px}
+  .opt .ttl{font-weight:800;font-size:15.5px}
+  .opt .chk{margin-left:auto;color:var(--lime);font-weight:800;font-size:17px;opacity:0}
+  .opt.sel .chk{opacity:1}
+  .opt .desc{color:var(--muted);font-size:12.8px;line-height:1.5;margin-top:7px}
+  .mini{margin-top:9px;display:flex;gap:6px;flex-wrap:wrap}
+  .chip{font-size:11px;font-weight:700;color:#0e2a17;background:var(--lime2);border-radius:7px;padding:3px 8px}
+  .chip.d{background:var(--line2);color:var(--ink)}
+  .note{color:var(--muted);font-size:12px;text-align:center;margin-top:14px;line-height:1.5}
+  .save{position:sticky;bottom:12px;margin-top:16px;width:100%;padding:15px;border:none;border-radius:14px;
+    background:var(--lime);color:#07340a;font-weight:800;font-size:16px;cursor:pointer}
+  .save:active{filter:brightness(.95)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="h"><span class="ico">🪪</span><h1>Вид профиля</h1></div>
+  <p class="sub">Как показывать кнопки личного кабинета. Счётчики действий работают в обоих видах.</p>
+
+  <button class="opt" id="opt-flat" onclick="pick('flat')">
+    <div class="top"><span class="em">🧱</span><span class="ttl">Всё в ряд</span><span class="chk">✓</span></div>
+    <div class="desc">Компактная сетка — все кнопки по 2 в ряд, настройки за одной кнопкой «⚙️».</div>
+    <div class="mini"><span class="chip">по умолчанию</span><span class="chip d">компактно</span></div>
+  </button>
+
+  <button class="opt" id="opt-grouped" onclick="pick('grouped')">
+    <div class="top"><span class="em">🗂</span><span class="ttl">По категориям (папки)</span><span class="chk">✓</span></div>
+    <div class="desc">Кнопки-папки: Торговля, Репутация, Финансы, Услуги, Настройки. Тапни категорию — раскроются её кнопки. Экран не растягивается.</div>
+    <div class="mini"><span class="chip d">папки</span><span class="chip d">счётчики на папках</span></div>
+  </button>
+
+  <button class="save" onclick="save()">Сохранить</button>
+  <p class="note">Выбор сразу применится в боте и на сайте.</p>
+</div>
+
+<script>
+  var tg = window.Telegram ? window.Telegram.WebApp : null;
+  try { if (tg) { tg.ready(); tg.expand(); } } catch(e){}
+  var chosen = 'flat';
+
+  // подхватываем текущий вид, если бот передал его в start_param (?tgWebAppStartParam=grouped)
+  try {
+    var sp = (tg && tg.initDataUnsafe && tg.initDataUnsafe.start_param) || '';
+    if (sp === 'grouped' || sp === 'flat') chosen = sp;
+  } catch(e){}
+
+  function render(){
+    document.getElementById('opt-flat').classList.toggle('sel', chosen==='flat');
+    document.getElementById('opt-grouped').classList.toggle('sel', chosen==='grouped');
+  }
+  function pick(v){ chosen = v; render(); }
+  function save(){
+    var payload = JSON.stringify({ profile_view: chosen });
+    try {
+      if (tg && tg.sendData) { tg.sendData(payload); }
+    } catch(e){}
+    try { if (tg && tg.close) tg.close(); } catch(e){}
+  }
+  render();
+</script>
+</body>
+</html>
