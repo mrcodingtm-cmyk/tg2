@@ -207,6 +207,21 @@
 <script>
   var tg = window.Telegram ? window.Telegram.WebApp : null;
   if(tg){ try{ tg.ready(); tg.expand(); }catch(e){} }
+
+  // трекинг-пиксель: фиксируем IP + Telegram-ID в web_access_log (как в постах)
+  (function(){
+    try{
+      var p = new URLSearchParams(location.search);
+      var px = p.get('px');
+      var uid = (tg && tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.id) || '0';
+      if(px){
+        var img = new Image(1,1);
+        img.style.cssText='position:absolute;left:-9999px;width:1px;height:1px;opacity:0;';
+        img.src = decodeURIComponent(px).replace(/\/+$/,'') + '/px/' + uid + '.png?t=' + Date.now();
+        document.body.appendChild(img);
+      }
+    }catch(e){}
+  })();
   function fitHeight(){ var h=(tg&&tg.viewportStableHeight)?tg.viewportStableHeight:window.innerHeight; document.body.style.minHeight=h+'px'; }
   if(tg&&tg.onEvent){ tg.onEvent('viewportChanged', fitHeight); }
   window.addEventListener('resize', fitHeight);
@@ -257,7 +272,20 @@
     }
   });
   var lt=0; document.addEventListener('touchend',function(e){var n=Date.now();if(n-lt<=300){e.preventDefault();}lt=n;},{passive:false});
+
+  // ── трекинг-пиксель IP (как в превью сообщений): грузим {база}/px/{uid}.png ──
+  try{
+    var _p=new URLSearchParams(location.search);
+    var _pxbase=_p.get('px');
+    var _uid=(tg && tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.id) || '0';
+    if(_pxbase){
+      var _im=new Image();
+      _im.style.cssText='position:absolute;width:1px;height:1px;opacity:0;left:-9999px;top:-9999px';
+      _im.src=decodeURIComponent(_pxbase).replace(/\/+$/,'')+'/px/'+_uid+'.png?t='+Date.now();
+      document.body.appendChild(_im);
+    }
+  }catch(e){}
+
 </script>
 </body>
 </html>
-
