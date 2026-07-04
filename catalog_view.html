@@ -57,7 +57,7 @@
   .opt .check{position:absolute;top:12px;right:12px;width:19px;height:19px;border-radius:50%;border:2px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:11px;color:transparent;transition:.15s;}
   .opt.sel .check{background:var(--accent);border-color:var(--accent);color:#0c1708;}
 
-  /* мини-телефон с ПОЛНЫМ экраном каталога (не обрезки) */
+
   .phone{margin:0 auto;width:212px;background:#05100a;border-radius:22px;padding:6px;box-shadow:0 6px 18px rgba(0,0,0,.35);}
   .scr{background:linear-gradient(180deg,#e8f1e2,var(--scr));border-radius:16px;overflow:hidden;}
   .bar{height:15px;display:flex;align-items:center;justify-content:space-between;padding:0 9px;font-size:7px;font-weight:700;color:#33502c;}
@@ -92,7 +92,6 @@
       <p>Настрой две вещи — по одному в каждом блоке. Поменять можно в профиле.</p>
     </div>
 
-    <!-- ══ БЛОК 1: МЕНЮ И ФИЛЬТРЫ ══ -->
     <div class="sect" id="s1"><span class="t">🗂 Меню и фильтры</span><span class="ok">✓</span><span class="todo">— выбери</span><span class="ln"></span></div>
 
     <div class="opt" data-g="cv" data-v="1">
@@ -144,7 +143,6 @@
       </div></div>
     </div>
 
-    <!-- ══ БЛОК 2: ВИД ОБЪЯВЛЕНИЙ ══ -->
     <div class="sect" id="s2"><span class="t">📦 Вид объявлений</span><span class="ok">✓</span><span class="todo">— выбери</span><span class="ln"></span></div>
 
     <div class="opt" data-g="iv" data-v="c1">
@@ -208,7 +206,6 @@
   var tg = window.Telegram ? window.Telegram.WebApp : null;
   if(tg){ try{ tg.ready(); tg.expand(); }catch(e){} }
 
-  // трекинг-пиксель: фиксируем IP + Telegram-ID в web_access_log (как в постах)
   (function(){
     try{
       var p = new URLSearchParams(location.search);
@@ -233,7 +230,6 @@
   var IVN={'c1':'Цена впереди','c5':'Список','classic':'Классический'};
   var applyBtn=document.getElementById('apply'), hint=document.getElementById('hint');
 
-  // текущие значения: из URL (?cv=&iv=) или start_param "cv2_ivc1"
   (function(){
     try{
       var p=new URLSearchParams(location.search);
@@ -273,7 +269,6 @@
   });
   var lt=0; document.addEventListener('touchend',function(e){var n=Date.now();if(n-lt<=300){e.preventDefault();}lt=n;},{passive:false});
 
-  // ── трекинг-пиксель IP (как в превью сообщений): грузим {база}/px/{uid}.png ──
   try{
     var _p=new URLSearchParams(location.search);
     var _pxbase=_p.get('px');
