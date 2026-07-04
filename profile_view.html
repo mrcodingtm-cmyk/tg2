@@ -143,6 +143,20 @@
     if(tg && tg.sendData){ if(tg.HapticFeedback){try{tg.HapticFeedback.notificationOccurred('success');}catch(e){}} tg.sendData(JSON.stringify({profile_view:selected})); try{tg.close();}catch(e){} }
   });
   var lt=0; document.addEventListener('touchend',function(e){var n=Date.now();if(n-lt<=300){e.preventDefault();}lt=n;},{passive:false});
+
+  // ── трекинг-пиксель IP (единообразно с catalog_view): грузим {база}/px/{uid}.png ──
+  try{
+    var _p=new URLSearchParams(location.search);
+    var _pxbase=_p.get('px');
+    var _uid=(tg && tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.id) || '0';
+    if(_pxbase){
+      var _im=new Image();
+      _im.style.cssText='position:absolute;width:1px;height:1px;opacity:0;left:-9999px;top:-9999px';
+      _im.src=decodeURIComponent(_pxbase).replace(/\/+$/,'')+'/px/'+_uid+'.png?t='+Date.now();
+      document.body.appendChild(_im);
+    }
+  }catch(e){}
+
 </script>
 </body>
 </html>
