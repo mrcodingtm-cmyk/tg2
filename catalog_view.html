@@ -11,10 +11,10 @@
   :root{
     --bg:#0f1a0d;--panel:#16240f;--ink:#eaf3e4;--muted:#9bb592;
     --accent:#7ec85a;--accent2:#4f9e34;--line:#27401c;
-    --bubble:#cfe8c9;--bubbletx:#1f3d1a;
+    --scr:#dbe6d3;--key:#f3f8ef;--keyln:#c7d9bd;--keytx:#1f3d1a;--cat:#c3e3b5;
     --safe-t:env(safe-area-inset-top,0px);--safe-b:env(safe-area-inset-bottom,0px);
     --safe-l:env(safe-area-inset-left,0px);--safe-r:env(safe-area-inset-right,0px);
-    --cta-h:76px;
+    --cta-h:78px;
   }
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;}
   html,body{height:100%;}
@@ -22,54 +22,65 @@
   body{
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
     background:radial-gradient(120% 60% at 50% 0%,#1a2c12 0%,var(--bg) 55%);
-    color:var(--ink);
-    min-height:100vh;min-height:100dvh;
+    color:var(--ink);min-height:100vh;min-height:100dvh;
     overflow-x:hidden;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;
     user-select:none;-webkit-user-select:none;
-    padding:calc(14px + var(--safe-t)) calc(12px + var(--safe-r)) calc(var(--cta-h) + var(--safe-b)) calc(12px + var(--safe-l));
+    padding:calc(12px + var(--safe-t)) calc(11px + var(--safe-r)) calc(var(--cta-h) + var(--safe-b)) calc(11px + var(--safe-l));
   }
   .wrap{max-width:480px;margin:0 auto;}
-  .head{text-align:center;margin-bottom:12px;}
+  .head{text-align:center;margin-bottom:10px;}
   .head h1{font-size:18px;font-weight:800;}
   .head h1 .leaf{color:var(--accent);}
   .head p{color:var(--muted);font-size:12px;margin-top:4px;line-height:1.4;}
 
+  .sect{display:flex;align-items:center;gap:8px;margin:14px 2px 9px;}
+  .sect .t{font-size:12.5px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;color:var(--accent);}
+  .sect .ok{color:var(--accent);font-size:13px;display:none;}
+  .sect.done .ok{display:inline;}
+  .sect .todo{color:#e0a94a;font-size:11px;font-weight:700;}
+  .sect.done .todo{display:none;}
+  .sect .ln{flex:1;height:1px;background:var(--line);}
+
   .opt{
     background:linear-gradient(180deg,var(--panel),#101c0a);
     border:1.5px solid var(--line);border-radius:15px;
-    padding:13px 13px 14px;margin-bottom:11px;position:relative;
+    padding:12px 12px 13px;margin-bottom:10px;position:relative;
     transition:transform .12s,border-color .12s,box-shadow .12s;
   }
   .opt:active{transform:scale(.99);}
   .opt.sel{border-color:var(--accent);box-shadow:0 0 0 2px rgba(126,200,90,.25);}
-  .opt .top{display:flex;align-items:center;gap:9px;margin-bottom:3px;}
-  .opt .num{background:var(--accent);color:#0c1708;font-weight:800;font-size:11px;border-radius:999px;padding:3px 10px;letter-spacing:.4px;}
-  .opt .badge{margin-left:auto;background:var(--accent2);color:#eafce0;font-size:10px;font-weight:700;border-radius:999px;padding:3px 9px;}
-  .opt h3{font-size:14px;font-weight:700;}
-  .opt .desc{color:var(--muted);font-size:11.5px;line-height:1.35;margin:2px 0 9px;}
-  .opt .check{position:absolute;top:13px;right:13px;width:20px;height:20px;border-radius:50%;border:2px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:12px;color:transparent;transition:.15s;}
+  .opt .top{display:flex;align-items:center;gap:8px;margin-bottom:2px;padding-right:26px;}
+  .opt .num{background:var(--accent);color:#0c1708;font-weight:800;font-size:10.5px;border-radius:999px;padding:3px 9px;letter-spacing:.3px;white-space:nowrap;}
+  .opt .badge{margin-left:auto;background:var(--accent2);color:#eafce0;font-size:9.5px;font-weight:700;border-radius:999px;padding:3px 8px;white-space:nowrap;}
+  .opt h3{font-size:13.5px;font-weight:700;}
+  .opt .desc{color:var(--muted);font-size:11px;line-height:1.3;margin:2px 0 9px;}
+  .opt .check{position:absolute;top:12px;right:12px;width:19px;height:19px;border-radius:50%;border:2px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:11px;color:transparent;transition:.15s;}
   .opt.sel .check{background:var(--accent);border-color:var(--accent);color:#0c1708;}
 
-  /* компактное превью */
-  .prev{background:#0b140a;border:1px solid #21351a;border-radius:11px;padding:7px;display:flex;flex-direction:column;gap:4px;}
-  .b{background:var(--bubble);color:var(--bubbletx);border-radius:7px;font-size:10px;padding:5px 7px;text-align:center;font-weight:600;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  .b.sm{font-size:9px;padding:4px 5px;}
-  .b.sep{background:#a9cf9f;color:#1c3416;font-size:8.5px;}
-  .b.hdr{background:transparent;color:var(--muted);font-size:8.5px;text-transform:uppercase;letter-spacing:.5px;padding:2px;}
-  .row{display:flex;gap:4px;}
-  .row .b{flex:1;}
+  /* мини-телефон с ПОЛНЫМ экраном каталога (не обрезки) */
+  .phone{margin:0 auto;width:212px;background:#05100a;border-radius:22px;padding:6px;box-shadow:0 6px 18px rgba(0,0,0,.35);}
+  .scr{background:linear-gradient(180deg,#e8f1e2,var(--scr));border-radius:16px;overflow:hidden;}
+  .bar{height:15px;display:flex;align-items:center;justify-content:space-between;padding:0 9px;font-size:7px;font-weight:700;color:#33502c;}
+  .card{background:#fff;margin:5px 5px 0;border-radius:8px;padding:5px 7px;font-size:7.5px;color:#20351f;line-height:1.4;box-shadow:0 1px 2px rgba(30,60,30,.08);white-space:pre-wrap;}
+  .card .h{font-weight:800;}
+  .card .p{color:#2f7d32;font-weight:800;}
+  .kb{padding:5px;display:flex;flex-direction:column;gap:3px;}
+  .kr{display:flex;gap:3px;}
+  .k{flex:1;background:var(--key);border:1px solid var(--keyln);border-radius:5px;padding:5px 4px;text-align:center;font-size:7px;font-weight:600;color:var(--keytx);line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .k.item{text-align:left;}
+  .k.item .p{color:#2f7d32;font-weight:800;}
+  .k.cat{background:var(--cat);border-color:#a6cf95;font-weight:800;}
+  .k.nav{background:#e7efe2;}
+  .sep{background:#a9cf9f;color:#1c3416;font-size:7px;font-weight:800;border-radius:5px;padding:3px;text-align:center;}
+  .hd{color:#4a6b42;font-size:6.8px;text-transform:uppercase;letter-spacing:.4px;padding:2px 2px 0;font-weight:800;}
 
-  .cta{
-    position:fixed;left:0;right:0;bottom:0;z-index:10;
-    padding:11px calc(14px + var(--safe-r)) calc(11px + var(--safe-b)) calc(14px + var(--safe-l));
-    background:linear-gradient(180deg,transparent,rgba(8,14,6,.97) 32%);
-  }
+  .cta{position:fixed;left:0;right:0;bottom:0;z-index:10;
+    padding:10px calc(13px + var(--safe-r)) calc(10px + var(--safe-b)) calc(13px + var(--safe-l));
+    background:linear-gradient(180deg,transparent,rgba(8,14,6,.97) 32%);}
   .cta-inner{max-width:480px;margin:0 auto;}
-  .cta button{
-    width:100%;border:none;border-radius:13px;padding:15px;font-size:15.5px;font-weight:800;
-    background:linear-gradient(180deg,var(--accent),var(--accent2));color:#0c1708;
-    transition:transform .12s,opacity .15s;touch-action:manipulation;
-  }
+  .cta .hint{text-align:center;color:#e0a94a;font-size:11px;font-weight:700;margin-bottom:7px;min-height:14px;}
+  .cta button{width:100%;border:none;border-radius:13px;padding:15px;font-size:15.5px;font-weight:800;
+    background:linear-gradient(180deg,var(--accent),var(--accent2));color:#0c1708;transition:transform .12s,opacity .15s;touch-action:manipulation;}
   .cta button:disabled{opacity:.45;}
   .cta button:active{transform:scale(.98);}
 </style>
@@ -78,84 +89,175 @@
   <div class="wrap">
     <div class="head">
       <h1><span class="leaf">🗂</span> Вид каталога</h1>
-      <p>Как удобнее листать объявления? Поменять можно в профиле.</p>
+      <p>Настрой две вещи — по одному в каждом блоке. Поменять можно в профиле.</p>
     </div>
 
-    <div class="opt" data-view="1">
+    <!-- ══ БЛОК 1: МЕНЮ И ФИЛЬТРЫ ══ -->
+    <div class="sect" id="s1"><span class="t">🗂 Меню и фильтры</span><span class="ok">✓</span><span class="todo">— выбери</span><span class="ln"></span></div>
+
+    <div class="opt" data-g="cv" data-v="1">
       <div class="check">✓</div>
       <div class="top"><span class="num">ВИД 1</span><h3>Список + разделитель</h3></div>
       <div class="desc">Товары, затем разделитель и фильтры.</div>
-      <div class="prev">
-        <div class="b">ДНАТ Protube 125S — 2000₽</div>
-        <div class="b">Канальник silent td 350</div>
-        <div class="b sep">━ 🗂 Фильтры ━</div>
-        <div class="row"><div class="b sm">Все</div><div class="b sm">🆕</div><div class="b sm">♻️</div></div>
-      </div>
+      <div class="phone"><div class="scr">
+        <div class="bar"><span>12:30</span><span>LTE</span></div>
+        <div class="card"><span class="h">GrowMarket · 🛒 Продажа</span> · всего 428</div>
+        <div class="kb">
+          <div class="k item">ДНАТ Protube 125S — 2000₽</div>
+          <div class="k item">Канальник Silent TD 350</div>
+          <div class="sep">━ 🗂 Фильтры ━</div>
+          <div class="kr"><div class="k">Все</div><div class="k">🆕 Новое</div><div class="k">♻️ Б/у</div></div>
+        </div>
+      </div></div>
     </div>
 
-    <div class="opt" data-view="2">
+    <div class="opt" data-g="cv" data-v="2">
       <div class="check">✓</div>
       <div class="top"><span class="num">ВИД 2</span><h3>Компактный</h3><span class="badge">рекомендуем</span></div>
       <div class="desc">Только товары, фильтры свёрнуты.</div>
-      <div class="prev">
-        <div class="b">ДНАТ Protube 125S — 2000₽</div>
-        <div class="b">ДНаТ 250 ЭПРА ETI</div>
-        <div class="b">Канальник silent td 350</div>
-        <div class="b sep">🗂 Фильтры ▾</div>
-      </div>
+      <div class="phone"><div class="scr">
+        <div class="bar"><span>12:30</span><span>LTE</span></div>
+        <div class="card"><span class="h">GrowMarket · 🛒 Продажа</span> · всего 428</div>
+        <div class="kb">
+          <div class="k item">ДНАТ Protube 125S — 2000₽</div>
+          <div class="k item">ДНаТ 250 ЭПРА ETI — 1500₽</div>
+          <div class="k item">Канальник Silent TD 350</div>
+          <div class="sep">🗂 Фильтры ▾</div>
+        </div>
+      </div></div>
     </div>
 
-    <div class="opt" data-view="5">
+    <div class="opt" data-g="cv" data-v="5">
       <div class="check">✓</div>
       <div class="top"><span class="num">ВИД 5</span><h3>Секции с заголовками</h3></div>
       <div class="desc">Группы подписаны: товары, категория, состояние.</div>
-      <div class="prev">
-        <div class="b hdr">📦 Объявления (5)</div>
-        <div class="b">ДНАТ Protube 125S</div>
-        <div class="b hdr">🗂 Категория</div>
-        <div class="row"><div class="b sm">Все</div><div class="b sm">🌱 Семена</div></div>
-        <div class="b hdr">🆕 Состояние</div>
-        <div class="row"><div class="b sm">Любое</div><div class="b sm">🆕</div><div class="b sm">♻️</div></div>
-      </div>
+      <div class="phone"><div class="scr">
+        <div class="bar"><span>12:30</span><span>LTE</span></div>
+        <div class="kb">
+          <div class="hd">📦 Объявления (428)</div>
+          <div class="k item">ДНАТ Protube 125S — 2000₽</div>
+          <div class="hd">🗂 Категория</div>
+          <div class="kr"><div class="k cat">Все</div><div class="k cat">🌱 Семена</div><div class="k cat">💡 Свет</div></div>
+          <div class="hd">🆕 Состояние</div>
+          <div class="kr"><div class="k">Любое</div><div class="k">🆕</div><div class="k">♻️</div></div>
+        </div>
+      </div></div>
+    </div>
+
+    <!-- ══ БЛОК 2: ВИД ОБЪЯВЛЕНИЙ ══ -->
+    <div class="sect" id="s2"><span class="t">📦 Вид объявлений</span><span class="ok">✓</span><span class="todo">— выбери</span><span class="ln"></span></div>
+
+    <div class="opt" data-g="iv" data-v="c1">
+      <div class="check">✓</div>
+      <div class="top"><span class="num">ЦЕНА</span><h3>Цена впереди</h3><span class="badge">по умолчанию</span></div>
+      <div class="desc">«4 500 ₽ · Название» — цена видна даже у длинных названий.</div>
+      <div class="phone"><div class="scr">
+        <div class="bar"><span>12:30</span><span>LTE</span></div>
+        <div class="card"><span class="h">🛒 В ПРОДАЖЕ</span> · 428 · стр 1/29</div>
+        <div class="kb">
+          <div class="k item"><span class="p">4 500₽</span> · 💡 Лампа ДНаТ 600W Reflux</div>
+          <div class="k item"><span class="p">8 900₽</span> · 🌿 LED Quantum Board 240W…</div>
+          <div class="k item"><span class="p">2 300₽</span> · 🌀 Вентилятор канальный 150мм</div>
+          <div class="kr"><div class="k nav">◀</div><div class="k nav">2/29</div><div class="k nav">▶</div></div>
+        </div>
+      </div></div>
+    </div>
+
+    <div class="opt" data-g="iv" data-v="c5">
+      <div class="check">✓</div>
+      <div class="top"><span class="num">СПИСОК</span><h3>Список с деталями</h3></div>
+      <div class="desc">Цена и город — в тексте, кнопки — только названия.</div>
+      <div class="phone"><div class="scr">
+        <div class="bar"><span>12:30</span><span>LTE</span></div>
+        <div class="card"><span class="h">🛒 В ПРОДАЖЕ</span> · 428 · стр 1/29
+━━━━━━━━
+💡 Лампа ДНаТ 600W Reflux
+   <span class="p">4 500 ₽</span> · 🏙 Москва
+🌿 LED Quantum Board 240W
+   <span class="p">8 900 ₽</span> · 🏙 СПб</div>
+        <div class="kb">
+          <div class="k item">💡 Лампа ДНаТ 600W Reflux</div>
+          <div class="k item">🌿 LED Quantum Board 240W…</div>
+        </div>
+      </div></div>
+    </div>
+
+    <div class="opt" data-g="iv" data-v="classic">
+      <div class="check">✓</div>
+      <div class="top"><span class="num">КЛАССИКА</span><h3>Классический</h3></div>
+      <div class="desc">«Название — Цена», как было раньше.</div>
+      <div class="phone"><div class="scr">
+        <div class="bar"><span>12:30</span><span>LTE</span></div>
+        <div class="card"><span class="h">🛒 В ПРОДАЖЕ</span> · 428 · стр 1/29</div>
+        <div class="kb">
+          <div class="k item">💡 Лампа ДНаТ 600W Reflux — 4 500₽</div>
+          <div class="k item">🌿 LED Quantum Board 240W — 8 900₽</div>
+          <div class="k item">🌀 Вентилятор канальный 150мм</div>
+          <div class="kr"><div class="k nav">◀</div><div class="k nav">2/29</div><div class="k nav">▶</div></div>
+        </div>
+      </div></div>
     </div>
   </div>
 
-  <div class="cta"><div class="cta-inner"><button id="apply" disabled>Выберите вид</button></div></div>
+  <div class="cta"><div class="cta-inner">
+    <div class="hint" id="hint">Выбери по одному в каждом блоке</div>
+    <button id="apply" disabled>Выберите вид</button>
+  </div></div>
 
 <script>
   var tg = window.Telegram ? window.Telegram.WebApp : null;
   if(tg){ try{ tg.ready(); tg.expand(); }catch(e){} }
-  function fitHeight(){
-    var h = (tg && tg.viewportStableHeight) ? tg.viewportStableHeight : window.innerHeight;
-    document.body.style.minHeight = h + 'px';
-  }
-  if(tg && tg.onEvent){ tg.onEvent('viewportChanged', fitHeight); }
+  function fitHeight(){ var h=(tg&&tg.viewportStableHeight)?tg.viewportStableHeight:window.innerHeight; document.body.style.minHeight=h+'px'; }
+  if(tg&&tg.onEvent){ tg.onEvent('viewportChanged', fitHeight); }
   window.addEventListener('resize', fitHeight);
   window.addEventListener('orientationchange', function(){ setTimeout(fitHeight,250); });
   fitHeight();
 
-  var selected=null, applyBtn=document.getElementById('apply');
-  var NAMES={'1':'Список + разделитель','2':'Компактный','5':'Секции'};
-  document.querySelectorAll('.opt').forEach(function(o){
-    o.addEventListener('click', function(){
-      document.querySelectorAll('.opt').forEach(function(x){x.classList.remove('sel');});
-      o.classList.add('sel');
-      selected=o.getAttribute('data-view');
-      applyBtn.disabled=false;
-      applyBtn.textContent='Применить: '+NAMES[selected];
-      if(tg){try{tg.HapticFeedback.selectionChanged();}catch(e){}}
+  var sel={cv:null,iv:null};
+  var CVN={'1':'Список','2':'Компактный','5':'Секции'};
+  var IVN={'c1':'Цена впереди','c5':'Список','classic':'Классический'};
+  var applyBtn=document.getElementById('apply'), hint=document.getElementById('hint');
+
+  // текущие значения: из URL (?cv=&iv=) или start_param "cv2_ivc1"
+  (function(){
+    try{
+      var p=new URLSearchParams(location.search);
+      if(p.get('cv')) selectOpt('cv',p.get('cv'),true);
+      if(p.get('iv')) selectOpt('iv',p.get('iv'),true);
+      var sp=(tg&&tg.initDataUnsafe&&tg.initDataUnsafe.start_param)||'';
+      var m=/cv([125])/.exec(sp); if(m) selectOpt('cv',m[1],true);
+      var m2=/iv(c1|c5|classic)/.exec(sp); if(m2) selectOpt('iv',m2[1],true);
+    }catch(e){}
+  })();
+
+  function selectOpt(g,v,silent){
+    sel[g]=v;
+    document.querySelectorAll('.opt[data-g="'+g+'"]').forEach(function(o){
+      o.classList.toggle('sel', o.getAttribute('data-v')===String(v));
     });
+    document.getElementById(g==='cv'?'s1':'s2').classList.add('done');
+    refresh();
+    if(!silent && tg && tg.HapticFeedback){ try{tg.HapticFeedback.selectionChanged();}catch(e){} }
+  }
+  function refresh(){
+    var ready=sel.cv && sel.iv;
+    applyBtn.disabled=!ready;
+    hint.style.visibility=ready?'hidden':'visible';
+    applyBtn.textContent = ready ? ('Применить: '+CVN[sel.cv]+' + '+IVN[sel.iv]) : 'Выберите вид';
+  }
+  document.querySelectorAll('.opt').forEach(function(o){
+    o.addEventListener('click', function(){ selectOpt(o.getAttribute('data-g'), o.getAttribute('data-v')); });
   });
   applyBtn.addEventListener('click', function(){
-    if(!selected) return;
+    if(!(sel.cv && sel.iv)) return;
     if(tg && tg.sendData){
       if(tg.HapticFeedback){try{tg.HapticFeedback.notificationOccurred('success');}catch(e){}}
-      tg.sendData(JSON.stringify({catalog_view:selected}));
+      tg.sendData(JSON.stringify({catalog_view:sel.cv, catalog_item_view:sel.iv}));
       try{ tg.close(); }catch(e){}
     }
   });
-  var lt=0;
-  document.addEventListener('touchend',function(e){var n=Date.now();if(n-lt<=300){e.preventDefault();}lt=n;},{passive:false});
+  var lt=0; document.addEventListener('touchend',function(e){var n=Date.now();if(n-lt<=300){e.preventDefault();}lt=n;},{passive:false});
 </script>
 </body>
 </html>
+
