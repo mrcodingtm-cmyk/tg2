@@ -909,6 +909,9 @@ body {
         <div class="cat-card" onclick="goScreen('screen-audio')">
           <img class="cat-bg" src="https://static.higgsfield.ai/ai-video/main-cinema-thumbnail.webp" loading="lazy">
           <div class="cat-ov"></div><div class="cat-title">Аудио и Аватары</div><div class="cat-sub">Озвучка · Музыка · Lipsync</div></div>
+        <div class="cat-card" onclick="goScreen('screen-uncensored')">
+          <img class="cat-bg" src="https://static.higgsfield.ai/seedream-5/bento/bento-7-v2.jpg" loading="lazy">
+          <div class="cat-ov"></div><div class="cat-title">🔞 Uncensored</div><div class="cat-sub">14 моделей · 18+ без цензуры</div></div>
       </div>
 
       <!-- AI BOTS -->
@@ -923,14 +926,14 @@ body {
       </div>
 
       <!-- FREE -->
-      <div class="section-title">Free · ежедневно</div>
+      <div class="section-title">Free · 1 запрос/сутки на модель</div>
       <div class="free-grid" style="grid-template-columns: 1fr 1fr;">
+        <div class="free-card" onclick="startChat('deepseek_v4_flash','DeepSeek V4 Flash','DeepSeek · Огромный контекст')">
+          <img class="cat-bg" src="https://static.higgsfield.ai/seedream-5/bento/bento-5.webp" loading="lazy">
+          <div class="cat-ov"></div><div class="cat-title">DeepSeek V4 Flash</div><div class="cat-sub" id="freeChatLeft">1 запрос/сутки</div></div>
         <div class="free-card" onclick="startChat('gpt52_chat','GPT-5.2 Chat','OpenAI · Conversational')">
           <img class="cat-bg" src="https://static.higgsfield.ai/nano-banana-2/slide-8.webp" loading="lazy">
-          <div class="cat-ov"></div><div class="cat-title">GPT-5.2 Chat</div><div class="cat-sub" id="freeChatLeft">3 сообщения</div></div>
-        <div class="free-card" onclick="startChat('grok41_fast','Grok-4.1 Fast','xAI · 2M · Agentic')">
-          <img class="cat-bg" src="https://static.higgsfield.ai/seedream-5/bento/bento-7-v2.jpg" loading="lazy">
-          <div class="cat-ov"></div><div class="cat-title">Grok-4.1 Fast</div><div class="cat-sub" id="freeChatLeft2">3 сообщения</div></div>
+          <div class="cat-ov"></div><div class="cat-title">GPT-5.2 Chat</div><div class="cat-sub" id="freeChatLeft2">1 запрос/сутки</div></div>
       </div>
 
       <!-- TRENDING -->
@@ -982,6 +985,14 @@ body {
       <div class="page-title">Аудио и Аватары</div>
       <div class="page-sub">Озвучка, музыка, оживление фото и Lipsync</div>
       <div class="grid-list" id="audioGrid"></div>
+    </div>
+
+    <!-- UNCENSORED 18+ -->
+    <div class="screen" id="screen-uncensored">
+      <button class="back-btn" onclick="goScreen('screen-home')">← Назад</button>
+      <div class="page-title">🔞 Uncensored · 18+</div>
+      <div class="page-sub">Генерация и редактирование без цензуры. Только для лиц 18+. Запрещён контент с реальными людьми без согласия и любой незаконный.</div>
+      <div class="grid-list" id="uncensoredGrid"></div>
     </div>
 
     <!-- SOUL GALLERY -->
@@ -1057,51 +1068,157 @@ body {
       </div>
       <div class="page-sub" style="padding:0 16px">Выберите модель для диалога</div>
       <div class="model-select-grid">
-        <div class="model-select-card" onclick="startChat('claude_opus46','Claude Opus 4.6','Anthropic · 1M context')">
+        <div class="model-select-card" onclick="startChat('grok4','Grok 4','xAI · Рассуждения + поиск в реальном времени')">
           <img src="https://static.higgsfield.ai/nano-banana-2/slide-6.webp" loading="lazy">
           <div class="ms-ov"></div>
-          <div class="ms-badge" style="background:rgba(168,130,255,0.2);color:#a882ff">TOP</div>
-          <div class="ms-info"><div class="ms-name">Claude Opus 4.6</div><div class="ms-sub">Anthropic · 1M · Reasoning · Writing</div></div>
+          
+          <div class="ms-info"><div class="ms-name">Grok 4</div><div class="ms-sub">xAI · Рассуждения + поиск в реальном времени</div></div>
         </div>
-        <div class="model-select-card" onclick="startChat('claude_opus45','Claude Opus 4.5','Anthropic · 256K context')">
-          <img src="https://static.higgsfield.ai/nano-banana-2/slide-2.webp" loading="lazy">
-          <div class="ms-ov"></div>
-          <div class="ms-info"><div class="ms-name">Claude Opus 4.5</div><div class="ms-sub">Anthropic · 256K · Creative</div></div>
-        </div>
-        <div class="model-select-card" onclick="startChat('gpt52_pro','GPT-5.2 Pro','OpenAI · Deep reasoning')">
-          <img src="https://static.higgsfield.ai/seedream-5/bento/bento-4.webp" loading="lazy">
-          <div class="ms-ov"></div>
-          <div class="ms-badge" style="background:rgba(168,130,255,0.2);color:#a882ff">PRO</div>
-          <div class="ms-info"><div class="ms-name">GPT-5.2 Pro</div><div class="ms-sub">OpenAI · Deep reasoning · Analysis</div></div>
-        </div>
-        <div class="model-select-card" onclick="startChat('gpt52_chat','GPT-5.2 Chat','OpenAI · Conversational')">
-          <img src="https://static.higgsfield.ai/seedream-5/bento/bento-1.webp" loading="lazy">
-          <div class="ms-ov"></div>
-          <div class="ms-info"><div class="ms-name">GPT-5.2 Chat</div><div class="ms-sub">OpenAI · ChatGPT · Everyday</div></div>
-        </div>
-        <div class="model-select-card" onclick="startChat('gemini31','Gemini 3.1 Pro','Google · 1M · Multimodal')">
-          <img src="https://static.higgsfield.ai/nano-banana-2/slide-8.webp" loading="lazy">
-          <div class="ms-ov"></div>
-          <div class="ms-badge" style="background:rgba(91,235,160,0.2);color:#5beba0">NEW</div>
-          <div class="ms-info"><div class="ms-name">Gemini 3.1 Pro</div><div class="ms-sub">Google · 1M · Multimodal · Agentic</div></div>
-        </div>
-        <div class="model-select-card" onclick="startChat('grok4','Grok-4','xAI · 256K · Reasoning')">
-          <img src="https://static.higgsfield.ai/seedream-5/bento/bento-7-v2.jpg" loading="lazy">
-          <div class="ms-ov"></div>
-          <div class="ms-info"><div class="ms-name">Grok-4</div><div class="ms-sub">xAI · 256K · Deep reasoning</div></div>
-        </div>
-        <div class="model-select-card" onclick="startChat('grok41_fast','Grok-4.1 Fast','xAI · 2M · Agentic')">
+        <div class="model-select-card" onclick="startChat('grok41_fast','Grok 4.1 Fast','xAI · 2M контекст · Быстрый и креативный')">
           <img src="https://static.higgsfield.ai/seedream-5/bento/bento-3.webp" loading="lazy">
           <div class="ms-ov"></div>
-          <div class="ms-badge" style="background:rgba(59,130,246,0.2);color:#93c5fd">FAST</div>
-          <div class="ms-info"><div class="ms-name">Grok-4.1 Fast</div><div class="ms-sub">xAI · 2M · Fast · Creative</div></div>
+          
+          <div class="ms-info"><div class="ms-name">Grok 4.1 Fast</div><div class="ms-sub">xAI · 2M контекст · Быстрый и креативный</div></div>
         </div>
-        <div class="model-select-card" onclick="startChat('deepseek32','DeepSeek V3.2','Open Source · Reasoning')">
+        <div class="model-select-card" onclick="startChat('gpt52_chat','GPT-5.2 Chat','OpenAI · Быстрый ежедневный ассистент')">
+          <img src="https://static.higgsfield.ai/nano-banana-2/slide-8.webp" loading="lazy">
+          <div class="ms-ov"></div>
+          
+          <div class="ms-info"><div class="ms-name">GPT-5.2 Chat</div><div class="ms-sub">OpenAI · Быстрый ежедневный ассистент</div></div>
+        </div>
+        <div class="model-select-card" onclick="startChat('gpt52_pro','GPT-5.2 Pro','OpenAI · Продвинутые рассуждения')">
           <img src="https://static.higgsfield.ai/seedream-5/bento/bento-5.webp" loading="lazy">
           <div class="ms-ov"></div>
-          <div class="ms-info"><div class="ms-name">DeepSeek V3.2</div><div class="ms-sub">Open Source · GPT-5 level · Chat</div></div>
+          
+          <div class="ms-info"><div class="ms-name">GPT-5.2 Pro</div><div class="ms-sub">OpenAI · Продвинутые рассуждения</div></div>
         </div>
-      </div>
+        <div class="model-select-card" onclick="startChat('claude_opus46','Claude Opus 4.6','Anthropic · Лучшая для кода и агентов')">
+          <img src="https://static.higgsfield.ai/nano-banana-2/case-2.webp" loading="lazy">
+          <div class="ms-ov"></div>
+          
+          <div class="ms-info"><div class="ms-name">Claude Opus 4.6</div><div class="ms-sub">Anthropic · Лучшая для кода и агентов</div></div>
+        </div>
+        <div class="model-select-card" onclick="startChat('claude_opus45','Claude Opus 4.5','Anthropic · Продвинутый код и агенты')">
+          <img src="https://static.higgsfield.ai/seedream-5/bento/bento-1.webp" loading="lazy">
+          <div class="ms-ov"></div>
+          
+          <div class="ms-info"><div class="ms-name">Claude Opus 4.5</div><div class="ms-sub">Anthropic · Продвинутый код и агенты</div></div>
+        </div>
+        <div class="model-select-card" onclick="startChat('claude_sonnet45','Claude Sonnet 4.5','Anthropic · Качество Opus за 1/5 цены')">
+          <img src="https://static.higgsfield.ai/nano-banana-2/feature-2.webp" loading="lazy">
+          <div class="ms-ov"></div>
+          
+          <div class="ms-info"><div class="ms-name">Claude Sonnet 4.5</div><div class="ms-sub">Anthropic · Качество Opus за 1/5 цены</div></div>
+        </div>
+        <div class="model-select-card" onclick="startChat('gemini31_pro','Gemini 3.1 Pro','Google · Мощные рассуждения и код')">
+          <img src="https://static.higgsfield.ai/seedream-5/bento/bento-4.webp" loading="lazy">
+          <div class="ms-ov"></div>
+          
+          <div class="ms-info"><div class="ms-name">Gemini 3.1 Pro</div><div class="ms-sub">Google · Мощные рассуждения и код</div></div>
+        </div>
+        <div class="model-select-card" onclick="startChat('gpt52_codex','GPT-5.2 Codex','OpenAI · Агентный кодинг-специалист')">
+          <img src="https://static.higgsfield.ai/nano-banana-2/slide-6.webp" loading="lazy">
+          <div class="ms-ov"></div>
+          
+          <div class="ms-info"><div class="ms-name">GPT-5.2 Codex</div><div class="ms-sub">OpenAI · Агентный кодинг-специалист</div></div>
+        </div>
+        <div class="model-select-card" onclick="startChat('deepseek_v32','DeepSeek V3.2','DeepSeek · Мощный и в 10× дешевле')">
+          <img src="https://static.higgsfield.ai/seedream-5/bento/bento-7-v2.webp" loading="lazy">
+          <div class="ms-ov"></div>
+          <div class="ms-badge" style="background:rgba(91,235,160,0.2);color:#5beba0">🆓</div>
+          <div class="ms-info"><div class="ms-name">DeepSeek V3.2</div><div class="ms-sub">DeepSeek · Мощный и в 10× дешевле</div></div>
+        </div>
+        <div class="model-select-card" onclick="startChat('claude_opus48','Claude Opus 4.8','Anthropic · Самый свежий флагман, код и агенты')">
+          <img src="https://static.higgsfield.ai/nano-banana-2/slide-8.webp" loading="lazy">
+          <div class="ms-ov"></div>
+          <div class="ms-badge" style="background:rgba(168,130,255,0.2);color:#a882ff">TOP</div>
+          <div class="ms-info"><div class="ms-name">Claude Opus 4.8</div><div class="ms-sub">Anthropic · Самый свежий флагман, код и агенты</div></div>
+        </div>
+        <div class="model-select-card" onclick="startChat('claude_opus47','Claude Opus 4.7','Anthropic · Топ рассуждения и агенты')">
+          <img src="https://static.higgsfield.ai/seedream-5/bento/bento-3.webp" loading="lazy">
+          <div class="ms-ov"></div>
+          
+          <div class="ms-info"><div class="ms-name">Claude Opus 4.7</div><div class="ms-sub">Anthropic · Топ рассуждения и агенты</div></div>
+        </div>
+        <div class="model-select-card" onclick="startChat('claude_sonnet46','Claude Sonnet 4.6','Anthropic · Качество Opus за 3/5 цены')">
+          <img src="https://static.higgsfield.ai/nano-banana-2/case-2.webp" loading="lazy">
+          <div class="ms-ov"></div>
+          
+          <div class="ms-info"><div class="ms-name">Claude Sonnet 4.6</div><div class="ms-sub">Anthropic · Качество Opus за 3/5 цены</div></div>
+        </div>
+        <div class="model-select-card" onclick="startChat('claude_haiku45','Claude Haiku 4.5','Anthropic · Быстрый и недорогой')">
+          <img src="https://static.higgsfield.ai/seedream-5/bento/bento-5.webp" loading="lazy">
+          <div class="ms-ov"></div>
+          
+          <div class="ms-info"><div class="ms-name">Claude Haiku 4.5</div><div class="ms-sub">Anthropic · Быстрый и недорогой</div></div>
+        </div>
+        <div class="model-select-card" onclick="startChat('gpt55','GPT-5.5','OpenAI · Новейший флагман, vision + tools')">
+          <img src="https://static.higgsfield.ai/nano-banana-2/feature-2.webp" loading="lazy">
+          <div class="ms-ov"></div>
+          <div class="ms-badge" style="background:rgba(168,130,255,0.2);color:#a882ff">TOP</div>
+          <div class="ms-info"><div class="ms-name">GPT-5.5</div><div class="ms-sub">OpenAI · Новейший флагман, vision + tools</div></div>
+        </div>
+        <div class="model-select-card" onclick="startChat('gemini35_flash','Gemini 3.5 Flash','Google · Быстрый, vision + audio')">
+          <img src="https://static.higgsfield.ai/seedream-5/bento/bento-1.webp" loading="lazy">
+          <div class="ms-ov"></div>
+          <div class="ms-badge" style="background:rgba(59,130,246,0.2);color:#93c5fd">FAST</div>
+          <div class="ms-info"><div class="ms-name">Gemini 3.5 Flash</div><div class="ms-sub">Google · Быстрый, vision + audio</div></div>
+        </div>
+        <div class="model-select-card" onclick="startChat('gemini31_pro_preview','Gemini 3.1 Pro Preview','Google · Продвинутый, vision + audio + tools')">
+          <img src="https://static.higgsfield.ai/nano-banana-2/slide-6.webp" loading="lazy">
+          <div class="ms-ov"></div>
+          
+          <div class="ms-info"><div class="ms-name">Gemini 3.1 Pro Preview</div><div class="ms-sub">Google · Продвинутый, vision + audio + tools</div></div>
+        </div>
+        <div class="model-select-card" onclick="startChat('deepseek_v4_pro','DeepSeek V4 Pro','DeepSeek · Флагман V4, отличный код')">
+          <img src="https://static.higgsfield.ai/seedream-5/bento/bento-4.webp" loading="lazy">
+          <div class="ms-ov"></div>
+          
+          <div class="ms-info"><div class="ms-name">DeepSeek V4 Pro</div><div class="ms-sub">DeepSeek · Флагман V4, отличный код</div></div>
+        </div>
+        <div class="model-select-card" onclick="startChat('deepseek_v4_flash','DeepSeek V4 Flash','DeepSeek · Очень дёшево, огромный контекст')">
+          <img src="https://static.higgsfield.ai/nano-banana-2/slide-8.webp" loading="lazy">
+          <div class="ms-ov"></div>
+          <div class="ms-badge" style="background:rgba(91,235,160,0.2);color:#5beba0">🆓</div>
+          <div class="ms-info"><div class="ms-name">DeepSeek V4 Flash</div><div class="ms-sub">DeepSeek · Очень дёшево, огромный контекст</div></div>
+        </div>
+        <div class="model-select-card" onclick="startChat('qwen37_max','Qwen 3.7 Max','Alibaba · Топ открытая, 1M контекст')">
+          <img src="https://static.higgsfield.ai/seedream-5/bento/bento-7-v2.webp" loading="lazy">
+          <div class="ms-ov"></div>
+          
+          <div class="ms-info"><div class="ms-name">Qwen 3.7 Max</div><div class="ms-sub">Alibaba · Топ открытая, 1M контекст</div></div>
+        </div>
+        <div class="model-select-card" onclick="startChat('glm52','GLM-5.2','Z.ai · Сильная в коде, 1M контекст')">
+          <img src="https://static.higgsfield.ai/nano-banana-2/case-2.webp" loading="lazy">
+          <div class="ms-ov"></div>
+          
+          <div class="ms-info"><div class="ms-name">GLM-5.2</div><div class="ms-sub">Z.ai · Сильная в коде, 1M контекст</div></div>
+        </div>
+        <div class="model-select-card" onclick="startChat('glm51','GLM-5.1','Z.ai · Код и рассуждения')">
+          <img src="https://static.higgsfield.ai/seedream-5/bento/bento-3.webp" loading="lazy">
+          <div class="ms-ov"></div>
+          
+          <div class="ms-info"><div class="ms-name">GLM-5.1</div><div class="ms-sub">Z.ai · Код и рассуждения</div></div>
+        </div>
+        <div class="model-select-card" onclick="startChat('minimax_m3','MiniMax M3','MiniMax · С vision, 1M контекст')">
+          <img src="https://static.higgsfield.ai/nano-banana-2/feature-2.webp" loading="lazy">
+          <div class="ms-ov"></div>
+          
+          <div class="ms-info"><div class="ms-name">MiniMax M3</div><div class="ms-sub">MiniMax · С vision, 1M контекст</div></div>
+        </div>
+        <div class="model-select-card" onclick="startChat('gpt54_nano','GPT-5.4 Nano','OpenAI · Дёшево и быстро, vision')">
+          <img src="https://static.higgsfield.ai/seedream-5/bento/bento-5.webp" loading="lazy">
+          <div class="ms-ov"></div>
+          <div class="ms-badge" style="background:rgba(91,235,160,0.2);color:#5beba0">🆓</div>
+          <div class="ms-info"><div class="ms-name">GPT-5.4 Nano</div><div class="ms-sub">OpenAI · Дёшево и быстро, vision</div></div>
+        </div>
+        <div class="model-select-card" onclick="startChat('gemini31_flash_lite','Gemini 3.1 Flash Lite','Google · Дёшево, vision + audio')">
+          <img src="https://static.higgsfield.ai/nano-banana-2/slide-6.webp" loading="lazy">
+          <div class="ms-ov"></div>
+          <div class="ms-badge" style="background:rgba(91,235,160,0.2);color:#5beba0">🆓</div>
+          <div class="ms-info"><div class="ms-name">Gemini 3.1 Flash Lite</div><div class="ms-sub">Google · Дёшево, vision + audio</div></div>
+        </div>
+            </div>
     </div>
 
         <!-- CODER MODEL SELECT -->
@@ -1730,6 +1847,22 @@ const AUDIO_MODELS = [
    subs:["Audio","Text"],modes:["Video + Audio → Video"],ratios:[],quals:[],audio:true,
    features:["Синхронизация губ","Требуется видео + аудио"],tool:"lipsync"},
 ];
+const UNCENSORED_MODELS = [
+  {id:"chroma",icon:"🔞",name:"Chroma",desc:"Полностью uncensored генерация картино",price:"2.3₽",subs:["Chroma"],modes:['Text → Image'],ratios:[],quals:[],durs:[],uncensored:true,kind:"t2i",photo:false,video:false,features:['Полностью uncensored генерация картинок.'],tool:"uncensored"},
+  {id:"seedream5_edit",icon:"🔞",name:"Seedream 5 Pro Edit",desc:"Редактирование фото без фильтров, до 4",price:"6.9₽",subs:["Seedream 5 Pro Edit"],modes:['Image Edit'],ratios:[],quals:[],durs:[],uncensored:true,kind:"i2i",photo:true,video:false,features:['Редактирование фото без фильтров, до 4K,', 'Требуется фото'],tool:"uncensored"},
+  {id:"seedream5_lite_edit",icon:"🔞",name:"Seedream 5 Lite Edit",desc:"Лёгкое редактирование фото без фильтро",price:"5.4₽",subs:["Seedream 5 Lite Edit"],modes:['Image Edit'],ratios:[],quals:[],durs:[],uncensored:true,kind:"i2i",photo:true,video:false,features:['Лёгкое редактирование фото без фильтров,', 'Требуется фото'],tool:"uncensored"},
+  {id:"wan27_edit",icon:"🔞",name:"Wan 2.7 Edit",desc:"Промт-редактирование фото с нескольким",price:"4.6₽",subs:["Wan 2.7 Edit"],modes:['Image Edit'],ratios:[],quals:[],durs:[],uncensored:true,kind:"i2i",photo:true,video:false,features:['Промт-редактирование фото с несколькими ', 'Требуется фото'],tool:"uncensored"},
+  {id:"wan22_spicy",icon:"🔞",name:"Wan 2.2 Spicy",desc:"Оживление фото без цензуры. Лучшая ана",price:"23₽",subs:["Wan 2.2 Spicy"],modes:['Image → Video'],ratios:['480p', '720p'],quals:['480p', '720p'],durs:[5, 8],uncensored:true,kind:"i2v",photo:true,video:false,features:['Оживление фото без цензуры. Лучшая анато', 'Требуется фото'],tool:"uncensored"},
+  {id:"wan22_spicy_lora",icon:"🔞",name:"Wan 2.2 Spicy LoRA",desc:"Оживление фото без цензуры + кастомные",price:"31₽",subs:["Wan 2.2 Spicy LoRA"],modes:['Image → Video'],ratios:['480p', '720p'],quals:['480p', '720p'],durs:[5, 8],uncensored:true,kind:"i2v",photo:true,video:false,features:['Оживление фото без цензуры + кастомные L', 'Требуется фото'],tool:"uncensored"},
+  {id:"wan26_spicy",icon:"🔞",name:"Wan 2.6 Spicy",desc:"Оживление фото без цензуры, до 1080p, ",price:"123₽",subs:["Wan 2.6 Spicy"],modes:['Image → Video'],ratios:['720p', '1080p'],quals:['720p', '1080p'],durs:[5, 10, 15],uncensored:true,kind:"i2v",photo:true,video:false,features:['Оживление фото без цензуры, до 1080p, до', 'Требуется фото'],tool:"uncensored"},
+  {id:"wan27_spicy",icon:"🔞",name:"Wan 2.7 Spicy",desc:"Оживление фото, до 1080p, кинематограф",price:"154₽",subs:["Wan 2.7 Spicy"],modes:['Image → Video'],ratios:['720p', '1080p'],quals:['720p', '1080p'],durs:[5, 8, 10],uncensored:true,kind:"i2v",photo:true,video:false,features:['Оживление фото, до 1080p, кинематографич', 'Требуется фото'],tool:"uncensored"},
+  {id:"seedance15_spicy",icon:"🔞",name:"Seedance 1.5 Pro Spicy",desc:"Высшее визуальное качество без цензуры",price:"151₽",subs:["Seedance 1.5 Pro Spicy"],modes:['Image → Video'],ratios:['720p', '1080p'],quals:['720p', '1080p'],durs:[5, 10, 15],uncensored:true,kind:"i2v",photo:true,video:false,features:['Высшее визуальное качество без цензуры. ', 'Требуется фото'],tool:"uncensored"},
+  {id:"seedance2_spicy",icon:"🔞",name:"Seedance 2.0 Spicy",desc:"Высшее качество, Hollywood-grade, ауди",price:"148₽",subs:["Seedance 2.0 Spicy"],modes:['Image → Video'],ratios:['720p', '1080p'],quals:['720p', '1080p'],durs:[4, 8, 12],uncensored:true,kind:"i2v",photo:true,video:false,features:['Высшее качество, Hollywood-grade, аудио-', 'Требуется фото'],tool:"uncensored"},
+  {id:"seedance2_fast_spicy",icon:"🔞",name:"Seedance 2.0 Fast Spicy",desc:"Быстрее и дешевле, качество Seedance.",price:"123₽",subs:["Seedance 2.0 Fast Spicy"],modes:['Image → Video'],ratios:['720p', '1080p'],quals:['720p', '1080p'],durs:[4, 8, 12],uncensored:true,kind:"i2v",photo:true,video:false,features:['Быстрее и дешевле, качество Seedance.', 'Требуется фото'],tool:"uncensored"},
+  {id:"seedance2_mini_spicy",icon:"🔞",name:"Seedance 2.0 Mini Spicy",desc:"Дешевле, мультишот, до 4K. Консистентн",price:"148₽",subs:["Seedance 2.0 Mini Spicy"],modes:['Image → Video'],ratios:['720p', '1080p', '4K'],quals:['720p', '1080p', '4K'],durs:[4, 8, 12, 15],uncensored:true,kind:"i2v",photo:true,video:false,features:['Дешевле, мультишот, до 4K. Консистентные', 'Требуется фото'],tool:"uncensored"},
+  {id:"vidu_q3_spicy",icon:"🔞",name:"Vidu Q3 Spicy",desc:"Оживление фото. ⚠️ Иногда добавляет ра",price:"99₽",subs:["Vidu Q3 Spicy"],modes:['Image → Video'],ratios:['720p'],quals:['720p'],durs:[4, 8],uncensored:true,kind:"i2v",photo:true,video:false,features:['Оживление фото. ⚠️ Иногда добавляет разм', 'Требуется фото'],tool:"uncensored"},
+  {id:"wan22_spicy_ext",icon:"🔞",name:"Wan 2.2 Spicy — Продление",desc:"Продление вашего видео без цензуры.",price:"23₽",subs:["Wan 2.2 Spicy — Продление"],modes:['Video Extend'],ratios:['480p', '720p'],quals:['480p', '720p'],durs:[5, 8],uncensored:true,kind:"ext",photo:false,video:true,features:['Продление вашего видео без цензуры.', 'Требуется видео'],tool:"uncensored"}
+];
 const SOUL_STYLES = [
   {id:"b3c8075a",name:"Creatures",img:"https://cdn.higgsfield.ai/soul-style/ce4416fd-37a7-42fe-af0d-10167d2cfa0a.webp"},
   {id:"1fc861ed",name:"Medieval",img:"https://cdn.higgsfield.ai/soul-style/6d384dd7-f756-41de-9628-06c6cb204423.jpg"},
@@ -1872,6 +2005,11 @@ function renderAudioGrid() {
   if (el) el.innerHTML = AUDIO_MODELS.map(m => vcard(m,'audio')).join('');
 }
 
+function renderUncensoredGrid() {
+  const el = document.getElementById('uncensoredGrid');
+  if (el) el.innerHTML = UNCENSORED_MODELS.map(m => vcard(m,'uncensored')).join('');
+}
+
 
 function renderSoulGrid(filter='') {
   const filtered = filter ? SOUL_STYLES.filter(s => s.name.toLowerCase().includes(filter.toLowerCase())) : SOUL_STYLES;
@@ -1891,7 +2029,7 @@ function selectSoul(id) { selectedSoul = selectedSoul===id ? null : id; renderSo
 // ═══════════════════════════════════════════
 function openConfig(modelId) {
   try {
-  const ALL = [...VIDEO_MODELS, ...IMAGE_MODELS, ...VIDEO_EDIT_MODELS, ...IMAGE_EDIT_MODELS];
+  const ALL = [...VIDEO_MODELS, ...IMAGE_MODELS, ...VIDEO_EDIT_MODELS, ...IMAGE_EDIT_MODELS, ...UNCENSORED_MODELS];
   currentModel = ALL.find(m => m.id === modelId);
   if (!currentModel) { console.error('Model not found:', modelId); return; }
   // ── Balance guard ──
@@ -2457,6 +2595,7 @@ renderImageGrid();
 renderVideoEditGrid();
 renderImageEditGrid();
 renderAudioGrid();
+renderUncensoredGrid();
 renderSoulGrid();
 autoHero();
 checkUrlResult();
