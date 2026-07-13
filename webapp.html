@@ -896,16 +896,19 @@ body {
       <div class="cat-grid" style="grid-template-columns: 1fr 1fr;">
         <div class="cat-card" onclick="goScreen('screen-videos')">
           <img class="cat-bg" src="https://static.higgsfield.ai/ai-video/main-cinema-thumbnail.webp" loading="lazy">
-          <div class="cat-ov"></div><div class="cat-title">Create Video</div><div class="cat-sub">12 моделей · AI генерация</div></div>
+          <div class="cat-ov"></div><div class="cat-title">Create Video</div><div class="cat-sub">20 моделей · AI генерация</div></div>
         <div class="cat-card" onclick="goScreen('screen-images')">
           <img class="cat-bg" src="https://static.higgsfield.ai/seedream-5/hero/hf_20260223_225531_d2d5ac50-8480-4b8c-992e-689e37ff1dd9.webp" loading="lazy">
-          <div class="cat-ov"></div><div class="cat-title">Create Image</div><div class="cat-sub">14 моделей · 4K</div></div>
+          <div class="cat-ov"></div><div class="cat-title">Create Image</div><div class="cat-sub">19 моделей · 4K</div></div>
         <div class="cat-card" onclick="goScreen('screen-image-edit')">
           <img class="cat-bg" src="https://static.higgsfield.ai/nano-banana-2/step-2.webp" loading="lazy">
           <div class="cat-ov"></div><div class="cat-title">Edit Image</div><div class="cat-sub">8 моделей · Ретушь</div></div>
         <div class="cat-card" onclick="goScreen('screen-video-edit')">
           <img class="cat-bg" src="https://static.higgsfield.ai/ai-video/director-2-mini-thumbnail.webp" loading="lazy">
           <div class="cat-ov"></div><div class="cat-title">Edit Video</div><div class="cat-sub">3 модели · VFX</div></div>
+        <div class="cat-card" onclick="goScreen('screen-audio')">
+          <img class="cat-bg" src="https://static.higgsfield.ai/ai-video/main-cinema-thumbnail.webp" loading="lazy">
+          <div class="cat-ov"></div><div class="cat-title">Аудио и Аватары</div><div class="cat-sub">Озвучка · Музыка · Lipsync</div></div>
       </div>
 
       <!-- AI BOTS -->
@@ -945,7 +948,7 @@ body {
     <div class="screen" id="screen-videos">
       <button class="back-btn" onclick="goScreen('screen-home')">← Назад</button>
       <div class="page-title">Create Videos</div>
-      <div class="page-sub">12 AI-моделей для генерации видео</div>
+      <div class="page-sub">20 AI-моделей для генерации видео</div>
       <div class="grid-list" id="videoGrid"></div>
     </div>
 
@@ -953,7 +956,7 @@ body {
     <div class="screen" id="screen-images">
       <button class="back-btn" onclick="goScreen('screen-home')">← Назад</button>
       <div class="page-title">Create Images</div>
-      <div class="page-sub">14 AI-моделей для генерации изображений</div>
+      <div class="page-sub">19 AI-моделей для генерации изображений</div>
       <div class="grid-list" id="imageGrid"></div>
     </div>
 
@@ -971,6 +974,14 @@ body {
       <div class="page-title">Edit Image</div>
       <div class="page-sub">8 AI-моделей для редактирования изображений</div>
       <div class="grid-list" id="imageEditGrid"></div>
+    </div>
+
+    <!-- AUDIO & AVATARS -->
+    <div class="screen" id="screen-audio">
+      <button class="back-btn" onclick="goScreen('screen-home')">← Назад</button>
+      <div class="page-title">Аудио и Аватары</div>
+      <div class="page-sub">Озвучка, музыка, оживление фото и Lipsync</div>
+      <div class="grid-list" id="audioGrid"></div>
     </div>
 
     <!-- SOUL GALLERY -->
@@ -1418,6 +1429,16 @@ function openChat(type) {
   }
 }
 function openModel(modelId, type) {
+  // Аудио/аватары требуют загрузки файлов — открываем флоу в боте
+  const AUDIO = (typeof AUDIO_MODELS!=='undefined'?AUDIO_MODELS:[]);
+  const audioModel = AUDIO.find(m => m.id === modelId);
+  if (audioModel && audioModel.tool) {
+    sendAction('open_audio', { tool: audioModel.tool, model: modelId });
+    if (tg && tg.showAlert) {
+      try { tg.showAlert('Открываю в чате бота — там загрузите нужные файлы.'); } catch(e){}
+    }
+    return;
+  }
   // Try opening config wizard first (for image/edit models)
   const ALL = [...VIDEO_MODELS, ...(typeof IMAGE_MODELS!=='undefined'?IMAGE_MODELS:[]), ...(typeof VIDEO_EDIT_MODELS!=='undefined'?VIDEO_EDIT_MODELS:[]), ...(typeof IMAGE_EDIT_MODELS!=='undefined'?IMAGE_EDIT_MODELS:[])];
   const found = ALL.find(m => m.id === modelId);
@@ -1518,6 +1539,46 @@ const VIDEO_MODELS = [
    subs:["Grok 2"],modes:["Text → Video","Image → Video"],
    ratios:["1:1","16:9","9:16"],durs:[6,10],quals:["480p","720p"],audio:false,
    features:[]},
+
+  {id:"grok_ref",icon:"◆",name:"Grok Референс",badge:null,desc:"X AI • Reference",price:"от 80₽",
+   subs:["Grok Reference"],modes:["Image → Video"],
+   ratios:["1:1","16:9","9:16"],durs:[6,10],quals:["480p","720p"],audio:false,
+   features:["Референсное фото"]},
+
+  {id:"seedance2",icon:"◆",name:"Seedance 2.0",badge:"NEW",badgeColor:"var(--green)",badgeBg:"rgba(91,235,160,0.15)",desc:"ByteDance • 2.0",price:"от 48₽",
+   subs:["Seedance 2.0","Seedance 2.0 Мультимодал"],modes:["Text → Video","Image → Video"],
+   ratios:["16:9","9:16","1:1","4:3","3:4"],durs:[4,8,12],quals:["720p","1080p"],audio:true,
+   features:["Мультимодал: несколько фото","Audio: опционально"]},
+
+  {id:"ltx2",icon:"◆",name:"LTX-2",badge:"NEW",badgeColor:"var(--green)",badgeBg:"rgba(91,235,160,0.15)",desc:"Lightricks • Fast",price:"от 32₽",
+   subs:["LTX-2"],modes:["Text → Video","Image → Video"],
+   ratios:["16:9","9:16","1:1"],durs:[5,8,10],quals:["720p","1080p"],audio:false,
+   features:[]},
+
+  {id:"hunyuan15",icon:"◆",name:"Hunyuan 1.5",desc:"Tencent • HD",price:"от 32₽",
+   subs:["Hunyuan 1.5"],modes:["Text → Video","Image → Video"],
+   ratios:["16:9","9:16","1:1"],durs:[5,8],quals:["720p","1080p"],audio:false,
+   features:[]},
+
+  {id:"luma_ray2",icon:"◆",name:"Luma Ray 2",desc:"Luma • Cinematic",price:"от 40₽",
+   subs:["Ray 2"],modes:["Text → Video","Image → Video"],
+   ratios:["16:9","9:16","1:1"],durs:[5,9],quals:["720p","1080p"],audio:false,
+   features:[]},
+
+  {id:"wan27",icon:"◆",name:"Wan 2.7",badge:"NEW",badgeColor:"var(--green)",badgeBg:"rgba(91,235,160,0.15)",desc:"Alibaba • 2.7",price:"от 24₽",
+   subs:["Wan 2.7"],modes:["Text → Video","Image → Video"],
+   ratios:["16:9","9:16","1:1"],durs:[5,10],quals:["720p","1080p"],audio:true,
+   features:["Негатив, seed, съёмка"]},
+
+  {id:"kling_4k",icon:"◆",name:"Kling 3.0 4K",badge:"4K",badgeColor:"var(--yellow)",badgeBg:"rgba(251,191,36,0.15)",desc:"Kuaishou • 4K",price:"от 240₽",
+   subs:["3.0 Pro 4K"],modes:["Text → Video","Image → Video"],
+   ratios:["16:9","9:16","1:1"],durs:[5,10],quals:["4K"],audio:true,
+   features:["Максимальное качество 4K"]},
+
+  {id:"vext",icon:"◆",name:"Продлить видео",desc:"Video Extend",price:"от 40₽",
+   subs:["Extend"],modes:["Video → Video"],
+   ratios:["16:9","9:16","1:1"],durs:[5],quals:["720p","1080p"],audio:false,
+   features:["Требуется видео файл","Продолжает ваше видео"]},
 ];
 const IMAGE_MODELS = [
   {id:"seedream",icon:"◆",name:"Seedream",desc:"4K • ByteDance",price:"от 16₽",
@@ -1589,6 +1650,31 @@ const IMAGE_MODELS = [
    subs:["Soul 2.0"],modes:["Image → Image"],
    ratios:["960×1696","1088×1632","1152×1536","1536×1536","1536×2048","2048×1152","2048×1536"],quals:["HD"],
    features:["Требуется фото","18 стилей Soul Styles"]},
+
+  {id:"seedream5",icon:"◆",name:"Seedream 5",badge:"NEW",badgeColor:"var(--green)",badgeBg:"rgba(91,235,160,0.15)",desc:"ByteDance • 5.0",price:"от 24₽",
+   subs:["Seedream 5","Seedream 5 Pro"],modes:["Text → Image"],
+   ratios:["1:1","16:9","9:16","4:3","3:4"],quals:["2048px","4K"],
+   features:["Pro: максимальное качество"]},
+
+  {id:"gpt_image2",icon:"◆",name:"GPT Image 2",badge:"NEW",badgeColor:"var(--green)",badgeBg:"rgba(91,235,160,0.15)",desc:"OpenAI • v2",price:"от 40₽",
+   subs:["GPT Image 2"],modes:["Text → Image","Image → Image"],
+   ratios:["1024×1024","1024×1536","1536×1024"],quals:["Low","Medium","High"],
+   features:["Качество: Low/Medium/High"]},
+
+  {id:"flux2",icon:"◆",name:"FLUX 2",badge:"NEW",badgeColor:"var(--green)",badgeBg:"rgba(91,235,160,0.15)",desc:"Black Forest • 2",price:"от 24₽",
+   subs:["FLUX 2"],modes:["Text → Image"],
+   ratios:["1:1","3:2","2:3","3:4","4:3","16:9","9:16","21:9"],quals:["1024px","2048px"],
+   features:[]},
+
+  {id:"qwen_image2",icon:"◆",name:"Qwen Image 2.0",desc:"Alibaba • Qwen",price:"от 16₽",
+   subs:["Qwen 2.0"],modes:["Text → Image"],
+   ratios:["1:1","16:9","9:16","4:3","3:4"],quals:["1024px"],
+   features:[]},
+
+  {id:"nanobanana2",icon:"◆",name:"Nano Banana 2",badge:"NEW",badgeColor:"var(--green)",badgeBg:"rgba(91,235,160,0.15)",desc:"Google • v2",price:"от 12₽",
+   subs:["Nano Banana 2"],modes:["Text → Image"],
+   ratios:["1:1","3:2","2:3","3:4","4:3","9:16","16:9","21:9"],quals:["1024px","2048px"],
+   features:[]},
 ];
 const VIDEO_EDIT_MODELS = [
   {id:"kling_o1_edit",icon:"◆",name:"Kling O1 Editor",desc:"Video Edit",price:"от 80₽",
@@ -1626,6 +1712,23 @@ const IMAGE_EDIT_MODELS = [
   {id:"reve_edit",icon:"◆",name:"Reve Edit",desc:"Image Edit",price:"от 16₽",
    subs:["Reve Edit"],modes:["Image → Image"],ratios:["1:1","16:9"],quals:["1024px"],
    features:["Требуется фото"]},
+];
+const AUDIO_MODELS = [
+  {id:"speech",icon:"◆",name:"Озвучка текста",badge:"NEW",badgeColor:"var(--green)",badgeBg:"rgba(91,235,160,0.15)",desc:"MiniMax • 16 голосов",price:"от 8₽",
+   subs:["Turbo","HD"],modes:["Text → Audio"],ratios:[],quals:["Turbo","HD"],audio:true,
+   features:["16 голосов","Эмоции","Русский язык"],tool:"speech"},
+
+  {id:"music",icon:"◆",name:"Генерация музыки",desc:"MiniMax Music",price:"от 24₽",
+   subs:["Music-02"],modes:["Text → Audio"],ratios:[],quals:[],audio:true,
+   features:["Вокал + инструменты","Свой стиль и текст"],tool:"music"},
+
+  {id:"avatar",icon:"◆",name:"AI Аватар",badge:"HOT",badgeColor:"var(--red)",badgeBg:"rgba(248,113,113,0.15)",desc:"Kling • Фото + голос",price:"от 40₽",
+   subs:["Standard","Pro"],modes:["Photo + Audio → Video"],ratios:[],quals:["Standard","Pro"],audio:true,
+   features:["Оживление фото","Требуются фото + аудио"],tool:"avatar"},
+
+  {id:"lipsync",icon:"◆",name:"Lipsync",desc:"Kling • Синхрон губ",price:"от 40₽",
+   subs:["Audio","Text"],modes:["Video + Audio → Video"],ratios:[],quals:[],audio:true,
+   features:["Синхронизация губ","Требуется видео + аудио"],tool:"lipsync"},
 ];
 const SOUL_STYLES = [
   {id:"b3c8075a",name:"Creatures",img:"https://cdn.higgsfield.ai/soul-style/ce4416fd-37a7-42fe-af0d-10167d2cfa0a.webp"},
@@ -1716,12 +1819,13 @@ function vcard(m, type) {
   const durT = (m.durs||[]).length ? (m.durs||[]).join('/')+'s' : '';
   const qualsT = (m.quals||[]).slice(0,2).join('/');
   const badge = m.badge ? '<div class="vc-hot" style="background:'+(m.badgeBg||'var(--accent-soft)')+';color:'+(m.badgeColor||'var(--accent)')+'">'+m.badge+'</div>' : '';
-  const tc = type==='video'?'vid':type==='image'?'img':'edt';
-  const pi = type==='video'?'▶':type==='image'?'◎':'✎';
+  const tc = type==='video'?'vid':type==='image'?'img':type==='audio'?'aud':'edt';
+  const pi = type==='video'?'▶':type==='image'?'◎':type==='audio'?'♫':'✎';
   const media = v ?
     '<video class="vc-vid" autoplay muted loop playsinline poster="'+p+'"><source src="'+v+'" type="video/mp4"></video>' :
     (p ? '<img class="vc-poster" src="'+p+'" loading="lazy">' : '');
-  return '<div class="vcard" onclick="openConfig(\''+m.id+'\')">'+media+
+  const _oc = type==='audio' ? ("openModel('"+m.id+"','audio')") : ("openConfig('"+m.id+"')");
+  return '<div class="vcard" onclick="'+_oc+'">'+media+
     '<div class="vc-grad"></div><div class="vc-play">'+pi+'</div>'+
     '<div class="vc-badges"><div class="vc-tag '+tc+'">'+type+'</div>'+audioB+'</div>'+badge+
     '<div class="vc-info"><div class="vc-name">'+m.name+'</div>'+
@@ -1761,6 +1865,11 @@ function renderVideoEditGrid() {
 
 function renderImageEditGrid() {
   document.getElementById('imageEditGrid').innerHTML = IMAGE_EDIT_MODELS.map(m => vcard(m,'edit')).join('');
+}
+
+function renderAudioGrid() {
+  const el = document.getElementById('audioGrid');
+  if (el) el.innerHTML = AUDIO_MODELS.map(m => vcard(m,'audio')).join('');
 }
 
 
@@ -2347,6 +2456,7 @@ renderVideoGrid();
 renderImageGrid();
 renderVideoEditGrid();
 renderImageEditGrid();
+renderAudioGrid();
 renderSoulGrid();
 autoHero();
 checkUrlResult();
